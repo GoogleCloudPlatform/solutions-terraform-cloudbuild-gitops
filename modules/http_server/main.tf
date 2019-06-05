@@ -29,7 +29,6 @@ resource "google_compute_instance" "http_server" {
       image = "debian-cloud/debian-9"
     }
   }
-
   network_interface {
     subnetwork = "${var.subnet}"
     access_config {
