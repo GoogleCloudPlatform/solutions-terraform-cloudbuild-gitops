@@ -37,7 +37,6 @@ resource "google_compute_instance" "http_server" {
       # Include this section to give the VM an external ip address
     }
   }
-
   # Apply the firewall rule to allow external IPs to access this instance
   tags = ["http-server"]
 }
