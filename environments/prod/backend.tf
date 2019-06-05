@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "jtg-review-1015-tfstate"
     prefix = "env/prod"
   }
 }
