@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "donkomura-apps-tfstate"
     prefix = "env/dev"
   }
 }
