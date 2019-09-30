@@ -17,7 +17,7 @@ module "vpc" {
   source  = "terraform-google-modules/network/google"
   version = "0.6.0"
 
-  "solid-choir-254209"   = "${var.project}"
+  project_id    = "${var.project}"
   network_name = "${var.env}"
 
   subnets = [
