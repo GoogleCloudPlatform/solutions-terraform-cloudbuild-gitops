@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = ""solid-choir-254209"-tfstate"
+    bucket = "solid-choir-254209-tfstate"
     prefix = "env/prod"
   }
 }
