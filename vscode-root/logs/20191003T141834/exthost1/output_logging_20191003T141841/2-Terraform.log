@@ -77,3 +77,8 @@
 2019-10-03 14:27:44:031 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
 2019-10-03 14:27:44:031 [DEBUG] telemetry:     symbolCount: 0
 2019-10-03 14:27:46:696 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/environments/prod/terraform.tfvars
+2019-10-03 14:44:09:446 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:44:09:446 [DEBUG] telemetry:     symbolCount: 2
+2019-10-03 14:44:30:560 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:44:30:560 [DEBUG] telemetry:     symbolCount: 2
+2019-10-03 14:44:38:967 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/modules/firewall/main.tf
