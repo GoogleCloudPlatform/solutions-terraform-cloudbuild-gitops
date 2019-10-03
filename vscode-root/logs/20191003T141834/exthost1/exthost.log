@@ -1,0 +1,12 @@
+[2019-10-03 14:18:38.446] [exthost] [info] extension host started
+[2019-10-03 14:18:38.609] [exthost] [info] ExtensionService#_doActivateExtension vscode.debug-auto-launch {"startup":true,"activationEvent":"*"}
+[2019-10-03 14:18:38.620] [exthost] [info] ExtensionService#loadCommonJSModule /usr/share/code/resources/app/extensions/debug-auto-launch/dist/extension
+[2019-10-03 14:18:38.631] [exthost] [info] ExtensionService#_doActivateExtension vscode.emmet {"startup":true,"activationEvent":"*"}
+[2019-10-03 14:18:38.632] [exthost] [info] ExtensionService#loadCommonJSModule /usr/share/code/resources/app/extensions/emmet/dist/extension
+[2019-10-03 14:18:38.760] [exthost] [info] ExtensionService#_doActivateExtension vscode.git {"startup":true,"activationEvent":"*"}
+[2019-10-03 14:18:38.765] [exthost] [info] ExtensionService#loadCommonJSModule /usr/share/code/resources/app/extensions/git/dist/main
+[2019-10-03 14:18:39.194] [exthost] [info] ExtensionService#_doActivateExtension vscode.merge-conflict {"startup":true,"activationEvent":"*"}
+[2019-10-03 14:18:39.197] [exthost] [info] ExtensionService#loadCommonJSModule /usr/share/code/resources/app/extensions/merge-conflict/dist/extension
+[2019-10-03 14:18:39.895] [exthost] [info] ExtensionService#_doActivateExtension mauve.terraform {"startup":true,"activationEvent":"workspaceContains:**/*.tf"}
+[2019-10-03 14:18:39.895] [exthost] [info] ExtensionService#loadCommonJSModule /root/.vscode/extensions/mauve.terraform-1.4.0/out/src/extension
+[2019-10-03 14:18:42.486] [exthost] [info] eager extensions activated

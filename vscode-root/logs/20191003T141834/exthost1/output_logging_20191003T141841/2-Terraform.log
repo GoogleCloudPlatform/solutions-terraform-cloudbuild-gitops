@@ -1,0 +1,79 @@
+2019-10-03 14:18:41:602 [INFO ] runner: Found Terraform binary terraform with version 0.12.7
+2019-10-03 14:18:41:698 [INFO ] runner: Found Terraform binary /usr/local/bin/terraform with version 0.12.7
+2019-10-03 14:18:41:822 [INFO ] file-system-watcher: Crawling workspace for terraform files...
+2019-10-03 14:18:41:947 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/environments/prod/versions.tf
+2019-10-03 14:18:42:006 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/environments/prod/backend.tf
+2019-10-03 14:18:42:015 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/environments/prod/terraform.tfvars
+2019-10-03 14:18:42:058 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/environments/prod/outputs.tf
+2019-10-03 14:18:42:099 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/environments/prod/main.tf
+2019-10-03 14:18:42:116 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/environments/prod/variables.tf
+2019-10-03 14:18:42:131 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/environments/dev/versions.tf
+2019-10-03 14:18:42:149 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/environments/dev/backend.tf
+2019-10-03 14:18:42:189 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/environments/dev/terraform.tfvars
+2019-10-03 14:18:42:240 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/environments/dev/outputs.tf
+2019-10-03 14:18:42:262 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/environments/dev/main.tf
+2019-10-03 14:18:42:277 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/environments/dev/variables.tf
+2019-10-03 14:18:42:288 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/modules/vpc/versions.tf
+2019-10-03 14:18:42:306 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/modules/vpc/outputs.tf
+2019-10-03 14:18:42:333 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/modules/vpc/main.tf
+2019-10-03 14:18:42:343 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/modules/vpc/variables.tf
+2019-10-03 14:18:42:358 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/modules/firewall/versions.tf
+2019-10-03 14:18:42:367 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/modules/firewall/outputs.tf
+2019-10-03 14:18:42:411 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/modules/firewall/main.tf
+2019-10-03 14:18:42:432 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/modules/firewall/variables.tf
+2019-10-03 14:18:42:439 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/modules/http_server/versions.tf
+2019-10-03 14:18:42:450 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/modules/http_server/outputs.tf
+2019-10-03 14:18:42:478 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/modules/http_server/main.tf
+2019-10-03 14:18:42:485 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/modules/http_server/variables.tf
+2019-10-03 14:18:42:486 [DEBUG] telemetry: Not sending metric initialCrawl
+2019-10-03 14:18:42:486 [DEBUG] telemetry:     totalTimeMs: 663.478544
+2019-10-03 14:18:42:486 [DEBUG] telemetry:     numberOfDocs: 24
+2019-10-03 14:18:42:486 [DEBUG] telemetry:     averagePerDocTimeMs: 27.644939333333337
+2019-10-03 14:18:42:486 [DEBUG] telemetry: Not sending metric activated
+2019-10-03 14:18:42:486 [DEBUG] telemetry:     activateTimeMs: 954.09128
+2019-10-03 14:18:58:876 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:18:58:876 [DEBUG] telemetry:     symbolCount: 1
+2019-10-03 14:19:03:165 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:19:03:165 [DEBUG] telemetry:     symbolCount: 5
+2019-10-03 14:19:12:562 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:19:12:562 [DEBUG] telemetry:     symbolCount: 5
+2019-10-03 14:19:16:280 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:19:16:280 [DEBUG] telemetry:     symbolCount: 0
+2019-10-03 14:19:18:259 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:19:18:259 [DEBUG] telemetry:     symbolCount: 1
+2019-10-03 14:19:20:878 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:19:20:878 [DEBUG] telemetry:     symbolCount: 0
+2019-10-03 14:20:46:150 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:20:46:150 [DEBUG] telemetry:     symbolCount: 2
+2019-10-03 14:20:57:444 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:20:57:444 [DEBUG] telemetry:     symbolCount: 2
+2019-10-03 14:21:03:883 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:21:03:883 [DEBUG] telemetry:     symbolCount: 2
+2019-10-03 14:21:05:822 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:21:05:822 [DEBUG] telemetry:     symbolCount: 0
+2019-10-03 14:21:10:471 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:21:10:471 [DEBUG] telemetry:     symbolCount: 2
+2019-10-03 14:21:19:663 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:21:19:663 [DEBUG] telemetry:     symbolCount: 5
+2019-10-03 14:21:32:538 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:21:32:538 [DEBUG] telemetry:     symbolCount: 1
+2019-10-03 14:26:44:724 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:26:44:724 [DEBUG] telemetry:     symbolCount: 1
+2019-10-03 14:26:46:464 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:26:46:464 [DEBUG] telemetry:     symbolCount: 1
+2019-10-03 14:26:55:971 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/environments/dev/backend.tf
+2019-10-03 14:27:07:427 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:27:07:427 [DEBUG] telemetry:     symbolCount: 0
+2019-10-03 14:27:10:387 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:27:10:387 [DEBUG] telemetry:     symbolCount: 0
+2019-10-03 14:27:11:237 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/environments/dev/terraform.tfvars
+2019-10-03 14:27:16:702 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:27:16:702 [DEBUG] telemetry:     symbolCount: 1
+2019-10-03 14:27:31:814 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:27:31:814 [DEBUG] telemetry:     symbolCount: 1
+2019-10-03 14:27:34:337 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/environments/prod/backend.tf
+2019-10-03 14:27:41:805 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:27:41:805 [DEBUG] telemetry:     symbolCount: 0
+2019-10-03 14:27:44:031 [DEBUG] telemetry: Not sending metric provideDocumentSymbols
+2019-10-03 14:27:44:031 [DEBUG] telemetry:     symbolCount: 0
+2019-10-03 14:27:46:696 [INFO ] file-system-watcher: Indexed file:///home/iac-terraform-cloudbuild/solutions-terraform-cloudbuild-gitops/environments/prod/terraform.tfvars
