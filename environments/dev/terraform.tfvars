@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="gcp-ref-arch-codebuild-gitops"
