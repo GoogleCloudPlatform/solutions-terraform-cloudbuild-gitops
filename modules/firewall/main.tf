@@ -11,7 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+#fix the "http-server**2**" typo in the target_tags field.
+#The value must be "http-server".
 
 locals {
   network = "${element(split("-", var.subnet), 0)}"
