@@ -86,7 +86,31 @@ steps:
         terraform apply -auto-approve
       else
         echo "***************************** SKIPPING APPLYING *******************************"
-        echo "Branch '$BRANCH_NAME' does not represent an oficial environment."
+        echo "Branch '$BRANCH_NAME' does not represent an official environment."
         echo "*******************************************************************************"
       fi
 # [END tf-apply]      
+
+# [START Running tests]
+- id: 'Running tests'
+  name: 'hashicorp/terraform:0.11.14'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    if [ -d "environments/$BRANCH_NAME/" ]; then
+      cd environments/$BRANCH_NAME
+      SERV_IP=$(terraform_0.11.14 show | grep external_ip | awk '{ print $3}')
+      echo "$SERV_IP"
+      [ "$SERV_IP" == "" ] && exit 1
+
+      RESPONSE=$(curl "http://$SERV_IP/")
+      echo "$RESPONSE"
+
+      [ "$RESPONSE" == "<html><body><h1>Environment: $BRANCH_NAME</h1></body></html>" ] || exit 1
+    else
+      echo "***************************** SKIPPING TESTING *******************************"
+      echo "Branch '$BRANCH_NAME' does not represent an official environment for testing."
+      echo "*******************************************************************************"
+    fi
+  # [END Running tests]
