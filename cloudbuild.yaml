@@ -99,7 +99,7 @@ steps:
   - '-c'
   - |
     if [ -d "environments/test/" ]; then
-      terraform show tf.plan > tf.show
+      terraform show > tf.show
       cat tf.show
     else
       echo "***************************** FAIL SHOWING *******************************"
