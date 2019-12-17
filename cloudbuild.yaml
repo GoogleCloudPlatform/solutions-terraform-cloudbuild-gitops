@@ -58,7 +58,6 @@ steps:
   - | 
       if [ -d "environments/test/" ]; then
         terraform plan -var 'env=$BRANCH_NAME' -var 'project=$PROJECT_ID' -out=tf.plan environments/test
-        cat tf.plan
       else
         for dir in environments/*/
         do 
@@ -83,7 +82,7 @@ steps:
   - '-c'
   - | 
       if [ -d "environments/test/" ]; then
-        terraform apply -auto-approve 'env=$BRANCH_NAME' tf.plan
+        terraform apply -auto-approve tf.plan
       else
         echo "***************************** FAIL APPLYING *******************************"
         echo "environment/test does not exist."
@@ -101,8 +100,8 @@ steps:
   - |
     if [ -d "environments/test/" ]; then
       cd environments/test
-      terraform show > $BRANCH_NAME.info
-      cat $BRANCH_NAME.info
+      terraform show > tf.show
+      cat tf.show
     else
       echo "***************************** FAIL SHOWING *******************************"
       echo "environment/test does not exist."
