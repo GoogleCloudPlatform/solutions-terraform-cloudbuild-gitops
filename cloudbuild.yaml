@@ -57,7 +57,7 @@ steps:
   - | 
       if [ -d "environments/test/" ]; then
         cd environments/test
-        terraform plan -var 'env=$BRANCH_NAME_$BUILD_ID'
+        terraform plan -var 'env=$BRANCH_NAME-$BUILD_ID'
       else
         for dir in environments/*/
         do 
