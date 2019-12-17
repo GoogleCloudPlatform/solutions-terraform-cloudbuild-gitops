@@ -30,9 +30,9 @@ steps:
   args: 
   - '-c'
   - |
-      if [ -d "environments/$BRANCH_NAME/" ]; then
-        cd environments/$BRANCH_NAME
-        terraform init
+      if [ -d "environments/test" ]; then
+        cd environments/test
+        terraform init -backend-config="${$PROJECT_ID}-tfstate" -backend-config="prefix=env/$BRANCH_NAME/$BUILD_ID"
       else
         for dir in environments/*/
         do 
@@ -55,9 +55,9 @@ steps:
   args: 
   - '-c'
   - | 
-      if [ -d "environments/$BRANCH_NAME/" ]; then
-        cd environments/$BRANCH_NAME
-        terraform plan
+      if [ -d "environments/test/" ]; then
+        cd environments/test
+        terraform plan -var 'env=$BRANCH_NAME_$BUILD_ID'
       else
         for dir in environments/*/
         do 
@@ -81,36 +81,56 @@ steps:
   args: 
   - '-c'
   - | 
-      if [ -d "environments/$BRANCH_NAME/" ]; then
-        cd environments/$BRANCH_NAME      
-        terraform apply -auto-approve
+      if [ -d "environments/test/" ]; then
+        cd environments/test
+        terraform apply -auto-approve -var 'env=$BRANCH_NAME_$BUILD_ID'
       else
-        echo "***************************** SKIPPING APPLYING *******************************"
-        echo "Branch '$BRANCH_NAME' does not represent an official environment."
+        echo "***************************** FAIL APPLYING *******************************"
+        echo "environment/test does not exist."
         echo "*******************************************************************************"
+        exit 1
       fi
 # [END tf-apply]      
 
-# [START Running tests]
-- id: 'Running tests'
+# [START tf-show]
+- id: 'tf show'
   name: 'hashicorp/terraform:0.11.14'
   entrypoint: 'sh'
   args:
   - '-c'
   - |
-    if [ -d "environments/$BRANCH_NAME/" ]; then
-      cd environments/$BRANCH_NAME
-      SERV_IP=$(terraform_0.11.14 show | grep external_ip | awk '{ print $3}')
-      echo "$SERV_IP"
-      [ "$SERV_IP" == "" ] && exit 1
-
-      RESPONSE=$(curl "http://$SERV_IP/")
-      echo "$RESPONSE"
-
-      [ "$RESPONSE" == "<html><body><h1>Environment: $BRANCH_NAME</h1></body></html>" ] || exit 1
+    if [ -d "environments/test/" ]; then
+      cd environments/test
+      terraform show > $BRANCH_NAME_$BUILD_ID.info
+      cat $BRANCH_NAME_$BUILD_ID.info
     else
-      echo "***************************** SKIPPING TESTING *******************************"
-      echo "Branch '$BRANCH_NAME' does not represent an official environment for testing."
+      echo "***************************** FAIL SHOWING *******************************"
+      echo "environment/test does not exist."
       echo "*******************************************************************************"
+      exit 1
     fi
-  # [END Running tests]
+# [END tf-show]
+
+# [START Running tests]
+#- id: 'Running tests'
+#  name: 'hashicorp/terraform:0.11.14'
+#  entrypoint: 'sh'
+#  args:
+#  - '-c'
+#  - |
+#    if [ -d "tests/" ]; then
+#      cd tests
+#      SERV_IP=$(terraform_0.11.14 show | grep external_ip | awk '{ print $3}')
+#      echo "$SERV_IP"
+#      [ "$SERV_IP" == "" ] && exit 1
+#
+#      RESPONSE=$(curl "http://$SERV_IP/")
+#      echo "$RESPONSE"
+#
+#      [ "$RESPONSE" == "<html><body><h1>Environment: $BRANCH_NAME</h1></body></html>" ] || exit 1
+#    else
+#      echo "***************************** SKIPPING TESTING *******************************"
+#      echo "Branch '$BRANCH_NAME' does not represent an official environment for testing."
+#      echo "*******************************************************************************"
+#    fi
+# [END Running tests]
