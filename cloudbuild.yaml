@@ -31,9 +31,9 @@ steps:
   - '-c'
   - |
       if [ -d "environments/test" ]; then
+        cd environments/test
         terraform init -backend-config="bucket=$PROJECT_ID-tfstate" \
-        -backend-config="prefix=env/$BRANCH_NAME" \
-        environments/test
+        -backend-config="prefix=env/$BRANCH_NAME"
       else
         for dir in environments/*/
         do 
@@ -57,7 +57,8 @@ steps:
   - '-c'
   - | 
       if [ -d "environments/test/" ]; then
-        terraform plan -var 'env=$BRANCH_NAME' -var 'project=$PROJECT_ID' -out=tf.plan environments/test
+        cd environments/test
+        terraform plan -var 'env=$BRANCH_NAME' -var 'project=$PROJECT_ID' -out=tf.plan
       else
         for dir in environments/*/
         do 
@@ -82,6 +83,7 @@ steps:
   - '-c'
   - | 
       if [ -d "environments/test/" ]; then
+        cd environments/test
         terraform apply -auto-approve tf.plan
       else
         echo "***************************** FAIL APPLYING *******************************"
@@ -142,7 +144,8 @@ steps:
   - '-c'
   - |
     if [ -d "environments/test/" ]; then
-      terraform destroy -auto-approve -var 'env=$BRANCH_NAME' -var 'project=$PROJECT_ID' environments/test
+      cd environments/test
+      terraform destroy -auto-approve -var 'env=$BRANCH_NAME' -var 'project=$PROJECT_ID'
     else
       echo "***************************** FAIL SHOWING *******************************"
       echo "environments/test does not exist."
