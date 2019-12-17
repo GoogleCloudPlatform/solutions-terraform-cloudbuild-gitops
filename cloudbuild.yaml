@@ -85,7 +85,7 @@ steps:
         terraform apply -auto-approve tf.plan
       else
         echo "***************************** FAIL APPLYING *******************************"
-        echo "environment/test does not exist."
+        echo "environments/test does not exist."
         echo "*******************************************************************************"
         exit 1
       fi
@@ -99,19 +99,18 @@ steps:
   - '-c'
   - |
     if [ -d "environments/test/" ]; then
-      cd environments/test
-      terraform show > tf.show
+      terraform show tf.plan > tf.show
       cat tf.show
     else
       echo "***************************** FAIL SHOWING *******************************"
-      echo "environment/test does not exist."
+      echo "environments/test does not exist."
       echo "*******************************************************************************"
       exit 1
     fi
 # [END tf-show]
 
-# [START Running tests]
-#- id: 'Running tests'
+# [START qa-testing]
+#- id: 'qa testing'
 #  name: 'hashicorp/terraform:0.11.14'
 #  entrypoint: 'sh'
 #  args:
@@ -132,4 +131,21 @@ steps:
 #      echo "Branch '$BRANCH_NAME' does not represent an official environment for testing."
 #      echo "*******************************************************************************"
 #    fi
-# [END Running tests]
+# [END qa-testing]
+
+# [START tf-destroy]
+- id: 'tf destroy'
+  name: 'hashicorp/terraform:0.11.14'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+    if [ -d "environments/test/" ]; then
+      terraform destroy -auto-approve environments/test
+    else
+      echo "***************************** FAIL SHOWING *******************************"
+      echo "environments/test does not exist."
+      echo "*******************************************************************************"
+      exit 1
+    fi
+# [END tf-destroy]
