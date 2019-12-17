@@ -99,6 +99,7 @@ steps:
   - '-c'
   - |
     if [ -d "environments/test/" ]; then
+      cd environments/test
       terraform show > tf.show
       cat tf.show
     else
