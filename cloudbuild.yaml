@@ -32,7 +32,7 @@ steps:
   - |
       if [ -d "environments/test" ]; then
         cd environments/test
-        terraform init -backend-config="${$PROJECT_ID}-tfstate" -backend-config="prefix=env/$BRANCH_NAME/$BUILD_ID"
+        terraform init -backend-config="${$PROJECT_ID}-tfstate" -backend-config="prefix=env/$BRANCH_NAME"
       else
         for dir in environments/*/
         do 
@@ -56,7 +56,7 @@ steps:
   - '-c'
   - | 
       if [ -d "environments/test/" ]; then
-        terraform plan -var 'env=$BRANCH_NAME-$BUILD_ID' -out=tf_plan.out environments/test
+        terraform plan -var 'env=$BRANCH_NAME' -out=tf_plan.out environments/test
         cat ./tf_plan.out
       else
         for dir in environments/*/
@@ -100,8 +100,8 @@ steps:
   - |
     if [ -d "environments/test/" ]; then
       cd environments/test
-      terraform show > $BRANCH_NAME_$BUILD_ID.info
-      cat $BRANCH_NAME_$BUILD_ID.info
+      terraform show > $BRANCH_NAME.info
+      cat $BRANCH_NAME.info
     else
       echo "***************************** FAIL SHOWING *******************************"
       echo "environment/test does not exist."
