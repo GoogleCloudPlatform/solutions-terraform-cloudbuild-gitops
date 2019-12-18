@@ -3,7 +3,10 @@
 BRANCH_NAME=$1
 TF_STATE=$2
 
-SERV_IP=$(terraform show | grep external_ip | awk '{ print $3}')
+echo $BRANCH_NAME
+echo $TF_STATE
+
+SERV_IP=$(grep external_ip $TF_STATE | awk '{ print $3}')
 echo "$SERV_IP"
 [ "$SERV_IP" == "" ] && exit 1
 

@@ -102,7 +102,7 @@ steps:
   - |
     if [ -d "environments/test/" ]; then
       cd environments/test
-      terraform show > tf.show
+      terraform show > tf.show && exit 1
       cat tf.show
     else
       echo "***************************** FAIL SHOWING *******************************"
@@ -111,6 +111,11 @@ steps:
       exit 1
     fi
 # [END tf-show]
+
+- name: 'ubuntu'
+  args: ['bash', './docker/run_tests.sh $BRANCH_NAME ../environments/tests/tf.show']
+
+
 
 # [START qa-testing]
 #- id: 'qa testing'
