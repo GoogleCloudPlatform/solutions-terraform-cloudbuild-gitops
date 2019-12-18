@@ -16,28 +16,31 @@
 steps:
 - id: 'branch name'
   name: 'alpine'
-  entrypoint: 'sh'  
-  args: 
+  entrypoint: 'sh'
+  args:
   - '-c'
-  - | 
+  - |
       echo "***********************"
-      echo "$BRANCH_NAME"
+      echo "Branch: $BRANCH_NAME"
+      echo "Commit SHA: $COMMIT_SHA"
+      echo "Revision ID: $REVISION_ID"
       echo "***********************"
 
 - id: 'tf init'
   name: 'hashicorp/terraform:0.11.14'
   entrypoint: 'sh'
-  args: 
+  args:
   - '-c'
   - |
       if [ -d "environments/test" ]; then
         cd environments/test
+        pwd
         terraform init -backend-config="bucket=$PROJECT_ID-tfstate" \
-        -backend-config="prefix=env/$BRANCH_NAME"
+          -backend-config="prefix=env/$BRANCH_NAME"
       else
         for dir in environments/*/
-        do 
-          cd ${dir}   
+        do
+          cd ${dir}
           env=${dir%*/}
           env=${env#*/}
           echo ""
@@ -47,24 +50,24 @@ steps:
           terraform init || exit 1
           cd ../../
         done
-      fi 
+      fi
 
 # [START tf-plan]
 - id: 'tf plan'
   name: 'hashicorp/terraform:0.11.14'
   entrypoint: 'sh'
-  args: 
+  args:
   - '-c'
-  - | 
+  - |
       if [ -d "environments/test/" ]; then
         cd environments/test
         terraform plan -var 'env=$BRANCH_NAME' -var 'project=$PROJECT_ID' -out=tf.plan
       else
         for dir in environments/*/
-        do 
-          cd ${dir}   
+        do
+          cd ${dir}
           env=${dir%*/}
-          env=${env#*/}  
+          env=${env#*/}
           echo ""
           echo "*************** TERRAFOM PLAN ******************"
           echo "******* At environment: ${env} ********"
@@ -72,16 +75,16 @@ steps:
           terraform plan || exit 1
           cd ../../
         done
-      fi 
+      fi
 # [END tf-plan]
 
 # [START tf-apply]
 - id: 'tf apply'
   name: 'hashicorp/terraform:0.11.14'
   entrypoint: 'sh'
-  args: 
+  args:
   - '-c'
-  - | 
+  - |
       if [ -d "environments/test/" ]; then
         cd environments/test
         terraform apply -auto-approve tf.plan
@@ -91,7 +94,7 @@ steps:
         echo "*******************************************************************************"
         exit 1
       fi
-# [END tf-apply]      
+# [END tf-apply]
 
 # [START tf-show]
 - id: 'tf show'
@@ -112,34 +115,22 @@ steps:
     fi
 # [END tf-show]
 
-- name: 'ubuntu'
-  args: ['bash', './docker/run_tests.sh $BRANCH_NAME ../environments/tests/tf.show']
+# [START docker build and push]
+#- name: 'gcr.io/cloud-builders/docker'
+#  dir: 'docker'
+#  args: ['build', '-t', 'gcr.io/$PROJECT_ID/sample-test-driver', '.']
+#- name: 'gcr.io/cloud-builders/docker'
+#  dir: 'docker'
+#  args: ['push', 'gcr.io/$PROJECT_ID/sample-test-driver']
+# [END docker build and push]
 
-
-
-# [START qa-testing]
-#- id: 'qa testing'
-#  name: 'hashicorp/terraform:0.11.14'
-#  entrypoint: 'sh'
-#  args:
-#  - '-c'
-#  - |
-#    if [ -d "tests/" ]; then
-#      cd tests
-#      SERV_IP=$(terraform_0.11.14 show | grep external_ip | awk '{ print $3}')
-#      echo "$SERV_IP"
-#      [ "$SERV_IP" == "" ] && exit 1
-#
-#      RESPONSE=$(curl "http://$SERV_IP/")
-#      echo "$RESPONSE"
-#
-#      [ "$RESPONSE" == "<html><body><h1>Environment: $BRANCH_NAME</h1></body></html>" ] || exit 1
-#    else
-#      echo "***************************** SKIPPING TESTING *******************************"
-#      echo "Branch '$BRANCH_NAME' does not represent an official environment for testing."
-#      echo "*******************************************************************************"
-#    fi
-# [END qa-testing]
+- id: 'run tests'
+  name: 'gcr.io/$PROJECT_ID/sample-test-driver'
+  entrypoint: 'sh'
+  args:
+    - '-c'
+    - |
+      test/run_tests.sh $BRANCH_NAME environments/test/tf.show
 
 # [START tf-destroy]
 - id: 'tf destroy'

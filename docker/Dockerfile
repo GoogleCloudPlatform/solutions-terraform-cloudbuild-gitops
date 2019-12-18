@@ -1,5 +1,3 @@
-FROM hashicorp/terraform:0.11.14
-
+FROM alpine
 RUN apk add --update curl
-
-ENTRYPOINT sh
+CMD ["/bin/sh"]
