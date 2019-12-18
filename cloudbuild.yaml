@@ -34,7 +34,6 @@ steps:
   - |
       if [ -d "environments/test" ]; then
         cd environments/test
-        pwd
         terraform init -backend-config="bucket=$PROJECT_ID-tfstate" \
           -backend-config="prefix=env/$BRANCH_NAME"
       else
