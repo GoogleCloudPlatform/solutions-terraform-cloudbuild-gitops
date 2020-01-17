@@ -32,7 +32,7 @@ steps:
   - |
       if [ -d "environments/$BRANCH_NAME/" ]; then
         cd environments/$BRANCH_NAME
-        terraform init -reconfigure
+        terraform init
       else
         for dir in environments/*/
         do 
