@@ -14,8 +14,5 @@
 
 
 terraform {
-  backend "gcs" {
-    bucket = "tf-infra-dev-tfstate"
-    prefix = "env/dev"
-  }
+  required_version = "~> 0.11.0"
 }
