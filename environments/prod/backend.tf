@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "terraform-aw-data-prod"
+    bucket = "terraform-aw-data-preprod"
     prefix = "terraform/state/env/prod"
   }
 }
