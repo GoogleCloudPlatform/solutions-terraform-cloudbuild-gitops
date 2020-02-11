@@ -58,7 +58,7 @@ steps:
   - | 
       if [ -d "environments/$BRANCH_NAME/" ]; then
         cd environments/$BRANCH_NAME      
-        terraform destroy
+        terraform fmt
       else
         echo "***************************** SKIPPING FORMATTING *****************************"
         echo "Branch '$BRANCH_NAME' does not represent an oficial environment."
