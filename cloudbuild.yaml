@@ -99,7 +99,7 @@ steps:
   args: 
   - '-c'
   - | 
-      if [ -d "environments/prod/" ]; then
+      if ["environments/prod/"]; then
         cd environments/prod     
         terraform apply -auto-approve
       else
