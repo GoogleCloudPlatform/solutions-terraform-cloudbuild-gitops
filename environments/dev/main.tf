@@ -16,7 +16,6 @@ resource "google_cloudbuild_trigger" "build_trigger" {
   project  = "${var.project}"
   trigger_template {
     branch_name = "prod"
-    project     = "${var.project}"
     repo_name   = "solutions-terraform-cloudbuild-gitops"
   }
   filename = "cloudbuildProd.yaml"
