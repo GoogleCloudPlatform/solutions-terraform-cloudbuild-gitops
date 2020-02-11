@@ -12,17 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-resource "google_cloudbuild_trigger" "filename-trigger" {
+resource "google_cloudbuild_trigger" "build_trigger" {
+  project  = "${var.project}"
   trigger_template {
     branch_name = "prod"
+    project     = "${var.project}"
     repo_name   = "solutions-terraform-cloudbuild-gitops"
   }
-
- # substitutions = {
- #   _FOO = "bar"
- #      _BAZ = "qux"
- #  }
-
   filename = "cloudbuildProd.yaml"
 }
 

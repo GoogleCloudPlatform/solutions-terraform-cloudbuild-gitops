@@ -92,18 +92,18 @@ steps:
 # [END tf-apply]     
 
 # [START tf-destroyyyy]
-- id: 'tf destroy'
-  name: 'hashicorp/terraform:0.12.14'
-  entrypoint: 'sh'
-  args: 
-  - '-c'
-  - | 
-      if [ -d "environments/$BRANCH_NAME/" ]; then
-        cd environments/$BRANCH_NAME      
-        terraform destroy -auto-approve
-      else
-        echo "***************************** SKIPPING DESTROYING *******************************"
-        echo "Branch '$BRANCH_NAME' does not represent an oficial environment."
-        echo "*******************************************************************************"
-      fi
+#- id: 'tf destroy'
+#  name: 'hashicorp/terraform:0.12.14'
+#  entrypoint: 'sh'
+#  args: 
+#  - '-c'
+#  - | 
+#      if [ -d "environments/$BRANCH_NAME/" ]; then
+#        cd environments/$BRANCH_NAME      
+#        terraform destroy -auto-approve
+#      else
+#        echo "***************************** SKIPPING DESTROYING *******************************"
+#        echo "Branch '$BRANCH_NAME' does not represent an oficial environment."
+#        echo "*******************************************************************************"
+#      fi
 # [END tf-destroy]
