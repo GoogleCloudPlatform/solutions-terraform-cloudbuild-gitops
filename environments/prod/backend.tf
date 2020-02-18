@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "turing-lane-268606-tfstate"
     prefix = "env/prod"
   }
 }
