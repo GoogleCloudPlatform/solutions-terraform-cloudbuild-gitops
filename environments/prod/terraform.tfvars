@@ -1,1 +1,1 @@
-project="sitcon-feb-2020"
+project="sitcon-2020"

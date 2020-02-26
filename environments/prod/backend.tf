@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "sitcon-feb-2020-tfstate"
+    bucket = "sitcon-2020-tfstate"
     prefix = "env/prod"
   }
 }
