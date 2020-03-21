@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "poc-sed-wss-strakovich-tfstate"
     prefix = "env/prod"
   }
 }
