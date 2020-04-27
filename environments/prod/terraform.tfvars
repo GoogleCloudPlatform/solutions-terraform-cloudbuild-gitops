@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="ksn-udp-tf-prj"
