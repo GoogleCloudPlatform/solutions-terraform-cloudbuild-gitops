@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "elegant-hope-223916-tfstate"
     prefix = "env/dev"
   }
 }
