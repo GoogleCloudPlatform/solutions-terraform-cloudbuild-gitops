@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "vast-tributary-276210-tfstate"
     prefix = "env/dev"
   }
 }
