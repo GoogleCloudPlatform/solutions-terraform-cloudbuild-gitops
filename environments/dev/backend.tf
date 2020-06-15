@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "-tfstate"
+    bucket = "automatizacion-279808-tfstate"
     prefix = "env/dev"
   }
 }
