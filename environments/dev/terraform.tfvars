@@ -1,1 +1,2 @@
-project="PROJECT_ID"
+project="tera-prj"
+env="d"

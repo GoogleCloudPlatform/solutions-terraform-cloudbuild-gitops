@@ -15,6 +15,9 @@
 
 locals {
   network = "${element(split("-", var.subnet), 0)}"
+  type = "sec"
+  ntype = "net"
+  category = {}
 }
 
 resource "google_compute_firewall" "allow-http" {
@@ -27,6 +30,21 @@ resource "google_compute_firewall" "allow-http" {
     ports    = ["80"]
   }
 
-  target_tags   = ["http-server2"]
+  target_tags   = ["http-server"]
   source_ranges = ["0.0.0.0/0"]
+}
+
+resource "google_compute_firewall" "priv-common" {
+  name    = "${local.network}-priv-common"
+  network = "${local.network}"
+  project = "${var.project}"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["20022"]
+  }
+
+  target_tags = ["${var.project}-${var.env}-${local.ntype}-pri-common"]
+  source_tags = ["${var.project}-${var.env}-${local.ntype}-mg-gateway"]
+  priority = "100"
 }

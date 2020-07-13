@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 output "firewall_rule" {
   value = "${google_compute_firewall.allow-http.name}"
+  value = "${google_compute_firewall.allow-pri-common.name}"
 }
