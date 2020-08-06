@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "indigo-history-267109-tfstate"
     prefix = "env/dev"
   }
 }
