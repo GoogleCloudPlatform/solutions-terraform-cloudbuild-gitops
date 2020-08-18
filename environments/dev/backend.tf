@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "teck-sandbox-sunil-pillai-tfstate"
     prefix = "env/dev"
   }
 }
