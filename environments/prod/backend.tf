@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "fb-mobil-app-tfstate"
+    bucket = "onboard-demo-egitim-tfstate"
     prefix = "env/prod"
   }
 }

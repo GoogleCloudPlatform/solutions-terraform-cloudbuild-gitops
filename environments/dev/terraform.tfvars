@@ -1,1 +1,1 @@
-project="fb-mobil-app"
+project="onboard-demo-egitim"
