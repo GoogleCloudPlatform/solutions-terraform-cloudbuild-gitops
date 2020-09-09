@@ -35,6 +35,7 @@ resource "google_compute_instance" "http_server" {
     subnetwork = "${var.subnet}"
   }
 
+
   # Apply the firewall rule to allow external IPs to access this instance
   tags = ["http-server"]
 }
