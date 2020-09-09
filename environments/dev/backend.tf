@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "king-ie-joakim-klang-sandbox-tfstate"
     prefix = "env/dev"
   }
 }
