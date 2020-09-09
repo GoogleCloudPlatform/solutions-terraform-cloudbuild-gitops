@@ -18,11 +18,11 @@ locals {
 }
 
 resource "google_compute_firewall" "allow-http" {
-  name    = "${local.network}-allow-http"
+  name    = "${local.network}-deny-http"
   network = "${local.network}"
   project = "${var.project}"
 
-  allow {
+  deny {
     protocol = "tcp"
     ports    = ["80"]
   }
