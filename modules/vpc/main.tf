@@ -42,3 +42,4 @@ resource "google_dns_policy" "example-policy" {
 
 
 }
+}
