@@ -31,4 +31,14 @@ module "vpc" {
   secondary_ranges = {
     "${var.env}-subnet-01" = []
   }
+
+resource "google_dns_policy" "example-policy" {
+  name                      = "example-policy"
+  enable_inbound_forwarding = false
+
+  enable_logging = true
+
+
+
+
 }
