@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "magnetic-hawk-276008-tfstate"
     prefix = "env/prod"
   }
 }
