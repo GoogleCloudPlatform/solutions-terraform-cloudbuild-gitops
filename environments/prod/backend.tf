@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "spark-k8-tfstate"
     prefix = "env/prod"
   }
 }
