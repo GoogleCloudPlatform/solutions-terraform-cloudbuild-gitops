@@ -14,7 +14,6 @@
 
 
 locals {
-  baloney = "yes"
   network = "${element(split("-", var.subnet), 0)}"
 }
 
