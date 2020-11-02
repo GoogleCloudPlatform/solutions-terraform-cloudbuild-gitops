@@ -14,8 +14,10 @@
 
 
 terraform {
-  backend "gcs" {
-    bucket = "galvanized-case-294217-tfstate"
-    prefix = "env/dev"
-  }
+	backend "gcs" {
+		bucket = "galvanized-case-294217-tfstate"
+		prefix = "env/dev"
+	}
 }
+
+

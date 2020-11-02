@@ -12,6 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+//Common
+variable "project" {
+	type = string
+	description = "The name of the GCP Project where all resources will be launched"
+}
 
-variable "project" {}
-variable "gia_account_id" {}
+//Service Accounts
+variable "gia_account_id" {
+	type = string
+	description = "The service account for Genesys Intelligent Automation"
+}
