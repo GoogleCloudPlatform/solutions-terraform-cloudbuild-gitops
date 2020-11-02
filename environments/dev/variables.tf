@@ -14,3 +14,9 @@
 
 
 variable "project" {}
+
+//Service Accounts
+variable "gia_account_id" {
+  type = string
+  description = "The service account for Genesys Intelligent Automation"
+}
