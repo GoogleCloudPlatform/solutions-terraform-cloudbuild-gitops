@@ -25,7 +25,8 @@ steps:
       echo "***********************"
 
 - id: 'tf init'
-  name: 'hashicorp/terraform:0.11.14'
+  #name: 'hashicorp/terraform:0.11.14'
+  name: 'hashicorp/terraform:0.13.5'
   entrypoint: 'sh'
   args: 
   - '-c'
