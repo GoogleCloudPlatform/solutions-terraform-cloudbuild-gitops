@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "ornate-justice-288911-tfstate"
     prefix = "env/prod"
   }
 }
