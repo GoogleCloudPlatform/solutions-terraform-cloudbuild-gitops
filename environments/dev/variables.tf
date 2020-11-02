@@ -14,3 +14,4 @@
 
 
 variable "project" {}
+variable "gia_account_id" {}
