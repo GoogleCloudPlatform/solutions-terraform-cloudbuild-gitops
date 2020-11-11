@@ -23,3 +23,9 @@ variable "gia_account_id" {
 	type = string
 	description = "The service account for Genesys Intelligent Automation"
 }
+
+//Test Vars
+variable "test_one" {
+	type = string
+	description = "test_one"
+}
