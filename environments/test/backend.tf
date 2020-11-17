@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
-    prefix = "env/prod"
+    bucket = "cap-multicloud-test-tfstate"
+    prefix = "env/test"
   }
 }
