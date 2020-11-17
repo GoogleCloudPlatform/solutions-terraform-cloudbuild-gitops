@@ -34,6 +34,6 @@ resource "google_storage_bucket" "cap-archive-mds" {
 
 resource "google_storage_bucket_object" "mig-sftp-ss" {
   name   = "cap-template-ss.sh"
-  source = file("${path.module}/files/cap-template-ss.sh")
+  content = file("${path.module}/files/cap-template-ss.sh")
   bucket = "${google_storage_bucket.cap-archive-mds.name}"
 }
