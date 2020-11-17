@@ -14,8 +14,8 @@
 
 
 locals {
-  "env" = "test"
-  "region" = "europe-west1"
+  env = "test"
+  region = "europe-west1"
 }
 
 provider "google" {
