@@ -15,26 +15,34 @@
 
 locals {
   "env" = "test"
+  "region" = "europe-west1"
 }
 
 provider "google" {
   project = "${var.project}"
 }
 
-module "vpc" {
-  source  = "../../modules/vpc"
+module "storage" {
+  source  = "../../modules/storage"
   project = "${var.project}"
   env     = "${local.env}"
+  region  = "${local.region}"
 }
 
-module "http_server" {
-  source  = "../../modules/http_server"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
+#module "vpc" {
+#  source  = "../../modules/vpc"
+#  project = "${var.project}"
+#  env     = "${local.env}"
+#}
 
-module "firewall" {
-  source  = "../../modules/firewall"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
+#module "http_server" {
+#  source  = "../../modules/http_server"
+#  project = "${var.project}"
+#  subnet  = "${module.vpc.subnet}"
+#}
+
+#module "firewall" {
+#  source  = "../../modules/firewall"
+#  project = "${var.project}"
+#  subnet  = "${module.vpc.subnet}"
+#}
