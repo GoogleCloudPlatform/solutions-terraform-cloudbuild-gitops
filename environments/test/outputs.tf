@@ -12,23 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-output "network" {
-  value = "${module.vpc.network}"
+output "storage" {
+  value = "${module.storage.bucket}"
 }
 
-output "subnet" {
-  value = "${module.vpc.subnet}"
+output "startup-script" {
+  value = "${module.storage.startup-script}"
 }
 
-output "firewall_rule" {
-  value = "${module.firewall.firewall_rule}"
-}
+#output "network" {
+#  value = "${module.vpc.network}"
+#}
 
-output "instance_name" {
-  value = "${module.http_server.instance_name}"
-}
+#output "subnet" {
+#  value = "${module.vpc.subnet}"
+#}
 
-output "external_ip" {
-  value = "${module.http_server.external_ip}"
-}
+#output "firewall_rule" {
+#  value = "${module.firewall.firewall_rule}"
+#}
+
+#output "instance_name" {
+#  value = "${module.http_server.instance_name}"
+#}
+
+#output "external_ip" {
+#  value = "${module.http_server.external_ip}"
+#}

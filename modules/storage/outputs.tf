@@ -13,10 +13,10 @@
 # limitations under the License.
 
 
-output "network" {
-  value = "${module.vpc.network_name}"
+output "bucket" {
+  value = "${google_storage_bucket.cap-archive-mds.name}"
 }
 
-output "subnet" {
-  value = "${element(module.vpc.subnets_names, 0)}"
+output "startup-script" {
+  value = "${google_storage_bucket_object.mig-sftp-ss.name}"
 }
