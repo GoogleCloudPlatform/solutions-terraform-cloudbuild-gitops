@@ -10,6 +10,14 @@ output "cf_sa" {
   value = "${module.sa.cf_sa}"
 }
 
+output "credditApprovalNotification" {
+  value = "${module.pubsub.credditApprovalNotification}"
+}
+
+output "credditApprovalValidation" {
+  value = "${module.pubsub.credditApprovalValidation}"
+}
+
 output "cf_clientAgeVal" {
   value = "${module.cloudfunction.cf_clientAgeVal}"
 }
