@@ -4,7 +4,7 @@ output "storage" {
 
 output "startup_script" {
   value = "${module.storage.startup-script}"
-
+}
 
 output "cf_sa" {
   value = "${module.cloudfunction.cf_sa}"
