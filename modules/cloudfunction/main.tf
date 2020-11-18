@@ -12,7 +12,7 @@ resource "google_project_iam_member" "cap_multicloud_sa_editor" {
 
 data "archive_file" "client_age_validation_zip" {
   type        = "zip"
-  source_dir  = "${path.module}/client_age_validation
+  source_dir  = "${path.module}/client_age_validation"
   output_path = "${path.module}/files/client_age_validation.zip"
 }
 
