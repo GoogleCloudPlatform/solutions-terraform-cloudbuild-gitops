@@ -1,5 +1,9 @@
-output "storage" {
-  value = "${module.storage.bucket}"
+output "mds" {
+  value = "${module.storage.mds}"
+}
+
+output "main_bucket" {
+  value = "${module.storage.main_bucket}"
 }
 
 output "startup_script" {
@@ -27,7 +31,7 @@ output "cf_duePayVal" {
 }
 
 output "cf_effortRateNewCredVal" {
-  value = "${module.cloudfunction.cf_effortRateNewCred}"
+  value = "${module.cloudfunction.cf_effortRateNewCredVal}"
 }
 
 output "cf_effortRateTotalCredVal" {
