@@ -5,6 +5,7 @@ locals {
 
 provider "google" {
   project = "${var.project}"
+  region = "${local.region}"
 }
 
 module "storage" {
