@@ -30,4 +30,3 @@ module "cloudfunction" {
   mds	   = "${module.storage.bucket}"
   sa_email = "${module.sa.cf_sa}"
 }
-
