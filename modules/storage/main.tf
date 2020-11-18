@@ -18,3 +18,18 @@ resource "google_storage_bucket_object" "mig-sftp-ss" {
   content = file("${path.module}/files/cap-template-ss.sh")
   bucket = "${google_storage_bucket.cap-archive-mds.name}"
 }
+
+resource "google_storage_bucket" "reports-main-bucket" {
+  name          = "reports-main-bucket-${var.env}"
+  location      = "${var.region}"
+  force_destroy = true
+
+  lifecycle_rule {
+    condition {
+      age = "7"
+    }
+    action {
+      type = "Delete"
+    }
+  }
+}

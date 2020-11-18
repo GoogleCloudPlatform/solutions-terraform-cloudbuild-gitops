@@ -23,10 +23,13 @@ module "storage" {
 }
 
 module "cloudfunction" {
-  source   = "../../modules/cloudfunction"
-  project  = "${var.project}"
-  env      = "${local.env}"
-  region   = "${local.region}"
-  mds	   = "${module.storage.bucket}"
-  sa_email = "${module.sa.cf_sa}"
+  source   					= "../../modules/cloudfunction"
+  project  					= "${var.project}"
+  env      					= "${local.env}"
+  region   					= "${local.region}"
+  mds	   					= "${module.storage.mds}"
+  main_bucket			    = "${module.storage.main_bucket}"
+  sa_email 					= "${module.sa.cf_sa}"
+  cf_sendmail_pubsub 		= "${module.pubsub.credditApprovalNotification}"
+  cf_triggerworkflow_pubsub = "${module.pubsub.credditApprovalValidation}"
 }
