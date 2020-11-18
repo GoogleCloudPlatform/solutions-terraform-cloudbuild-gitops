@@ -21,7 +21,7 @@ resource "google_storage_bucket_object" "client_age_validation_obj" {
   name   = "cfs/client_age_validation.zip"
   bucket = "${var.mds}"
   source = "${data.archive_file.client_age_validation_zip.output_path}"
-  depends_on = ["data.archive_file.client_age_validation_zip"]
+  depends_on = [data.archive_file.client_age_validation_zip]
 }
 
 # client_age_validation cf
