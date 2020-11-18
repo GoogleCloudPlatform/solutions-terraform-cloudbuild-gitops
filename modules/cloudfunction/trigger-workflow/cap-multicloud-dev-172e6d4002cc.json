@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "cap-multicloud-dev",
+  "private_key_id": "172e6d4002cc421a2cc4a56eef0cb54f21f3fee0",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC/PEsbVjQtoPpw\nIxbssCS7rETeFNYelNAdQKvfzQzMoso4mBr7Vw8V1G/hKdRhiXR4fA8zSQyfZXiG\noXXkjD6ets3X35ShfFK55OVUH4aZp5GpcLzCjjxeZPW7luaw58YON630HXHp49rZ\n3ju+Meoak8RFx4/2daLq2lEDVMOPs13fKti0SPlh4LWE07n46d0AsX/odFWBAreE\n42iHJwGjAIF3A6ryBiq5/6hJ0ShUwy+T9ucJ9+HG1PYLoHXrBcVIvwjiH+JWX2L+\nVx87/3lr1N97MTFBwNdoZOOukHnU7H6UMXPZY/VMjSYX21l39hOeimG5Jg/reymv\nCojU8qVlAgMBAAECggEAAnQgDyCJfcrv7lJXJ/xUBai+igOws/FbIMZJ85W7SUgV\n+dq/Tv0UcEZnIzB3EN/cXKwpQlJVFuDMqg3EjzbhxLB9la451Y1cjSPC45sP1UxA\naDgcfwDgkz55UI1fPRTFigOo7UszwUQC5k1S9EwftTvBLbsFK96aWpnhUUWYnfgq\n3AtUHgFvpbAfnbQ63foWi01Cl2a6oD4eEbcr7cNMfBLbzcM+48J9/vMB0knXrbL2\nHlAgRPGAORAzlvQAfBEw/pDB5YLjMmeKyo4reFmfSnw32UuEi0XobXSatV8UpKCk\nBzStGRhiy1SeCYI6ceZP16rSJvKfyQ9Gr1iMUcXu2QKBgQDmZ+u/yaE2AQoR/eht\n/SHUO/qydevcM5dnCLg7pCxWPLet49LrDEEkCpIwT16oW0FbiFIgpROlTVA95rsH\nlfzgxxfbWzcf5808zOdhC2T/uwyduPtfCWsknorrldDt5wWPbSeQByf7RmD/yfn8\ny41bnUGg3MvY5f9MCIsNXHP3zQKBgQDUenqcQtYlL/FLpxo2DzH8HdVsfX0f8lKz\n6dL57ZuhlgeCMNRjI+NTW1bfttOP0Zk5mxvdq/3I5kfgNVNW4qswGdfzvlWHSclb\nD8Otwqs+q7JlPW0aOhdtlau+i89Uz68A23kOkq9uO5AKfkZRciwpOXKelD+9y1/Z\ngM+AlRQb+QKBgQCcvR9UJe8kVMqr+KWwhR4JShA+bRfZgcNCVV03PXTn6YAurChk\nu75orURL1wKW1xV8Fh2AlavqrNCke5zKCU+w/d+N2tyCOOeWr/HLQ7wed/maJifi\nu/6GN9BbeVxbKujObDwYr7WUK4l7GMSWI0bzhuQJcYq+75+f8sPdgAJoFQKBgAaA\n8TvTN+bPft1H8h9xe6Ax8ZRuiuPtcOac455OzZK2mug7QmT+djjY9OHIINWoHr6K\npuG0IAKEOfL87t4b9g103Q1S6B9J/OXSp7Sr3r3+V2mN5ccFvC3YhPdCJEh+SucF\n0MDHcKM5I4GOt+xKSFvCrGV6ODFBBmAL904CQilRAoGBAK3aoh2uMmrPR2GLL+da\na35powe3PoOz6hJXSUDCXPkDmG2KQ9fdD6X8esUF7+LOAvU8VYRNjvSqSQZLE8cG\n3HIU9eY9znzoXKN5kKZQLpE25oBlY5MCVFh6UmmNgSd5RERpOOi631gDuTeQoL8y\n5cv+tOk9fkyYWr9w5MOPd6Gn\n-----END PRIVATE KEY-----\n",
+  "client_email": "cap-multicloud-sa-dev@cap-multicloud-dev.iam.gserviceaccount.com",
+  "client_id": "108189996388107629856",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/cap-multicloud-sa-dev%40cap-multicloud-dev.iam.gserviceaccount.com"
+}

@@ -29,20 +29,11 @@ module "storage" {
   region  = "${local.region}"
 }
 
-#module "vpc" {
-#  source  = "../../modules/vpc"
-#  project = "${var.project}"
-#  env     = "${local.env}"
-#}
+module "cloudfunction" {
+  source  = "../../modules/cloudfunction"
+  project = "${var.project}"
+  env     = "${local.env}"
+  region  = "${local.region}"
+  mds	  = "${module.storage.bucket}"
+}
 
-#module "http_server" {
-#  source  = "../../modules/http_server"
-#  project = "${var.project}"
-#  subnet  = "${module.vpc.subnet}"
-#}
-
-#module "firewall" {
-#  source  = "../../modules/firewall"
-#  project = "${var.project}"
-#  subnet  = "${module.vpc.subnet}"
-#}

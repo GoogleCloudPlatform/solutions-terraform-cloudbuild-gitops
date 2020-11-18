@@ -1,0 +1,4 @@
+PyJWT
+requests
+httplib2
+cryptography
