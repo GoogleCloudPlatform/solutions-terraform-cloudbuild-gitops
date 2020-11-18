@@ -16,7 +16,7 @@ resource "google_storage_bucket_object" "client_age_validation_obj" {
 
 # client_age_validation cf
 resource "google_cloudfunctions_function" "client_age_validation_cf" {
- name                  = "client_age_validation"
+ name                  = "client-age-validation"
  description           = "CF to validate the client age"
  available_memory_mb   = 128
  source_archive_bucket = "${var.mds}"
@@ -47,7 +47,7 @@ resource "google_storage_bucket_object" "due_payments_validation_obj" {
 
 # due_payments_validation cf
 resource "google_cloudfunctions_function" "due_payments_validation_cf" {
- name                  = "due_payments_validation"
+ name                  = "due-payments-validation"
  description           = "CF to validate due payments"
  available_memory_mb   = 128
  source_archive_bucket = "${var.mds}"
