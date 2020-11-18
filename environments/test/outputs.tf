@@ -7,7 +7,7 @@ output "startup_script" {
 }
 
 output "cf_sa" {
-  value = "${module.cloudfunction.cf_sa}"
+  value = "${module.sa.cf_sa}"
 }
 
 output "cf_clienteAgeValidator" {
