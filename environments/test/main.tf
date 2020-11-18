@@ -21,4 +21,3 @@ module "cloudfunction" {
   region  = "${local.region}"
   mds	  = "${module.storage.bucket}"
 }
-
