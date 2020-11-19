@@ -1,12 +1,12 @@
 # Custom VPC for InnerCity-Stores
 resource "google_compute_network" "cap_network" {
-  name                    = "cap_network"
+  name                    = "cap-network"
   auto_create_subnetworks = "false"
 }
 
 # Subnet for InnerCity-Stores custom VPC
 resource "google_compute_subnetwork" "cap_subnet" {
-  name                     = "cap_subnet"
+  name                     = "cap-subnet"
   ip_cidr_range            = "10.3.4.0/24"
   network                  = "${google_compute_network.cap_network.self_link}"
   region                   = "${var.region}"
@@ -15,7 +15,7 @@ resource "google_compute_subnetwork" "cap_subnet" {
 
 # Firewall for load balancing on custom VPC
 resource "google_compute_firewall" "vpc_cap_fw_lb" {
-  name          = "cap_fw_lb"
+  name          = "cap-fw-lb"
   network       = google_compute_network.cap_network.name
   priority      = 1000
   direction     = "INGRESS"
@@ -28,7 +28,7 @@ resource "google_compute_firewall" "vpc_cap_fw_lb" {
 
 # Firewall for health check on custom VPC
 resource "google_compute_firewall" "vpc_cap_fw_hc" {
-  name          = "cap_fw_mig"
+  name          = "cap-fw-mig"
   network       = google_compute_network.cap_network.name
   priority      = 1000
   direction     = "INGRESS"
@@ -156,5 +156,5 @@ resource "google_compute_forwarding_rule" "cap_mig_frule" {
 }
 
 resource "google_compute_address" "cap_mig_ip" {
-  name = "cap_mig_ip"
+  name = "cap-mig-ip"
 }
