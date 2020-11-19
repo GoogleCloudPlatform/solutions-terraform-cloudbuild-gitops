@@ -1,11 +1,7 @@
-output "mds" {
-  value = "${google_storage_bucket.cap-archive-mds.name}"
+output "mig_ip" {
+  value = "${google_compute_address.cap_mig_ip.address}"
 }
 
-output "main_bucket" {
-  value = "${google_storage_bucket.reports-main-bucket.name}"
-}
-
-output "startup-script" {
-  value = "${google_storage_bucket_object.mig-sftp-ss.name}"
+output "mig_name" {
+  value = "${google_compute_region_instance_group_manager.cap_mig.name}"
 }

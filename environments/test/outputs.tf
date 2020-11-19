@@ -14,6 +14,10 @@ output "cf_sa" {
   value = "${module.sa.cf_sa}"
 }
 
+output "mig_sa" {
+  value = "${module.sa.mig_sa}"
+}
+
 output "credditApprovalNotification" {
   value = "${module.pubsub.credditApprovalNotification}"
 }
@@ -40,4 +44,12 @@ output "cf_effortRateTotalCredVal" {
 
 output "cf_jsonToBase64" {
   value = "${module.cloudfunction.cf_jsonToBase64}"
+}
+
+output "mig_ip" {
+  value = "${module.mig.mig_ip}"
+}
+
+output "mig_name" {
+  value = "${module.mig.mig_name}"
 }

@@ -40,3 +40,11 @@ module "cloudfunction" {
   cf_sendmail_pubsub 		= "${module.pubsub.credditApprovalNotification}"
   cf_triggerworkflow_pubsub = "${module.pubsub.credditApprovalValidation}"
 }
+
+module "mig" {
+  source  	= "../../modules/mig"
+  project 	= "${var.project}"
+  env     	= "${local.env}"
+  region  	= "${local.region}"
+  sa_email 	= "${module.sa.mig_sa}"
+}
