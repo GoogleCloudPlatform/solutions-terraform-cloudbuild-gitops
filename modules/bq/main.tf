@@ -177,7 +177,7 @@ EOF
 
 resource "google_bigquery_table" "cap_bank_trans_main" {
   dataset_id = google_bigquery_dataset.cap_bank.dataset_id
-  table_id   = "transactions"
+  table_id   = "trans_main"
 
   view {
     query = <<SQL
