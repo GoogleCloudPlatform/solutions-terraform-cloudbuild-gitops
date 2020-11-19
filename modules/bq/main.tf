@@ -181,7 +181,6 @@ resource "google_bigquery_table" "cap_bank_trans_main" {
 
   view {
     query = <<SQL
-	[
 select t.id as ID, 
   t.quantity as Quantity, 
   t.amount as Amount, 
@@ -193,8 +192,7 @@ from bank.transactions t
 inner join bank.countries c on c.countryCode = t.countryCode
 inner join bank.operations o on o.operationCode = t.operationCode
 left join bank.payments p on p.paymentCode = t.paymentType
-    ]  
-	SQL
+SQL
     use_legacy_sql = false
   }
 
