@@ -192,7 +192,7 @@ select t.id as ID,
 from bank.transactions t
 inner join bank.countries c on c.countryCode = t.countryCode
 inner join bank.operations o on o.operationCode = t.operationCode
-left join bank.payments p on p.paymentCode = t.paymentType;
+left join bank.payments p on p.paymentCode = t.paymentType
     ]  
 	SQL
     use_legacy_sql = false
