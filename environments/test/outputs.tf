@@ -10,6 +10,10 @@ output "startup_script" {
   value = "${module.storage.startup-script}"
 }
 
+output "cap_bank" {
+  value = "${module.bq.cap_bank}"
+}
+
 output "cf_sa" {
   value = "${module.sa.cf_sa}"
 }

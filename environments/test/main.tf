@@ -22,6 +22,13 @@ module "storage" {
   region  = "${local.region}"
 }
 
+module "bq" {
+  source  = "../../modules/storage"
+  project = "${var.project}"
+  env     = "${local.env}"
+  region  = "${local.region}"
+}
+
 module "pubsub" {
   source  = "../../modules/pubsub"
   project = "${var.project}"

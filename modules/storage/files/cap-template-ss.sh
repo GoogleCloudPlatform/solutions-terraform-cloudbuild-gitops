@@ -51,22 +51,14 @@ do
     secretName=$(echo ${secret} | cut -d'#' -f 1)
     # userAux=$(echo ${secretName} | cut -d'-' -f 2)
     user=$(echo ${secretName})
-    
-    version="latest"
-    if [[ ${val} == *#* ]]
-    then
-      version=$(echo ${val} | cut -d'#' -f 2)
-    fi  
-    plain="$(gcloud beta secrets versions access --secret=${secretName} ${version} ${project})"
+	
+    version=$(sudo gcloud beta secrets versions list ${secretName} --filter=enabled | grep enabled | cut -c'1')
+
+    plain="$(sudo gcloud beta secrets versions access --secret=${secretName} ${version} ${project})"
     #For multiline management
     export $key="$(echo $plain | sed -e 's/\n//g')"
     sudo adduser $user
     echo $plain | sudo passwd --stdin $user
-
-
-    #Get GCP project ID && project env
-    export PROJECT_ID=$(gcloud config list --format 'value(core.project)')
-    project_env=$(echo ${PROJECT_ID=} | cut -d'-' -f 4)
     
     #Mount home directory to GCStorage
     uid=$(id -u $user)

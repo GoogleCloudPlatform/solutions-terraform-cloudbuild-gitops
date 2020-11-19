@@ -138,10 +138,10 @@ resource "google_compute_region_instance_group_manager" "cap_mig" {
   
   target_pools  = [google_compute_target_pool.cap_mig_targetpool.self_link]
 
-  auto_healing_policies {
-    health_check      = google_compute_health_check.cap_mig_hc.id
-    initial_delay_sec = 300
-  }
+  #auto_healing_policies {
+  #  health_check      = google_compute_health_check.cap_mig_hc.id
+  #  initial_delay_sec = 300
+  #}
 }
 
 // Forwarding rule for Internal Load Balancing
