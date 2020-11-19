@@ -12,7 +12,7 @@ resource "google_project_iam_member" "cap_multicloud_sa_editor" {
 
 # Service Account to be used by MIG
 resource "google_service_account" "cap_mig_sa" {
-    account_id   = "cap_mig_sa-${var.env}"
+    account_id   = "cap-mig-sa-${var.env}"
     display_name = "MIG Service Account to access Secret Manager and Storage Bucket"
 }
 
