@@ -72,7 +72,7 @@ do
     uid=$(id -u $user)
     gid=$(id -g $user)
     echo $uid
-    fstabline=$( echo reports-main-bucket /home/${user} gcsfuse rw,_netdev,allow_other,nonempty,uid=${uid},gid=${gid},only_dir=${user})
+    fstabline=$( echo reports-main-bucket-test /home/${user} gcsfuse rw,_netdev,allow_other,nonempty,uid=${uid},gid=${gid},only_dir=${user})
     echo $fstabline
     
   if ! [[ "$user" =~ "cap-archive-v1" ]]
