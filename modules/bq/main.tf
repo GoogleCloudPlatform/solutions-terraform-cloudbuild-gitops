@@ -179,53 +179,6 @@ resource "google_bigquery_table" "cap_bank_trans_main" {
   dataset_id = google_bigquery_dataset.cap_bank.dataset_id
   table_id   = "transactions"
 
-  schema = <<EOF
-[
-  {
-    "name": "ID",
-    "type": "STRING",
-    "mode": "NULLABLE",
-    "description": "Transaction ID"
-  },
-  {
-    "name": "Quantity",
-    "type": "NUMERIC",
-    "mode": "NULLABLE",
-    "description": "Quantity"
-  },
-  {
-    "name": "Amount",
-    "type": "NUMERIC",
-    "mode": "NULLABLE",
-    "description": "Amount"
-  },
-  {
-    "name": "Country",
-    "type": "STRING",
-    "mode": "NULLABLE",
-    "description": "Country Code"
-  },
-  {
-    "name": "Operation",
-    "type": "STRING",
-    "mode": "NULLABLE",
-    "description": "Operation Code"
-  },
-  {
-    "name": "PaymentType",
-    "type": "STRING",
-    "mode": "NULLABLE",
-    "description": "Payment Type"
-  },
-  {
-    "name": "TransactionDate",
-    "type": "DATE",
-    "mode": "NULLABLE",
-    "description": "Transaction Date"
-  }
-]
-EOF
-
   view {
     query = <<SQL
 	[
