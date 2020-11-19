@@ -23,7 +23,7 @@ module "storage" {
 }
 
 module "bq" {
-  source  = "../../modules/storage"
+  source  = "../../modules/bq"
   project = "${var.project}"
   env     = "${local.env}"
   region  = "${local.region}"
