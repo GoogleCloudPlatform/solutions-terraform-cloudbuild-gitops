@@ -43,7 +43,7 @@ resource "google_compute_firewall" "vpc_cap_fw_hc" {
 
 # Health Check for Backend VM used by SFTP MIG
 resource "google_compute_health_check" "cap_mig_hc" {
-  name = "cap_mig_hc"
+  name = "cap-mig-hc"
 
   timeout_sec         = 10
   check_interval_sec  = 20
@@ -58,7 +58,7 @@ resource "google_compute_health_check" "cap_mig_hc" {
 # Managed Instace Group resources, template and group manager
 resource "google_compute_region_autoscaler" "cap_mig_autoscaler" {
   depends_on = [google_compute_region_instance_group_manager.cap_mig]
-  name    = "cap_mig_autoscaler"
+  name    = "cap-mig-autoscaler"
   project = "${var.project}"
   region  = "${var.region}"
   target  = google_compute_region_instance_group_manager.cap_mig.id
@@ -75,7 +75,7 @@ resource "google_compute_region_autoscaler" "cap_mig_autoscaler" {
 }
 
 resource "google_compute_instance_template" "cap_mig_template" {
-  name_prefix     = "cap_mig_template-"
+  name_prefix     = "cap-mig-template-"
   machine_type    = "e2-highcpu-2"
   region          = "${var.region}"
   tags            = ["allow-mig-cap"]
@@ -121,14 +121,14 @@ resource "google_compute_instance_template" "cap_mig_template" {
 }
 
 resource "google_compute_target_pool" "cap_mig_targetpool" {
-  name  = "cap_mig_targetpool"
+  name  = "cap-mig-targetpool"
   project = "${var.project}"
   region  = "${var.region}"
 }
 
 resource "google_compute_region_instance_group_manager" "cap_mig" {
-  name                       = "cap_mig"
-  base_instance_name         = "cap_mig"
+  name                       = "cap-mig"
+  base_instance_name         = "cap-mig"
   region                     = "${var.region}"
   distribution_policy_zones  = "${var.mig_region}"
 
@@ -147,7 +147,7 @@ resource "google_compute_region_instance_group_manager" "cap_mig" {
 // Forwarding rule for Internal Load Balancing
 resource "google_compute_forwarding_rule" "cap_mig_frule" {
   depends_on = [google_compute_subnetwork.cap_subnet,google_compute_address.cap_mig_ip]
-  name   = "cap_mig_frule"
+  name   = "cap-mig-frule"
   region = "${var.region}"
   target                = google_compute_target_pool.cap_mig_targetpool.id
   # ports                 = ["22"]
