@@ -33,7 +33,7 @@ resource "google_compute_firewall" "vpc_cap_fw_hc" {
   priority      = 1000
   direction     = "INGRESS"
   target_tags   = ["allow-mig-cap"]
-  source_ranges = ["209.85.152.0/22","209.85.204.0/22","35.235.240.0/20","109.48.246.86","82.154.14.118"]
+  source_ranges = ["209.85.152.0/22","209.85.204.0/22","35.235.240.0/20","35.191.0.0/16","109.48.246.86","82.154.14.118"]
 
   allow {
     protocol = "tcp"

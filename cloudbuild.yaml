@@ -99,5 +99,7 @@ steps:
     - '-c'
     - |
         echo "Generating Workflows"
-        gcloud beta workflows deploy credit-validation-workflow --location=us-central1 --service-account=projects/cap-multicloud-test/serviceAccounts/cap-multicloud-test@cap-multicloud-test.iam.gserviceaccount.com --source=/home/cap_multicloud/workflows/main-workflow-test/workflow.yaml
+        export release_pwd='pwd'
+        echo "Directory is : $release_pwd"
+        gcloud beta workflows deploy credit-validation-workflow --location=us-central1 --service-account=projects/cap-multicloud-test/serviceAccounts/cap-multicloud-test@cap-multicloud-test.iam.gserviceaccount.com --source=modules/workflows/workflow.yaml
 # [END gcloud beta]   
