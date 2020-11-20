@@ -1,0 +1,56 @@
+main:
+    params: [args]
+    steps:
+      - assignInput:
+          assign:
+            - dataVar: ${args}
+      - clientAgeValidation:
+          call: http.post
+          args:
+            url: https://europe-west1-cap-multicloud-test.cloudfunctions.net/client-age-validation
+            body: 
+              data: ${dataVar}
+          result: dataVar
+      - duePaymentsValidation:
+          call: http.post
+          args:
+            url: https://europe-west1-cap-multicloud-test.cloudfunctions.net/due-payments-validation
+            body: 
+              data: ${dataVar.body.data}
+          result: dataVar
+      - effortNewCreditValidation:
+          call: http.post
+          args:
+            url: https://europe-west1-cap-multicloud-test.cloudfunctions.net/effort-rate-new-credit-validation
+            body: 
+              data: ${dataVar.body.data}
+          result: dataVar
+      - effortTotalCreditsValidation:
+          call: http.post
+          args:
+            url: https://europe-west1-cap-multicloud-test.cloudfunctions.net/effort-rate-total-credit-validation
+            body: 
+              data: ${dataVar.body.data}
+          result: dataVar
+      - jsonToBase64:
+          call: http.post
+          args:
+            url: https://europe-west1-cap-multicloud-test.cloudfunctions.net/json-to-base64
+            body: 
+              data: ${dataVar.body.data}
+          result: dataBase64
+      - assignBase64:
+          assign:
+            - dataBase64:
+                messages: [ data: ${dataBase64.body} ]
+      - sendToNotificationTopic:
+          call: http.post
+          args:
+            url: https://pubsub.googleapis.com/v1/projects/cap-multicloud-test/topics/creditapproval-notification-test:publish
+            auth:
+              type: OAuth2
+            body: 
+              messages: ${dataBase64.messages}
+          result: messageId
+      - returnOutput:
+          return: ${dataVar.body.data}
