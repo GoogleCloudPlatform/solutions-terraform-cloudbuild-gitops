@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "idyllic-lattice-288614-tfstate"
+    bucket = "savvy-pagoda-294917-tfstate"
     prefix = "env/dev"
   }
 }
