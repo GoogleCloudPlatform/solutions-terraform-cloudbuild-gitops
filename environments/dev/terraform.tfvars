@@ -1,1 +1,1 @@
-project="GitOpsTutorial"
+project="gitopstutorial"
