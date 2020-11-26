@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "coherent-brand-258813-tfstate"
+    bucket = "cbuild-terraform-tfstate"
     prefix = "env/prod"
   }
 }
