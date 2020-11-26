@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "GitOpsTutorial-tfstate"
+    bucket = "gitopstutorial-tfstate"
     prefix = "env/prod"
   }
 }
