@@ -1,192 +1,190 @@
-[
-  {
-    "displayName": "CAP",
-    "gridLayout": {
-      "columns": "2",
-      "widgets": [
-        {
-          "title": "Execution times of Cloud Functions",
-          "xyChart": {
-            "chartOptions": {
-              "mode": "COLOR"
-            },
-            "dataSets": [
-              {
-                "minAlignmentPeriod": "60s",
-                "plotType": "LINE",
-                "timeSeriesQuery": {
-                  "timeSeriesFilter": {
-                    "aggregation": {
-                      "crossSeriesReducer": "REDUCE_PERCENTILE_99",
-                      "groupByFields": [
-                        "resource.label.\"function_name\""
-                      ],
-                      "perSeriesAligner": "ALIGN_DELTA"
-                    },
-                    "filter": "metric.type=\"cloudfunctions.googleapis.com/function/execution_times\" resource.type=\"cloud_function\""
-                  }
-                }
-              }
-            ],
-            "timeshiftDuration": "0s",
-            "yAxis": {
-              "label": "y1Axis",
-              "scale": "LINEAR"
-            }
-          }
-        },
-        {
-          "title": "Function executions by status",
-          "xyChart": {
-            "chartOptions": {
-              "mode": "COLOR"
-            },
-            "dataSets": [
-              {
-			    "minAlignmentPeriod": "60s",
-                "plotType": "LINE",
-                "timeSeriesQuery": {
-                  "timeSeriesFilter": {
-                    "aggregation": {
-                      "crossSeriesReducer": "REDUCE_SUM",
-                      "groupByFields": [
-                        "resource.label.\"function_name\"",
-                        "metric.label.\"status\""
-                      ],
-                      "perSeriesAligner": "ALIGN_COUNT"
-                    },
-                    "filter": "metric.type=\"cloudfunctions.googleapis.com/function/execution_count\" resource.type=\"cloud_function\""
-                  },
-                  "unitOverride": "1"
-                }
-              }
-            ],
-            "timeshiftDuration": "0s",
-            "yAxis": {
-              "label": "y1Axis",
-              "scale": "LINEAR"
-            }
-          }
-        },
-        {
-          "title": "Instance group size",
-          "xyChart": {
-            "chartOptions": {
-              "mode": "COLOR"
-            },
-            "dataSets": [
-              {
-                "minAlignmentPeriod": "60s",
-                "plotType": "LINE",
-                "timeSeriesQuery": {
-                  "timeSeriesFilter": {
-                    "aggregation": {
-                      "crossSeriesReducer": "REDUCE_SUM",
-                      "groupByFields": [
-                        "resource.label.\"instance_group_name\""
-                      ],
-                      "perSeriesAligner": "ALIGN_MEAN"
-                    },
-                    "filter": "metric.type=\"compute.googleapis.com/instance_group/size\" resource.type=\"instance_group\""
-                  }
-                }
-              }
-            ],
-            "timeshiftDuration": "0s",
-            "yAxis": {
-              "label": "y1Axis",
-              "scale": "LINEAR"
-            }
-          }
-        },
-        {
-          "title": "VM Instance - CPU usage",
-          "xyChart": {
-            "chartOptions": {
-              "mode": "COLOR"
-            },
-            "dataSets": [
-              {
-                "minAlignmentPeriod": "60s",
-                "plotType": "LINE",
-                "timeSeriesQuery": {
-                  "timeSeriesFilter": {
-                    "aggregation": {
-                      "crossSeriesReducer": "REDUCE_SUM",
-                      "groupByFields": [
-                        "metric.label.\"instance_name\""
-                      ],
-                      "perSeriesAligner": "ALIGN_RATE"
-                    },
-                    "filter": "metric.type=\"compute.googleapis.com/instance/cpu/usage_time\" resource.type=\"gce_instance\""
-                  }
-                }
-              }
-            ],
-            "timeshiftDuration": "0s",
-            "yAxis": {
-              "label": "y1Axis",
-              "scale": "LINEAR"
-            }
-          }
-        },
-        {
-          "title": "Object count for reports-main-bucket",
-          "xyChart": {
-            "chartOptions": {
-              "mode": "COLOR"
-            },
-            "dataSets": [
-              {
-                "minAlignmentPeriod": "60s",
-                "plotType": "LINE",
-                "timeSeriesQuery": {
-                  "timeSeriesFilter": {
-                    "aggregation": {
-                      "perSeriesAligner": "ALIGN_MEAN"
-                    },
-                    "filter": "metric.type=\"storage.googleapis.com/storage/object_count\" resource.type=\"gcs_bucket\" resource.label.\"bucket_name\"=\"reports-main-bucket\""
-                  },
-                  "unitOverride": "1"
-                }
-              }
-            ],
-            "timeshiftDuration": "0s",
-            "yAxis": {
-              "label": "y1Axis",
-              "scale": "LINEAR"
-            }
-          }
-        },
-        {
-          "title": "Unacked messages in PubSub Subscriptions",
-          "xyChart": {
-            "chartOptions": {
-              "mode": "COLOR"
-            },
-            "dataSets": [
-              {
-                "minAlignmentPeriod": "60s",
-                "plotType": "LINE",
-                "timeSeriesQuery": {
-                  "timeSeriesFilter": {
-                    "aggregation": {
-                      "perSeriesAligner": "ALIGN_MEAN"
-                    },
-                    "filter": "metric.type=\"pubsub.googleapis.com/subscription/num_undelivered_messages\" resource.type=\"pubsub_subscription\" 
-                    "secondaryAggregation": {}
-                  }
-                }
-              }
-            ],
-            "timeshiftDuration": "0s",
-            "yAxis": {
-              "label": "y1Axis",
-              "scale": "LINEAR"
-            }
-          }
-        }
-      ]
-    },
-  }
-]				  
+{
+	"displayName": "CAP",
+	"gridLayout": {
+		"columns": "2",
+		"widgets": [
+			{
+				"title": "Execution times of Cloud Functions",
+				"xyChart": {
+					"chartOptions": {
+						"mode": "COLOR"
+					},
+					"dataSets": [
+						{
+							"minAlignmentPeriod": "60s",
+							"plotType": "LINE",
+							"timeSeriesQuery": {
+								"timeSeriesFilter": {
+									"aggregation": {
+										"crossSeriesReducer": "REDUCE_PERCENTILE_99",
+										"groupByFields": [
+											"resource.label.\"function_name\""
+										],
+										"perSeriesAligner": "ALIGN_DELTA"
+									},
+									"filter": "metric.type=\"cloudfunctions.googleapis.com/function/execution_times\" resource.type=\"cloud_function\""
+								}
+							}
+						}
+					],
+					"timeshiftDuration": "0s",
+					"yAxis": {
+						"label": "y1Axis",
+						"scale": "LINEAR"
+					}
+				}
+			},
+			{
+				"title": "Function executions by status",
+				"xyChart": {
+					"chartOptions": {
+						"mode": "COLOR"
+					},
+					"dataSets": [
+						{
+							"minAlignmentPeriod": "60s",
+							"plotType": "LINE",
+							"timeSeriesQuery": {
+								"timeSeriesFilter": {
+									"aggregation": {
+										"crossSeriesReducer": "REDUCE_SUM",
+										"groupByFields": [
+											"resource.label.\"function_name\"",
+											"metric.label.\"status\""
+										],
+										"perSeriesAligner": "ALIGN_COUNT"
+									},
+									"filter": "metric.type=\"cloudfunctions.googleapis.com/function/execution_count\" resource.type=\"cloud_function\""
+								},
+								"unitOverride": "1"
+							}
+						}
+					],
+					"timeshiftDuration": "0s",
+					"yAxis": {
+						"label": "y1Axis",
+						"scale": "LINEAR"
+					}
+				}
+			},
+			{
+				"title": "Instance group size",
+				"xyChart": {
+					"chartOptions": {
+						"mode": "COLOR"
+					},
+					"dataSets": [
+						{
+							"minAlignmentPeriod": "60s",
+							"plotType": "LINE",
+							"timeSeriesQuery": {
+								"timeSeriesFilter": {
+									"aggregation": {
+										"crossSeriesReducer": "REDUCE_SUM",
+										"groupByFields": [
+											"resource.label.\"instance_group_name\""
+										],
+										"perSeriesAligner": "ALIGN_MEAN"
+									},
+									"filter": "metric.type=\"compute.googleapis.com/instance_group/size\" resource.type=\"instance_group\""
+								}
+							}
+						}
+					],
+					"timeshiftDuration": "0s",
+					"yAxis": {
+						"label": "y1Axis",
+						"scale": "LINEAR"
+					}
+				}
+			},
+			{
+				"title": "VM Instance - CPU usage",
+				"xyChart": {
+					"chartOptions": {
+						"mode": "COLOR"
+					},
+					"dataSets": [
+						{
+							"minAlignmentPeriod": "60s",
+							"plotType": "LINE",
+							"timeSeriesQuery": {
+								"timeSeriesFilter": {
+									"aggregation": {
+										"crossSeriesReducer": "REDUCE_SUM",
+										"groupByFields": [
+											"metric.label.\"instance_name\""
+										],
+										"perSeriesAligner": "ALIGN_RATE"
+									},
+									"filter": "metric.type=\"compute.googleapis.com/instance/cpu/usage_time\" resource.type=\"gce_instance\""
+								}
+							}
+						}
+					],
+					"timeshiftDuration": "0s",
+					"yAxis": {
+						"label": "y1Axis",
+						"scale": "LINEAR"
+					}
+				}
+			},
+			{
+				"title": "Object count for reports-main-bucket",
+				"xyChart": {
+					"chartOptions": {
+						"mode": "COLOR"
+					},
+					"dataSets": [
+						{
+							"minAlignmentPeriod": "60s",
+							"plotType": "LINE",
+							"timeSeriesQuery": {
+								"timeSeriesFilter": {
+									"aggregation": {
+										"perSeriesAligner": "ALIGN_MEAN"
+									},
+									"filter": "metric.type=\"storage.googleapis.com/storage/object_count\" resource.type=\"gcs_bucket\" resource.label.\"bucket_name\"=\"reports-main-bucket\""
+								},
+								"unitOverride": "1"
+							}
+						}
+					],
+					"timeshiftDuration": "0s",
+					"yAxis": {
+						"label": "y1Axis",
+						"scale": "LINEAR"
+					}
+				}
+			},
+			{
+				"title": "Unacked messages in PubSub Subscriptions",
+				"xyChart": {
+					"chartOptions": {
+						"mode": "COLOR"
+					},
+					"dataSets": [
+						{
+							"minAlignmentPeriod": "60s",
+							"plotType": "LINE",
+							"timeSeriesQuery": {
+								"timeSeriesFilter": {
+									"aggregation": {
+										"perSeriesAligner": "ALIGN_MEAN"
+									},
+									"filter": "metric.type=\"pubsub.googleapis.com/subscription/num_undelivered_messages\" resource.type=\"pubsub_subscription\"",
+									"secondaryAggregation": {}
+								}
+							}
+						}
+					],
+					"timeshiftDuration": "0s",
+					"yAxis": {
+						"label": "y1Axis",
+						"scale": "LINEAR"
+					}
+				}
+			}
+		]
+	}
+}
