@@ -35,8 +35,8 @@ def storageToBq(event, context):
 
     for x in range(n_transactions):
         id = str(uuid.uuid4())[-12:]
-        source_account_id = int(json_data_dict['transactions'][x]['sourceAccountId'])
-        target_account_id = int(json_data_dict['transactions'][x]['targetAccountId'])
+        #source_account_id = int(json_data_dict['transactions'][x]['sourceAccountId'])
+        #target_account_id = int(json_data_dict['transactions'][x]['targetAccountId'])
         amount = json_data_dict['transactions'][x]['amount']
         description = json_data_dict['transactions'][x]['description']
         #date_time = d['transactions'][x]['dateTime']

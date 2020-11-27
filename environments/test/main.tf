@@ -55,3 +55,11 @@ module "mig" {
   region  	= "${local.region}"
   sa_email 	= "${module.sa.mig_sa}"
 }
+
+module "monitoring" {
+  source  	= "../../modules/monitoring"
+  project 	= "${var.project}"
+  env     	= "${local.env}"
+  region  	= "${local.region}"
+  mig_name 	= "${module.mig.mig_name}"
+}
