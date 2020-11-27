@@ -159,3 +159,7 @@ resource "google_monitoring_notification_channel" "cap_notification_email" {
 
   type    = "email"
 }
+
+resource "google_monitoring_dashboard" "cap_monitoring_dashboard" {
+  dashboard_json = file("Dashboard/CapDashboard.json")
+} 
