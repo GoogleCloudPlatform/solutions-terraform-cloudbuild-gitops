@@ -161,5 +161,5 @@ resource "google_monitoring_notification_channel" "cap_notification_email" {
 }
 
 resource "google_monitoring_dashboard" "cap_monitoring_dashboard" {
-  dashboard_json = file("Dashboard/CapDashboard.json")
+  dashboard_json = file("${path.module}/Dashboard/CapDashboard.json")
 } 
