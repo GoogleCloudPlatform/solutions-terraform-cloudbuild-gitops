@@ -144,7 +144,7 @@
 									"aggregation": {
 										"perSeriesAligner": "ALIGN_MEAN"
 									},
-									"filter": "metric.type=\"storage.googleapis.com/storage/object_count\" resource.type=\"gcs_bucket\" resource.label.\"bucket_name\"=\"reports-main-bucket\""
+									"filter": "metric.type=\"storage.googleapis.com/storage/object_count\" resource.type=\"gcs_bucket\""
 								},
 								"unitOverride": "1"
 							}
