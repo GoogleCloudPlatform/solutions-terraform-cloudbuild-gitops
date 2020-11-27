@@ -30,7 +30,7 @@ resource "google_monitoring_alert_policy" "cap_alertpolicy_mig" {
   }
 
   enabled               = "true"
-  notification_channels = "${google_monitoring_notification_channel.cap_notification_email.name}"
+  notification_channels = ["${google_monitoring_notification_channel.cap_notification_email.name}"]
 }
 
 resource "google_monitoring_alert_policy" "cap_alertpolicy_cf" {
@@ -90,7 +90,7 @@ resource "google_monitoring_alert_policy" "cap_alertpolicy_cf" {
   }
 
   enabled               = "true"
-  notification_channels = "${google_monitoring_notification_channel.cap_notification_email.name}"
+  notification_channels = ["${google_monitoring_notification_channel.cap_notification_email.name}"]
 }
 
 resource "google_monitoring_alert_policy" "cap_alertpolicy_pubsub" {
@@ -146,7 +146,7 @@ resource "google_monitoring_alert_policy" "cap_alertpolicy_pubsub" {
   }
 
   enabled               = "true"
-  notification_channels = "${google_monitoring_notification_channel.cap_notification_email.name}"
+  notification_channels = ["${google_monitoring_notification_channel.cap_notification_email.name}"]
 }
 
 resource "google_monitoring_notification_channel" "cap_notification_email" {
