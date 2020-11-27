@@ -10,7 +10,7 @@ resource "google_monitoring_alert_policy" "cap_alertpolicy_mig" {
 
       comparison      = "COMPARISON_LT"
       duration        = "0s"
-      filter          = "metric.type=\"compute.googleapis.com/instance_group/size\" resource.type=\"instance_group\" resource.label.\"instance_group_name\"=\"${var.mig_name}""
+      filter          = "metric.type=\"compute.googleapis.com/instance_group/size\" resource.type=\"instance_group\" resource.label.\"instance_group_name\"=${var.mig_name}"
       threshold_value = "1"
 
       trigger {
