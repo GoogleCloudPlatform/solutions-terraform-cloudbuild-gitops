@@ -2,7 +2,7 @@
 
 
 provider "google" {
-   project = "${var.project_id}"
+   project = "${var.project}"
    region  = "${var.region}"
 }
 
@@ -37,7 +37,7 @@ resource "google_cloud_run_service" "credit-approval-app" {
     template {
         spec {
             containers {
-                image = "eu.gcr.io/${var.project_id}/gcr/creditwebapp"  
+                image = "eu.gcr.io/${var.project}/gcr/creditwebapp"  
                 resources {
                     limits = {
                       memory = "2048Mi"
@@ -45,7 +45,7 @@ resource "google_cloud_run_service" "credit-approval-app" {
                     }
                   }
                 }
-            service_account_name = "sa-credit-approval-app@${var.project_id}.iam.gserviceaccount.com"
+            service_account_name = "sa-credit-approval-app@${var.project}.iam.gserviceaccount.com"
             timeout_seconds = 800
             }
         metadata {
