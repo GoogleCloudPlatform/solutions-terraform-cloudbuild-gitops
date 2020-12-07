@@ -32,7 +32,7 @@ steps:
   - |
     echo */*/
     ls -d workspace/*
-    docker build -t eu.gcr.io/cap-multicloud-$BRANCH_NAME/gcr/creditwebapp -f  Dockerfile workspace/modules/run/source
+    docker build -t eu.gcr.io/cap-multicloud-$BRANCH_NAME/gcr/creditwebapp -f  workspace/modules/run/source
     docker push eu.gcr.io/cap-multicloud-$BRANCH_NAME/gcr/creditwebapp
         
 
