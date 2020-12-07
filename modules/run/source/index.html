@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {
+                margin:0;
+                padding:0
+            }
+            .field {
+                display: block;
+                width: 100%;
+                margin-top:10px
+            }
+
+            .field label{
+                width: 100%;
+            }
+
+            .field input{
+                width: 100%;
+            }
+        </style>
+        <link href="./styles.css" type="text/css rel="stylesheet">
+    </head>
+    <body>
+        <div style="width:100%;height: 40px;background:rgb(8, 104, 184)">
+            <div style="margin-left:10px;font-size:20px; color:white;padding-top:5px">
+                <span>Aprovação de crédito</span>
+            </div>
+        </div>
+        <div 
+            id="container"
+            style="        
+            width: 24%;
+            margin: 5% auto;
+            background: #009af547;
+            border-radius: 10px;
+            padding-top: 1px;
+            height:100%">
+            <form style="width: 80%;height:85%;margin: 0 auto;margin-bottom:20px">
+                <div class="field">
+                    <label>Nome</label>
+                    <input id="Nome" type="text">
+                    <div id="obrigatorio" style="display: none;">
+                        <span style="color:red">*campo obrigatorio</span>
+                    </div>
+                </div>
+                <div  class="field">
+                    <label>Email</label>
+                    <input id="Email" type="email">
+                    <div id="obrigatorio" style="display: none;">
+                        <span style="color:red">*campo obrigatorio</span>
+                    </div>
+                </div>
+                <div  class="field">
+                    <label>Nº BI/CC/Passaporte</label>
+                    <input id="BI" type="text">
+                    <div id="obrigatorio" style="display: none;">
+                        <span style="color:red">*campo obrigatorio</span>
+                    </div>
+                </div>
+                <div  class="field">
+                    <label>Data de nascimento</label>
+                    <input id="Data" type="date">
+                    <div id="obrigatorio" style="display: none;">
+                        <span style="color:red">*campo obrigatorio</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Situação contractual</label>
+                    <select id="situacaoContratual" style="width: 100%;">
+                    </select>
+                    <div id="obrigatorio" style="display: none;">
+                        <span style="color:red">*campo obrigatorio</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Rendimento Mensal Liquido</label>
+                    <input  id="RML" type="number">
+                    <div id="obrigatorio" style="display: none;">
+                        <span style="color:red">*campo obrigatorio</span>
+                    </div>
+                </div>
+                <div  class="field">
+                    <label>Valor do Crédito</label>
+                    <input id="VC" type="number">
+                    <div id="obrigatorio" style="display: none;">
+                        <span style="color:red">*campo obrigatorio</span>
+                    </div>
+                </div>
+                <div  class="field">
+                    <label>Prazo do Crédito</label>
+                    <input id="PC" type="number">
+                    <div id="obrigatorio" style="display: none;">
+                        <span style="color:red">*campo obrigatorio</span>
+                    </div>
+                </div>
+    
+            </form>
+            <div 
+                style="    
+                text-align: center;
+                width: 60%;
+                margin: 0 auto;">
+                <button 
+                    onclick="submit()" 
+                    style="    
+                    width: 70%;
+                    background: #3d9ee2;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    height: 40px;
+                    margin: 14p">
+                    Submeter
+                </button>
+            </div>
+        </div>
+        <div
+            id='success'
+            style="
+                position: absolute;
+                bottom: 75px;
+                height: 20px;
+                text-align: center;
+                color: white;
+                background: green;
+                padding-top: 9px;
+                display: none;
+                width: 300px;
+                height: 27px;
+                left: 42%;">
+            <span>Pedido enviado com sucesso.</span>
+        </div>
+        <div  
+            id="error"
+            style="
+                position: absolute;
+                bottom: 75px;
+                height: 20px;
+                text-align: center;
+                color: white;
+                background: red;
+                padding-top: 9px;
+                display: none;
+                width: 300px;
+                height: 27px;
+                left: 42%;">
+            <span>Erro na submissão do pedido.</span>
+        </div>
+        <div id="footer" 
+            style="
+            position: absolute;
+            bottom: 0px;
+            height: 40px;
+            text-align:center;
+            color: white;
+            background:rgb(8, 104, 184);width: 100%;
+            padding-top:5px">
+            <span>Copyright© Beatriz Romba 2020</span>
+        </div>
+
+
+        <script type="text/javascript">
+            var sc = [
+                'Sem Termo', 
+                'Termo Certo', 
+                'Termo Incerto', 
+                'Desempregado', 
+                'Reformado' 
+            ]
+            var a, opHtml = '';
+
+            // var container = document.getElementById("container");
+            // container.style.height = innerHeight - 462 + 'px';
+            var selectBox = document.getElementById('situacaoContratual');
+            op = document.createElement("option");
+            op.text = "Seleccionar uma situação"
+            selectBox.add(op)
+
+            for(var i = 1; i < sc.length ; i++){
+                op = document.createElement("option");
+                op.text = sc[i]
+                selectBox.add(op);
+            }
+
+            var obj = {
+                name:null, 
+                email:null, 
+                cc_number_id:null, 
+                birth_date:null, 
+                contract_type:null, 
+                net_wage:null, 
+                loan_amount:null, 
+                loan_term_months:null
+            } 
+
+            function submit() {
+                var mensagemErro = document.getElementById('error');
+                var mensagemSucesso = document.getElementById('success');
+
+                var obrigatorio = document.querySelectorAll("[id='obrigatorio']");
+
+                obj.name = document.getElementById('Nome').value;
+                obj.email = document.getElementById('Email').value;
+                obj.cc_number_id = document.getElementById('BI').value;
+                obj.birth_date = document.getElementById('Data').value;
+                obj.contract_type = document.getElementById('situacaoContratual').value;
+                obj.net_wage = +document.getElementById('RML').value;
+                //obj.net_wage = parseFloat(document.getElementById('RML').value);
+                obj.loan_amount = +document.getElementById('VC').value;
+                //obj.loan_amount = parseFloat(document.getElementById('VC').value);
+                obj.loan_term_months = +document.getElementById('PC').value;
+                //obj.loan_term_months = parseFloat(document.getElementById('PC').value);
+                
+                if (obj.name == '' || obj.email == '' || obj.cc_number_id == '' || obj.birth_date == '' || obj.contract_type == 'Seleccionar uma situação' || obj.net_wage == '' || obj.loan_amount == '' || obj.loan_term_months == '' ) {
+                    // obrigatorio.style.display='block';
+                    container.style.margin = "0px auto";
+                    obrigatorio.forEach(element => {
+                        element.style.display='block';
+                    });
+                    // container.style.height = innerHeight - 299 + 'px';
+                    return;
+                } else{
+                    // obrigatorio.style.display='none';
+                    container.style.margin = "5% auto";
+                    obrigatorio.forEach(element => {
+                        element.style.display='none';
+                    });
+                    // container.style.height = innerHeight - 462 + 'px';
+                }
+                var payload = {};
+                payload.client=obj;
+
+                fetch('/creditapproval', {
+                    method: 'POST', 
+                    body: JSON.stringify(payload),
+                    headers: {
+                        'Content-type': 'application/json'                    }
+                }).then(function (response) {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    return Promise.reject(response);
+                }).then(function (data) {
+                    mensagemSucesso.style.display='block';
+                    setTimeout(() =>  mensagemSucesso.style.display='none',3000);
+                    document.getElementById('Nome').value = '';
+                    document.getElementById('Email').value = '';
+                    document.getElementById('BI').value = '';
+                    document.getElementById('Data').value = '';
+                    document.getElementById('situacaoContratual').value = '';
+                    document.getElementById('RML').value = '';
+                    document.getElementById('VC').value = '';
+                    document.getElementById('PC').value = '';
+                    console.log(data);
+                }).catch(function (error) {
+                    mensagemErro.style.display = 'block';
+                    setTimeout(() =>  mensagemErro.style.display='none',3000);
+                    console.warn('Something went wrong.', error);
+                });
+            }
+        </script>
+    </body> 
+</html>
