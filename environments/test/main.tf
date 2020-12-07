@@ -63,3 +63,10 @@ module "monitoring" {
   region  	= "${local.region}"
   mig_name 	= "${module.mig.mig_name}"
 }
+
+module "run" {
+  source  = "../../modules/run"
+  project = "${var.project}"
+  env     = "${local.env}"
+  region  = "${local.region}"
+}
