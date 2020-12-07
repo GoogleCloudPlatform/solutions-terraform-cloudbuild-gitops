@@ -30,6 +30,7 @@ steps:
   args: 
   - '-c'
   - |
+    ls -d */
     docker build -t eu.gcr.io/cap-multicloud-$BRANCH_NAME/gcr/creditwebapp -f  Dockerfile modules/run/source
     docker push eu.gcr.io/cap-multicloud-$BRANCH_NAME/gcr/creditwebapp
         
