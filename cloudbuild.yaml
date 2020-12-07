@@ -24,6 +24,16 @@ steps:
       echo "$BRANCH_NAME"
       echo "***********************"
 
+- name: 'gcr.io/cloud-builders/docker'
+  dir: '/'
+  entrypoint: 'bash'
+  args: 
+  - '-c'
+  - |
+    docker build -t eu.gcr.io/cap-multicloud-$BRANCH_NAME/gcr/creditwebapp -f  Dockerfile modules/run/source
+    docker push eu.gcr.io/cap-multicloud-$BRANCH_NAME/gcr/creditwebapp
+        
+
 - id: 'tf init'
   name: hashicorp/terraform:latest
   entrypoint: 'sh'
