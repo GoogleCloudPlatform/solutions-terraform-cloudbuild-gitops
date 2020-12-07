@@ -57,3 +57,7 @@ output "mig_ip" {
 output "mig_name" {
   value = "${module.mig.mig_name}"
 }
+
+output "email" {
+  value = "${module.monitoring.email}"
+}
