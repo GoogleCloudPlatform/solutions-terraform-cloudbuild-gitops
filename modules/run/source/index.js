@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
 });
 
 app.post('/creditapproval', (req, res , next) => {
-    var projectId = 'cap-multicloud-dev'; // Your Google Cloud Platform project ID
+    var projectId = 'cap-multicloud-_ENV_'; // Your Google Cloud Platform project ID
     
     // Instantiates a client
     const pubsub = new PubSub({projectId});
@@ -30,7 +30,8 @@ app.post('/creditapproval', (req, res , next) => {
 });
 
 async function publishMessage(pubsub,data) {
-    var topicName = 'creditapproval-validation-dev';
+    var topicName = 'creditapproval-validation-_ENV_';
+	console.log(`**********Topic ${topicName} in project ${projectId}.`);
     // Publishes the message as a string, e.g. "Hello, world!" or JSON.stringify(someObject)
     const dataBuffer = Buffer.from(data);
 
