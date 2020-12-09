@@ -24,6 +24,7 @@ app.post('/creditapproval', (req, res , next) => {
     
     // Instantiates a client
     const pubsub = new PubSub({projectId});
+	console.log(`**********Project  ${projectId}.`);
     publishMessage(pubsub,JSON.stringify(req.body));
     // Receive callbacks for new messages on the subscription
     res.send({"mensagem":"api chamada"});
@@ -31,7 +32,7 @@ app.post('/creditapproval', (req, res , next) => {
 
 async function publishMessage(pubsub,data) {
     var topicName = 'creditapproval-validation-_ENV_';
-	console.log(`**********Topic ${topicName} in project ${projectId}.`);
+	console.log(`**********Topic ${topicName}`);
     // Publishes the message as a string, e.g. "Hello, world!" or JSON.stringify(someObject)
     const dataBuffer = Buffer.from(data);
 
