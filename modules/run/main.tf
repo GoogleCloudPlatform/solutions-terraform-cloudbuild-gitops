@@ -32,7 +32,7 @@ resource "google_cloud_run_service" "credit-approval-app" {
                     }
                   }
                 }
-            service_account_name = "sa-credit-approval-app@${var.project}.iam.gserviceaccount.com"
+            
             timeout_seconds = 800
             }
         metadata {
