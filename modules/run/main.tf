@@ -65,4 +65,6 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
   service     = google_cloud_run_service.credit-approval-app.name
 
   policy_data = data.google_iam_policy.noauth.policy_data
+  
+  depends_on = [google_cloud_run_service.credit-approval-app]
 }
