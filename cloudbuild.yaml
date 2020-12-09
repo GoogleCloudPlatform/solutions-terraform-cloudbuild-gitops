@@ -30,6 +30,7 @@ steps:
   args: 
   - '-c'
   - |
+    sed -i 's/_ENV_/$BRANCH_NAME/g' workspace/modules/run/source/index.js
     docker build -t eu.gcr.io/cap-multicloud-$BRANCH_NAME/gcr/creditwebapp workspace/modules/run/source
     docker push eu.gcr.io/cap-multicloud-$BRANCH_NAME/gcr/creditwebapp
         
