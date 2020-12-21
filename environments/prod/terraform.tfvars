@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="aip-rentz-cloud-build-github"

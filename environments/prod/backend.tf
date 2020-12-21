@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "aip-rentz-cloud-build-github-tfstate"
     prefix = "env/prod"
   }
 }
