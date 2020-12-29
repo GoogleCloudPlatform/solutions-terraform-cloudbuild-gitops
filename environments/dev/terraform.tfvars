@@ -1,1 +1,1 @@
-project="iac-pipeline-demo"
+project="premvc-20201209"
