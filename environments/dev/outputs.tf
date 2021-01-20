@@ -1,34 +1,63 @@
-# Copyright 2019 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-
-output "network" {
-  value = "${module.vpc.network}"
+output "mds" {
+  value = "${module.storage.mds}"
 }
 
-output "subnet" {
-  value = "${module.vpc.subnet}"
+output "main_bucket" {
+  value = "${module.storage.main_bucket}"
 }
 
-output "firewall_rule" {
-  value = "${module.firewall.firewall_rule}"
+output "startup_script" {
+  value = "${module.storage.startup-script}"
 }
 
-output "instance_name" {
-  value = "${module.http_server.instance_name}"
+output "cap_bank" {
+  value = "${module.bq.cap_bank}"
 }
 
-output "external_ip" {
-  value = "${module.http_server.external_ip}"
+output "cf_sa" {
+  value = "${module.sa.cf_sa}"
+}
+
+output "mig_sa" {
+  value = "${module.sa.mig_sa}"
+}
+
+output "credditApprovalNotification" {
+  value = "${module.pubsub.credditApprovalNotification}"
+}
+
+output "credditApprovalValidation" {
+  value = "${module.pubsub.credditApprovalValidation}"
+}
+
+output "cf_clientAgeVal" {
+  value = "${module.cloudfunction.cf_clientAgeVal}"
+}
+
+output "cf_duePayVal" {
+  value = "${module.cloudfunction.cf_duePayVal}"
+}
+
+output "cf_effortRateNewCredVal" {
+  value = "${module.cloudfunction.cf_effortRateNewCredVal}"
+}
+
+output "cf_effortRateTotalCredVal" {
+  value = "${module.cloudfunction.cf_effortRateTotalCredVal}"
+}
+
+output "cf_jsonToBase64" {
+  value = "${module.cloudfunction.cf_jsonToBase64}"
+}
+
+output "mig_ip" {
+  value = "${module.mig.mig_ip}"
+}
+
+output "mig_name" {
+  value = "${module.mig.mig_name}"
+}
+
+output "email" {
+  value = "${module.monitoring.email}"
 }

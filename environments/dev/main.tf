@@ -1,40 +1,72 @@
-# Copyright 2019 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-
 locals {
-  "env" = "dev"
+  env = "dev"
+  region = "europe-west1"
 }
 
 provider "google" {
   project = "${var.project}"
+  region = "${local.region}"
 }
 
-module "vpc" {
-  source  = "../../modules/vpc"
+module "sa" {
+  source  = "../../modules/sa"
   project = "${var.project}"
   env     = "${local.env}"
+  region  = "${local.region}"
 }
 
-module "http_server" {
-  source  = "../../modules/http_server"
+module "storage" {
+  source  = "../../modules/storage"
   project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
+  env     = "${local.env}"
+  region  = "${local.region}"
 }
 
-module "firewall" {
-  source  = "../../modules/firewall"
+module "bq" {
+  source  = "../../modules/bq"
   project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
+  env     = "${local.env}"
+  region  = "${local.region}"
+}
+
+module "pubsub" {
+  source  = "../../modules/pubsub"
+  project = "${var.project}"
+  env     = "${local.env}"
+  region  = "${local.region}"
+}
+
+module "cloudfunction" {
+  source   					= "../../modules/cloudfunction"
+  project  					= "${var.project}"
+  env      					= "${local.env}"
+  region   					= "${local.region}"
+  mds	   					= "${module.storage.mds}"
+  main_bucket			    = "${module.storage.main_bucket}"
+  sa_email 					= "${module.sa.cf_sa}"
+  cf_sendmail_pubsub 		= "${module.pubsub.credditApprovalNotification}"
+  cf_triggerworkflow_pubsub = "${module.pubsub.credditApprovalValidation}"
+}
+
+module "mig" {
+  source  	= "../../modules/mig"
+  project 	= "${var.project}"
+  env     	= "${local.env}"
+  region  	= "${local.region}"
+  sa_email 	= "${module.sa.mig_sa}"
+}
+
+module "monitoring" {
+  source  	= "../../modules/monitoring"
+  project 	= "${var.project}"
+  env     	= "${local.env}"
+  region  	= "${local.region}"
+  mig_name 	= "${module.mig.mig_name}"
+}
+
+module "run" {
+  source  = "../../modules/run"
+  project = "${var.project}"
+  env     = "${local.env}"
+  region  = "${local.region}"
 }
