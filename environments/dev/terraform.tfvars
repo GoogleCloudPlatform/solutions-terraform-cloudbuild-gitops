@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="alexbu-20200128-gitops"
