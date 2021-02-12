@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "-tfstate"
+    bucket = "exalted-well-284222-tfstate"
     prefix = "env/dev"
   }
 }
