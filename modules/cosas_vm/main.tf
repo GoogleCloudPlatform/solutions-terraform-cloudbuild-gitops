@@ -12,11 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-locals {
-  network = "${element(split("-", var.subnet), 0)}"
-}
-
 resource "google_compute_instance" "cosas_vm" {
   name         = "cosasvm01"
   machine_type = "f1-micro"

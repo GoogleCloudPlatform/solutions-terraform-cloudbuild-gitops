@@ -24,7 +24,6 @@ provider "google" {
 }
 
 module "cosas_vm" {
-  source  = "../../modules/cosasvm"
+  source  = "../../modules/cosas_vm"
   project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
 }
