@@ -19,22 +19,12 @@ locals {
 
 provider "google" {
   project = "${var.project}"
+  region  = "${var.region}"
+  zone    = "${var.zone}"
 }
 
-module "vpc" {
-  source  = "../../modules/vpc"
-  project = "${var.project}"
-  env     = "${local.env}"
-}
-
-module "http_server" {
-  source  = "../../modules/http_server"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
-
-module "firewall" {
-  source  = "../../modules/firewall"
+module "cosas_vm" {
+  source  = "../../modules/cosasvm"
   project = "${var.project}"
   subnet  = "${module.vpc.subnet}"
 }
