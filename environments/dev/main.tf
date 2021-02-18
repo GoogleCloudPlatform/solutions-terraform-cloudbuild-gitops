@@ -26,4 +26,5 @@ provider "google" {
 module "cosas_vm" {
   source  = "../../modules/cosas_vm"
   project = "${var.project}"
+  zone    = "${var.zone}"
 }
