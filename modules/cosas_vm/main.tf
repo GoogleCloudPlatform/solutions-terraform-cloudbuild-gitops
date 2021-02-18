@@ -15,8 +15,8 @@
 resource "google_compute_instance" "cosas_vm" {
   name         = "cosasvm01"
   machine_type = "f1-micro"
-  project      = "${var.project}"
-  zone         = "${var.zone}"
+  project      = var.project
+  zone         = var.zone
 
   boot_disk {
     initialize_params {

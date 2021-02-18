@@ -13,18 +13,14 @@
 # limitations under the License.
 
 
-locals {
-  "env" = "dev"
-}
-
 provider "google" {
-  project = "${var.project}"
-  region  = "${var.region}"
-  zone    = "${var.zone}"
+  project = var.project
+  region  = var.region
+  zone    = var.zone
 }
 
 module "cosas_vm" {
   source  = "../../modules/cosas_vm"
-  project = "${var.project}"
-  zone    = "${var.zone}"
+  project = var.project
+  zone    = var.zone
 }

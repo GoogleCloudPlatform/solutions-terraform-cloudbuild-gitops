@@ -14,9 +14,9 @@
 
 
 output "instance_name" {
-  value = "${module.cosas_vm.instance_name}"
+  value = module.cosas_vm.instance_name
 }
 
 output "external_ip" {
-  value = "${module.cosas_vm.external_ip}"
+  value = module.cosas_vm.external_ip
 }
