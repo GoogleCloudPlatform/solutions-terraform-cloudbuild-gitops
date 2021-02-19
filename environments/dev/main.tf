@@ -24,3 +24,8 @@ module "cosas_vm" {
   project = var.project
   zone    = var.zone
 }
+
+module "datastore" {
+  source  = "../../modules/datastore"
+  project = var.project
+}
