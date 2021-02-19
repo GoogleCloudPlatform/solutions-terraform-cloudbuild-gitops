@@ -1,5 +1,5 @@
-module "datastore" {
-  source      = "terraform-google-modules/cloud-datastore/google"
+resource "google_app_engine_application" "app" {
   project     = var.project
-  //indexes     = "${file("index.yaml")}"
+  location_id = "us-central"
+  database_type = "CLOUD_DATASTORE_COMPATIBILITY"
 }
