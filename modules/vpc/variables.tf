@@ -14,4 +14,6 @@
 
 
 variable "project" {}
+variable "network_name" {}
 variable "env" {}
+variable "gcp_region" {}

@@ -1,1 +1,2 @@
 project="nextwork"
+env="production"

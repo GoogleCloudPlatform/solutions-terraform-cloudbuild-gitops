@@ -14,17 +14,19 @@
 
 
 locals {
-  "env" = "websites"
+  network_name = "websites"
 }
 
 provider "google" {
-  project = "${var.project}"
+  project = var.project
 }
 
 module "vpc" {
-  source  = "../../modules/vpc"
-  project = "${var.project}"
-  env     = "${local.env}"
+  source       = "../../modules/vpc"
+  project      = var.project
+  env          = var.env
+  network_name = local.network_name
+  gcp_region   = var.gcp_region
 }
 
 # module "http_server" {
