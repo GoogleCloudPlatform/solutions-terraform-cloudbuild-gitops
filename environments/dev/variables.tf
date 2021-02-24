@@ -14,3 +14,22 @@
 
 
 variable "project" {}
+variable "env" {}
+
+variable "gcp_region" {
+  description = "GCP region"
+  type        = string
+  default     = "europe-west1"
+}
+
+variable "instance_count_min" {
+  description = "Mimimun number of instances to provision."
+  type        = number
+  default     = 1
+}
+
+variable "instance_count_max" {
+  description = "Maximum number of instances to provision."
+  type        = number
+  default     = 3
+}
