@@ -15,7 +15,10 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    # PROJECT_ID=$(gcloud config get-value project)
+    # gsutil mb -l EU gs://${PROJECT_ID}-tfstate
+    # gsutil versioning set on gs://${PROJECT_ID}-tfstate
+    bucket = "nextwork-staging-tfstate"
     prefix = "env/dev"
   }
 }
