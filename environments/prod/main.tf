@@ -29,6 +29,14 @@ module "vpc" {
   gcp_region   = var.gcp_region
 }
 
+module "buckets" {
+  source        = "../../modules/buckets"
+  project       = var.project
+  env           = var.env
+  bucket_output = var.bucket_output
+  bucket_input  = var.bucket_input
+}
+
 # module "http_server" {
 #   source  = "../../modules/http_server"
 #   project = "${var.project}"

@@ -15,6 +15,8 @@
 
 variable "project" {}
 variable "env" {}
+variable "bucket_input" {}
+variable "bucket_output" {}
 
 variable "gcp_region" {
   description = "GCP region"
