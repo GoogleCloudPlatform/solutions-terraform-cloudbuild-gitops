@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "metal-circle-306117-tfstate"
     prefix = "env/prod"
   }
 }
