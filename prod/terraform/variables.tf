@@ -11,5 +11,5 @@ variable "project_id" {
 # vpc network name
 variable "vpc_network_name" {
   type = string
-  default = "infrastructure-prod-network-2"
+  default = "infrastructure-prod-network"
 }
