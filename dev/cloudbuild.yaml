@@ -21,6 +21,7 @@ steps:
     args: 
     - '-c'
     - |
+        echo "DEV"
         terraform init
   
   # [START tf-plan]
