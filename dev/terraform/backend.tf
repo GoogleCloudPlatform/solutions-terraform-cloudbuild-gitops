@@ -5,6 +5,8 @@ terraform {
   }
 }
 
+# Updated
+
 # terraform {
 #   backend "local" {
 #     path = "terraform.tfstate"
