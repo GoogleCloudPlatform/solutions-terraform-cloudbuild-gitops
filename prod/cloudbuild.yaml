@@ -13,26 +13,24 @@
 # limitations under the License.
 
 
-steps:
+steps:  
   - id: 'tf init'
     name: 'hashicorp/terraform:0.14.6'
     entrypoint: 'sh'
+    dir: 'terraform'
     args: 
     - '-c'
     - |
-        echo "$BRANCH_NAME"
-        echo "$PWD"
-        cd terraform
         terraform init
   
   # [START tf-plan]
   - id: 'tf plan'
     name: 'hashicorp/terraform:0.14.6'
     entrypoint: 'sh'
+    dir: 'terraform'
     args: 
     - '-c'
     - | 
-        cd terraform
         terraform plan
   # [END tf-plan]
   
@@ -40,10 +38,10 @@ steps:
   - id: 'tf apply'
     name: 'hashicorp/terraform:0.14.6'
     entrypoint: 'sh'
+    dir: 'terraform'
     args: 
     - '-c'
-    - | 
-        cd terraform     
+    - |     
         terraform apply -auto-approve
   # [END tf-apply]      
   
