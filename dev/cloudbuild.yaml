@@ -21,6 +21,7 @@ steps:
     args: 
     - '-c'
     - |
+        echo "DEV"
         terraform init
   
   # [START tf-plan]
@@ -31,6 +32,7 @@ steps:
     args: 
     - '-c'
     - | 
+        echo "DEV"
         terraform plan
   # [END tf-plan]
   
@@ -42,6 +44,7 @@ steps:
     args: 
     - '-c'
     - |     
+        echo "DEV"
         terraform apply -auto-approve
   # [END tf-apply]      
   
