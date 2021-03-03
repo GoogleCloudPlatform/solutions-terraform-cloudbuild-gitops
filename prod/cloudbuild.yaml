@@ -20,6 +20,8 @@ steps:
     args: 
     - '-c'
     - |
+        echo "$BRANCH_NAME"
+        echo "$PWD"
         cd terraform
         terraform init
   
