@@ -14,4 +14,3 @@
 
 
 variable "project" {}
-variable "subnet" {}

@@ -21,20 +21,8 @@ provider "google" {
   project = "${var.project}"
 }
 
-module "vpc" {
-  source  = "../../modules/vpc"
+module "ssl-cert" {
+  source  = "../../modules/ssl-cert"
   project = "${var.project}"
   env     = "${local.env}"
-}
-
-module "http_server" {
-  source  = "../../modules/http_server"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
-
-module "firewall" {
-  source  = "../../modules/firewall"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
 }

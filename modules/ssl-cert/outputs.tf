@@ -13,6 +13,6 @@
 # limitations under the License.
 
 
-output "firewall_rule" {
-  value = "${google_compute_firewall.allow-http.name}"
+output "IP-ingress" {
+  value = "${google_compute_address.IP-ingress}"
 }
