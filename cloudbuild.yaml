@@ -20,11 +20,11 @@ steps:
   args: 
   - '-c'
   - |
-      if [ $_ENV == $_ENV_TYPE ]; then
+      if [ $_PLAN_ENV == $_PLAN_IN ]; then
         cd dev/terraform
         terraform init
       fi
-      if [ $_ENV == $_ENV_TYPE ]; then
+      if [ $_PLAN_ENV == $_PLAN_IN ]; then
         cd prod/terraform
         terraform init
       fi
@@ -35,11 +35,11 @@ steps:
   args: 
   - '-c'
   - |
-      if [ $_ENV == $_ENV_TYPE ]; then
+      if [ $_PLAN_ENV == $_PLAN_IN ]; then
         cd dev/terraform
         terraform plan
       fi
-      if [ $_ENV == $_ENV_TYPE ]; then
+      if [ $_PLAN_ENV == $_PLAN_IN ]; then
         cd prod/terraform
         terraform plan
       fi
@@ -52,15 +52,14 @@ steps:
   - |
       if [ $_PUSH_ENV == $_APPLY_IN ]; then
         cd dev/terraform
-        terraform apply
+        terraform apply -auto-approve
       fi
       if [ $_PUSH_ENV == $_APPLY_IN ]; then
         cd prod/terraform
-        terraform apply
+        terraform apply -auto-approve
       fi
 
 substitutions:
-  _ENV_TYPE: "DEV"
+  _PLAN_IN: "DEV"
   _APPLY_IN: "DEV"
-   
   
