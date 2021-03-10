@@ -14,27 +14,41 @@
 
 
 steps:  
-  - id: 'tf init'
-    name: 'hashicorp/terraform:0.14.6'
-    entrypoint: 'sh'
-    dir: 'dev/terraform'
-    args: 
-    - '-c'
-    - |
-        echo "DEV"
+- id: 'tf init'
+  name: 'hashicorp/terraform:0.14.6'
+  entrypoint: 'sh'
+  #dir: 'dev/terraform'
+  # args: 
+  # - '-c'
+  # - |
+  #     echo "DEV"
+  #     terraform init
+  args: 
+  - '-c'
+  - |
+      if [ $_ENV == $_ENV_TYPE ]; then
+        cd dev/terraform
         terraform init
-  
-  # [START tf-plan]
-  - id: 'tf plan'
-    name: 'hashicorp/terraform:0.14.6'
-    entrypoint: 'sh'
-    dir: 'dev/terraform'
-    args: 
-    - '-c'
-    - | 
-        terraform plan
-    tags:
-    - 'dev'
+      fi
+      if [ $_ENV == $_ENV_TYPE ]; then
+        cd prod/terraform
+        terraform init
+      fi
+
+# # [START tf-plan]
+# - id: 'tf plan'
+#   name: 'hashicorp/terraform:0.14.6'
+#   entrypoint: 'sh'
+#   #dir: 'dev/terraform'
+#   args: 
+#   - '-c'
+#   - | 
+#       terraform plan
+
+
+substitutions:
+  _ENV_TYPE: "DEV"
+
   # [END tf-plan]
 
 
