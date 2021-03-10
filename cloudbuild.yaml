@@ -17,32 +17,35 @@ steps:
   - id: 'tf init'
     name: 'hashicorp/terraform:0.14.6'
     entrypoint: 'sh'
-    dir: 'prod/terraform'
+    dir: 'dev/terraform'
     args: 
     - '-c'
     - |
-        echo "PROD"
+        echo "DEV"
         terraform init
   
   # [START tf-plan]
   - id: 'tf plan'
     name: 'hashicorp/terraform:0.14.6'
     entrypoint: 'sh'
-    dir: 'prod/terraform'
+    dir: 'dev/terraform'
     args: 
     - '-c'
     - | 
         terraform plan
   # [END tf-plan]
+
+tags:
+- 'dev'
   
   # [START tf-apply]
-  - id: 'tf apply'
-    name: 'hashicorp/terraform:0.14.6'
-    entrypoint: 'sh'
-    dir: 'prod/terraform'
-    args: 
-    - '-c'
-    - |     
-        terraform apply -auto-approve
+  # - id: 'tf apply'
+  #   name: 'hashicorp/terraform:0.14.6'
+  #   entrypoint: 'sh'
+  #   dir: 'dev/terraform'
+  #   args: 
+  #   - '-c'
+  #   - |     
+  #       terraform apply -auto-approve
   # [END tf-apply]      
   
