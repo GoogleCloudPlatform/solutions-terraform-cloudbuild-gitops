@@ -33,6 +33,8 @@ steps:
 - id: 'tf plan'
   name: 'hashicorp/terraform:0.14.6'
   entrypoint: 'sh'
+  args: 
+  - '-c'
   - |
       if [ $_ENV == $_ENV_TYPE ]; then
         cd dev/terraform
