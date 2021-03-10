@@ -52,11 +52,11 @@ steps:
   - |
       if [ $_PUSH_ENV == $_APPLY_IN ]; then
         cd dev/terraform
-        terraform plan
+        terraform apply
       fi
       if [ $_PUSH_ENV == $_APPLY_IN ]; then
         cd prod/terraform
-        terraform plan
+        terraform apply
       fi
 
 substitutions:
