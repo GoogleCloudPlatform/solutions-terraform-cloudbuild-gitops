@@ -33,10 +33,12 @@ steps:
     - '-c'
     - | 
         terraform plan
+    tags:
+    - 'dev'
   # [END tf-plan]
 
-tags:
-- 'dev'
+
+
   
   # [START tf-apply]
   # - id: 'tf apply'
