@@ -29,7 +29,6 @@ steps:
         terraform init
       fi
 
-# [START tf-plan]
 - id: 'tf plan'
   name: 'hashicorp/terraform:0.14.6'
   entrypoint: 'sh'
@@ -45,23 +44,23 @@ steps:
         terraform plan
       fi
 
+- id: 'tf apply'
+  name: 'hashicorp/terraform:0.14.6'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - |
+      if [ $_PUSH_ENV == $_APPLY_IN ]; then
+        cd dev/terraform
+        terraform plan
+      fi
+      if [ $_PUSH_ENV == $_APPLY_IN ]; then
+        cd prod/terraform
+        terraform plan
+      fi
 
 substitutions:
   _ENV_TYPE: "DEV"
-
-  # [END tf-plan]
-
-
-
-  
-  # [START tf-apply]
-  # - id: 'tf apply'
-  #   name: 'hashicorp/terraform:0.14.6'
-  #   entrypoint: 'sh'
-  #   dir: 'dev/terraform'
-  #   args: 
-  #   - '-c'
-  #   - |     
-  #       terraform apply -auto-approve
-  # [END tf-apply]      
+  _APPLY_IN: "DEV"
+   
   
