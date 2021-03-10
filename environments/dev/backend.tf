@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "iverona-f0cas-20210312-tfstate"
     prefix = "env/dev"
   }
 }
