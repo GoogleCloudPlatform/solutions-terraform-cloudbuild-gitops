@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "custom-jupyter-notebook-tfstate"
     prefix = "env/dev"
   }
 }
