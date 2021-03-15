@@ -50,15 +50,15 @@ steps:
   args: 
   - '-c'
   - |
-      if [ $_PUSH_ENV == $_APPLY_IN ]; then
+      if [ $_PLAN_ENV == $_PLAN_IN and $_PUSH_ENV == $_APPLY_IN ]; then
         cd dev/terraform
         terraform apply -auto-approve
       fi
-      if [ $_PUSH_ENV == $_APPLY_IN ]; then
+      if [ $_PLAN_ENV == $_PLAN_IN and $_PUSH_ENV == $_APPLY_IN ]; then
         cd prod/terraform
         terraform apply -auto-approve
       fi
 
 substitutions:
-  _PLAN_IN: "DEV"
-  _APPLY_IN: "DEV"
+  _PLAN_IN: "PROD"
+  _APPLY_IN: "PROD"
