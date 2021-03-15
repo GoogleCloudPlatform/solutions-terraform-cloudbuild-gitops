@@ -60,5 +60,5 @@ steps:
       fi
 
 substitutions:
-  _PLAN_IN: "PROD"
-  _APPLY_IN: "PROD"
+  _PLAN_IN: "DEV"
+  _APPLY_IN: "DEV"
