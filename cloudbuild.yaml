@@ -20,11 +20,11 @@ steps:
   args: 
   - '-c'
   - |
-      if [ $_PLAN_ENV == $_PLAN_IN ]; then
+      if [ $_DEV_PLAN == $_PLAN_IN ]; then
         cd dev/terraform
         terraform init
       fi
-      if [ $_PLAN_ENV == $_PLAN_IN ]; then
+      if [ $_PROD_PLAN == $_PLAN_IN ]; then
         cd prod/terraform
         terraform init
       fi
@@ -35,11 +35,11 @@ steps:
   args: 
   - '-c'
   - |
-      if [ $_PLAN_ENV == $_PLAN_IN ]; then
+      if [ $_DEV_PLAN == $_PLAN_IN ]; then
         cd dev/terraform
         terraform plan
       fi
-      if [ $_PLAN_ENV == $_PLAN_IN ]; then
+      if [ $_PROD_PLAN == $_PLAN_IN ]; then
         cd prod/terraform
         terraform plan
       fi
@@ -50,11 +50,11 @@ steps:
   args: 
   - '-c'
   - |
-      if [ $_PLAN_ENV == $_PLAN_IN ] && [ $_PUSH_ENV == $_APPLY_IN ]; then
+      if [ $_DEV_PLAN == $_PLAN_IN ] && [ $_DEV_APPLY == $_APPLY_IN ]; then
         cd dev/terraform
         terraform apply -auto-approve
       fi
-      if [ $_PLAN_ENV == $_PLAN_IN ] && [ $_PUSH_ENV == $_APPLY_IN ]; then
+      if [ $_PROD_PLAN == $_PLAN_IN ] && [ $_PROD_APPLY == $_APPLY_IN ]; then
         cd prod/terraform
         terraform apply -auto-approve
       fi
