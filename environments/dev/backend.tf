@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "acn-modernization-with-cloud-tfstate"
     prefix = "env/dev"
   }
 }
