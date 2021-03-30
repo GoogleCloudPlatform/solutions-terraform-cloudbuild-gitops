@@ -12,23 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-output "network" {
-  value = "${module.vpc.network}"
+locals {
+  env = "dev"
 }
 
-output "subnet" {
-  value = "${module.vpc.subnet}"
+
+provider "google" {
+  project = "${var.project}"
 }
 
-output "firewall_rule" {
-  value = "${module.firewall.firewall_rule}"
-}
-
-output "instance_name" {
-  value = "${module.http_server.instance_name}"
-}
-
-output "external_ip" {
-  value = "${module.http_server.external_ip}"
-}
