@@ -16,6 +16,6 @@
 terraform {
   backend "gcs" {
     bucket = "sandbox-1-308009-tfstate"
-    prefix = var.prefix
+    prefix = "env/sbx"
   }
 }
