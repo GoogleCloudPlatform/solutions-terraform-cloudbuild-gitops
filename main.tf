@@ -27,7 +27,7 @@ resource "google_project_iam_member" "project_viewer" {
   member  = "user:zuzanna.dylegowska@flyonthecloud.com"
 }
 
-resource "google_project_iam_member" "project_viewer" {
+resource "google_project_iam_member" "project_bq_user" {
   project = var.project
   role    = "roles/bigquery.user"
   member  = "user:zuzanna.dylegowska@flyonthecloud.com"
