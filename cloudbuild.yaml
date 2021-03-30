@@ -17,12 +17,12 @@ steps:
 
 - id: 'tf init'
   name: 'hashicorp/terraform:0.14.9'
-  entrypoint: 'sh'
+  # entrypoint: 'sh'
   args: 
-  - '-c'
+  # - '-c'
   # - do
   #   echo "*************** TERRAFORM INIT ******************"
-  - terraform init
+  - init
   #   done
 
 # [START tf-plan]
@@ -31,24 +31,8 @@ steps:
   entrypoint: 'sh'
   args: 
   - '-c'
-  - | 
-      if [ -d "environments/$BRANCH_NAME/" ]; then
-        cd environments/$BRANCH_NAME
-        terraform plan
-      else
-        for dir in environments/*/
-        do 
-          cd ${dir}   
-          env=${dir%*/}
-          env=${env#*/}  
-          echo ""
-          echo "*************** TERRAFOM PLAN ******************"
-          echo "******* At environment: ${env} ********"
-          echo "*************************************************"
-          terraform plan || exit 1
-          cd ../../
-        done
-      fi 
+  - terraform plan
+
 # [END tf-plan]
 
 # [START tf-apply]
@@ -57,13 +41,6 @@ steps:
   entrypoint: 'sh'
   args: 
   - '-c'
-  - | 
-      if [ -d "environments/$BRANCH_NAME/" ]; then
-        cd environments/$BRANCH_NAME      
-        terraform apply -auto-approve
-      else
-        echo "***************************** SKIPPING APPLYING *******************************"
-        echo "Branch '$BRANCH_NAME' does not represent an oficial environment."
-        echo "*******************************************************************************"
-      fi
+  - terraform apply -auto-approve
+
 # [END tf-apply]      
