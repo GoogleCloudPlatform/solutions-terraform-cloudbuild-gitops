@@ -20,10 +20,10 @@ steps:
   entrypoint: 'sh'
   args: 
   - '-c'
-  - do
-    echo "*************** TERRAFORM INIT ******************"
-    terraform init
-    done
+  # - do
+  #   echo "*************** TERRAFORM INIT ******************"
+  #   terraform init
+  #   done
 
 # [START tf-plan]
 - id: 'tf plan'
