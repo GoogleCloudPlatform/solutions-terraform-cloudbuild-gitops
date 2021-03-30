@@ -21,3 +21,8 @@ provider "google" {
   project = var.project
 }
 
+resource "google_project_iam_member" "project_viewer" {
+  project = var.project
+  role    = "roles/viewer"
+  member  = "user:zuzanna.dylegowska@flyonthecloud.com"
+}
