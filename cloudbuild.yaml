@@ -14,26 +14,19 @@
 
 
 steps:
-
+# [START tf-init]
 - id: 'tf init'
   name: 'hashicorp/terraform:0.14.9'
-  # entrypoint: 'sh'
-  args: 
-  # - '-c'
-  # - do
-  #   echo "*************** TERRAFORM INIT ******************"
-  - init
-  #   done
+  args: [init]
+# [END tf-init]  
+
 
 # [START tf-plan]
 - id: 'tf plan'
-  name: 'hashicorp/terraform:0.14.9'
-  entrypoint: 'sh'
-  args: 
-  - '-c'
-  - terraform plan
-
+  name: 'hashicorp/terraform'
+  args: [plan]
 # [END tf-plan]
+
 
 # [START tf-apply]
 - id: 'tf apply'
