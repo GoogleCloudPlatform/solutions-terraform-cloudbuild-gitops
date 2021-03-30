@@ -22,7 +22,7 @@ steps:
   - '-c'
   # - do
   #   echo "*************** TERRAFORM INIT ******************"
-  #   terraform init
+  - terraform init
   #   done
 
 # [START tf-plan]
