@@ -21,7 +21,7 @@ steps:
   args: 
   - '-c'
   - echo "*************** TERRAFORM INIT ******************"
-    terraform init
+  - terraform init
 
 # [START tf-plan]
 - id: 'tf plan'
