@@ -14,4 +14,4 @@
 
 
 variable "project" {}
-variable "subnet" {}
+variable "prefix" {}

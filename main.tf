@@ -12,6 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+locals {
+  env = "dev"
+}
 
-variable "project" {}
-variable "subnet" {}
+
+provider "google" {
+  project = var.project
+}
+
+resource "google_project_iam_member" "project_viewer" {
+  project = var.project
+  role    = "roles/viewer"
+  member  = "user:zuzanna.dylegowska@flyonthecloud.com"
+}
