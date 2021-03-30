@@ -23,7 +23,7 @@ steps:
 
 # [START tf-plan]
 - id: 'tf plan'
-  name: 'hashicorp/terraform'
+  name: 'hashicorp/terraform:0.14.9'
   args: [plan]
 # [END tf-plan]
 
@@ -31,9 +31,5 @@ steps:
 # [START tf-apply]
 - id: 'tf apply'
   name: 'hashicorp/terraform:0.14.9'
-  entrypoint: 'sh'
-  args: 
-  - '-c'
-  - terraform apply -auto-approve
-
+  args: [apply]
 # [END tf-apply]      
