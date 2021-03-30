@@ -14,4 +14,4 @@
 
 
 variable "project" {}
-variable "previx" {}
+variable "prefix" {}
