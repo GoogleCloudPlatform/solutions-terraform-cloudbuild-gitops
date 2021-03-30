@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "sandbox-1-308009-tfstate"
     prefix = var.prefix
   }
 }
