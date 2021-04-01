@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "caseytin-sandbox-pso-tfstate"
     prefix = "env/prod"
   }
 }
