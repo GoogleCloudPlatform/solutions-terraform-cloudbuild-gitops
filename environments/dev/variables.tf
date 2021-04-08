@@ -23,6 +23,7 @@ variable "project_id" {
 variable "bucket_name" {
   description = "GCS Bucket name. Value should be unique ."
   type        = string
+  default = "my-dataops-bucket-123"
 }
 
 variable "region" {
