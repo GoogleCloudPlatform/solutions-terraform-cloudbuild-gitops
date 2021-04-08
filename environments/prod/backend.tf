@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "mhanline-sand07-tfstate"
     prefix = "env/prod"
   }
 }
