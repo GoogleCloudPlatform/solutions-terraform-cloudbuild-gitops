@@ -1,0 +1,18 @@
+[
+    {
+        "name": "datehour",
+        "type": "TIMESTAMP"
+    },
+    {
+        "name": "wiki",
+        "type": "STRING"
+    },
+    {
+        "name": "title",
+        "type": "STRING"
+    },
+    {
+        "name": "views",
+        "type": "INTEGER"
+    }
+]
