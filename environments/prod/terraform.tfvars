@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="my-first-project-310908"
