@@ -12,15 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+data "google_compute_image" "vmimage" {
+  family  = "ubuntu-minimal-2004"
+  project = "ubuntu-os-cloud"
+}
+
 resource "google_compute_instance" "cosas_vm" {
   name         = "cosasvm01"
   machine_type = "f1-micro"
   project      = var.project
   zone         = var.zone
 
+  metadata_startup_script = file("${path.module}/scripts/provision.sh")
+
   boot_disk {
     initialize_params {
-      image = "ubuntu-minimal-2004-lts"
+      image = data.google_compute_image.vmimage.self_link
     }
   }
 
