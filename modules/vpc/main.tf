@@ -12,13 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 module "vpc" {
   source  = "terraform-google-modules/network/google"
-  version = "0.6.0"
+  version = "~> 3.0"
 
-  project_id   = "${var.project}"
-  network_name = "${var.env}"
+  project_id   = var.project
+  network_name = var.env
 
   subnets = [
     {

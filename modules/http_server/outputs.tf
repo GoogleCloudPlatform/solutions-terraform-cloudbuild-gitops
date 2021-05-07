@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 output "instance_name" {
   value = "${google_compute_instance.http_server.name}"
 }
