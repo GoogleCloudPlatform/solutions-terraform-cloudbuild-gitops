@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="cicd-test-312910"
