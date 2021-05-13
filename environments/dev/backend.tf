@@ -13,8 +13,6 @@
 # limitations under the License.
 
 
-
-
 terraform {
   backend "gcs" {
     bucket = "PROJECT_ID-tfstate"
