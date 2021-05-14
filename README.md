@@ -30,5 +30,3 @@ terraform apply
 terraform destroy
 ```
 
-***SBA EDIT***
-***MAB EDIT***
