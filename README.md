@@ -29,10 +29,3 @@ terraform plan
 terraform apply
 terraform destroy
 ```
-
-
-
-
-## MAB Last
-## Next test!
-## And last test!
