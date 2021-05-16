@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="staking-dev-313416"
