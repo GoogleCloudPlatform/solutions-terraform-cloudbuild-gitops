@@ -30,11 +30,3 @@ terraform apply
 terraform destroy
 ```
 
-
-
-
-## MAB Last
-## Next test!
-## And last test!
-
-## SBA change VSCode via cloud shell
