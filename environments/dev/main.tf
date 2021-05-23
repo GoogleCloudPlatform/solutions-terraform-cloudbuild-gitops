@@ -12,29 +12,51 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#
+#locals {
+#  "env" = "dev"
+#}
+#
+#provider "google" {
+#  project = "${var.project}"
+#}
+#
+#module "vpc" {
+#  source  = "../../modules/vpc"
+#  project = "${var.project}"
+#  env     = "${local.env}"
+#}
+#
+#module "http_server" {
+#  source  = "../../modules/http_server"
+#  project = "${var.project}"
+#  subnet  = "${module.vpc.subnet}"
+#}
+#
+#module "firewall" {
+#  source  = "../../modules/firewall"
+#  project = "${var.project}"
+#  subnet  = "${module.vpc.subnet}"
+#}
 
 locals {
-  "env" = "dev"
+  env = "dev"
+  project_id = "cloudbuild-trigger"
 }
 
 provider "google" {
-  project = "${var.project}"
+  version = "3.5.0"
+  credentials = file("/downloads/instance.json")
+  project = locals.project_id
+  region  = "us-central1"
+  zone    = "us-central1-c"
 }
-
-module "vpc" {
-  source  = "../../modules/vpc"
-  project = "${var.project}"
-  env     = "${local.env}"
+resource "google_compute_network" "vpc_network" {
+  name = "terraform-network"
 }
-
-module "http_server" {
-  source  = "../../modules/http_server"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
-
-module "firewall" {
-  source  = "../../modules/firewall"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
+resource "google_compute_subnetwork" "public-subnetwork" {
+  name          = "terraform-subnetwork"
+  ip_cidr_range = "10.2.0.0/16"
+  region        = "us-central1"
+  network       = google_compute_network.vpc_network.name
 }
