@@ -41,7 +41,7 @@
 
 locals {
   env = "prod"
-  project_id = "cloudbuild-trigger"
+  project_id = "cloud-build-prod"
 }
 
 provider "google" {
