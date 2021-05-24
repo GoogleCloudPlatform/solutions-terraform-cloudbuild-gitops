@@ -1,1 +1,1 @@
-project="gcp-prj-01-309214"
+project="cloudbuild-trigger"

@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "gcp-prj-01-309214-tfstate"
+    bucket = "cloudbuild-trigger-tfstate"
     prefix = "env/dev"
   }
 }
