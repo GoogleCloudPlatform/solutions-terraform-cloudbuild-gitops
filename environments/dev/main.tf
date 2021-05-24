@@ -62,39 +62,3 @@ resource "google_compute_subnetwork" "public-subnetwork" {
   region        = "us-central1"
   network       = google_compute_network.vpc_network.id
 }
-
-resource "google_cloudbuild_trigger" "nonmaster_trigger" {
-  #for_each = toset(var.github_repos)
-  provider = google-beta
-  project     = local.project_id
-  description = "terraform plan on push to non-master."
-
-  github {
-    name  = "solutions-terraform-cloudbuild-gitops"
-    owner = "kumaraswami"
-
-    push {
-      branch = "dev"
-    }
-
-    #pull_request {
-     # branch          = "dev"
-     # comment_control = "COMMENTS_ENABLED"
-    #}
-  }
-
-  substitutions = {
-    #_ORG_ID               = var.org_id
-    _BILLING_ID           = "019E78-7206AF-CDB24B"
-    _DEFAULT_REGION       = local.region
-    _TF_SA_EMAIL          = "238064600662@cloudbuild.gserviceaccount.com"
-    _STATE_BUCKET_NAME    = "cloudbuild-trigger-tfstate"
-    _ARTIFACT_BUCKET_NAME = "cloudbuild-trigger-artifacts"
-    _SEED_PROJECT_ID      = local.project_id
-    _TF_ACTION            = "plan"
-  }
-
-  filename = "cloudbuild.yaml"
-  
-
-}
