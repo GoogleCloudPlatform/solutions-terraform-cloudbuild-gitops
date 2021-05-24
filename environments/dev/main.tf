@@ -73,14 +73,14 @@ resource "google_cloudbuild_trigger" "nonmaster_trigger" {
     name  = "solutions-terraform-cloudbuild-gitops"
     owner = "kumaraswami"
 
-    #push {
-    #  branch = ".*"
-    #}
-
-    pull_request {
-      branch          = "dev"
-      comment_control = "COMMENTS_ENABLED"
+    push {
+      branch = "dev"
     }
+
+    #pull_request {
+     # branch          = "dev"
+     # comment_control = "COMMENTS_ENABLED"
+    #}
   }
 
   substitutions = {
