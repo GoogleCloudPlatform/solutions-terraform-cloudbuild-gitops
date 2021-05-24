@@ -42,6 +42,7 @@
 locals {
   env = "dev"
   project_id = "cloudbuild-trigger"
+  region  = "us-central1"
 }
 
 provider "google" {
