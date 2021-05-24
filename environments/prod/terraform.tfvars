@@ -1,1 +1,1 @@
-project="cloudbuild-trigger"
+project="cloud-build-prod"
