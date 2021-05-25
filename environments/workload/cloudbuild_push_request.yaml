@@ -93,7 +93,7 @@ steps:
               echo "*************** TERRAFORM APPLY ******************"
               echo "******* At environment: ${dir}${env} *************"
               echo "*************************************************"
-              terraform apply -auto-aprove || exit 1
+              terraform apply -auto-approve || exit 1
               cd -
             fi
          cd ../ 
