@@ -16,6 +16,6 @@
 terraform {
   backend "gcs" {
     bucket = "tf-environments"
-    prefix = "terraform/state/cloud-foundations/dev"
+    prefix = "terraform/state/workload/dev"
   }
 }
