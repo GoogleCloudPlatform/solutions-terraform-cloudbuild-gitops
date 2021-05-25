@@ -54,7 +54,7 @@ steps:
           cd ../ 
         done
 
-- id: 'tf apply'
+- id: 'tf plan'
   name: hashicorp/terraform:0.15.3
   dir: 'environments'
   entrypoint: 'sh'
