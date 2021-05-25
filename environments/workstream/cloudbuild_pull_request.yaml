@@ -17,12 +17,13 @@ timeout: 1200s
 steps:
 - id: 'tf init'
   name: hashicorp/terraform:0.15.3
-  dir: 'environments/workstream/dev/'
+  dir: '.'
+  entrypoint: 'sh'
   args: 
   - '-c'
   - |
       
-        for dir in environments/workstream/*/
+        for dir in $(ls -d */);
         do 
           cd ${dir}   
           env=${dir%*/}
@@ -37,12 +38,13 @@ steps:
   
 - id: 'tf validate'
   name: hashicorp/terraform:0.15.3
-  dir: 'environments/workstream/dev/'
+  dir: '.'
+  entrypoint: 'sh'
   args: 
   - '-c'
   - |
       
-        for dir in environments/workstream/*/
+        for dir in $(ls -d */);
         do 
           cd ${dir}   
           env=${dir%*/}
@@ -56,13 +58,13 @@ steps:
         done
 - id: 'tf plan'
   name: hashicorp/terraform:0.15.3
-  args:
-  dir: 'environments/workstream/dev/'
+  dir: '.'
+  entrypoint: 'sh'
   args: 
   - '-c'
   - |
       
-        for dir in environments/workstream/*/
+        for dir in $(ls -d */);
         do 
           cd ${dir}   
           env=${dir%*/}
@@ -71,10 +73,32 @@ steps:
           echo "*************** TERRAFORM INIT ******************"
           echo "******* At environment: ${env} ********"
           echo "*************************************************"
-          terraform plan -input=false || exit 1
+          terraform plan -input=false  || exit 1
           cd -
         done
-artifacts:
-  objects:
-    location: 'gs://${_ARTIFACT_BUCKET_NAME}/terraform/cloudbuild/plan/$BUILD_ID'
-    paths: ['cloudbuild_pull_request.yaml', 'tfplan']
+#- id: 'tf plan'
+#  name: hashicorp/terraform:0.15.3
+#  dir: '.'
+#  entrypoint: 'sh'
+#  args: 
+#  - '-c'
+#  - |
+      
+#        for dir in $(ls -d */);
+#        do 
+#          cd ${dir}   
+#          env=${dir%*/}
+#          env=${env#*/}
+#          echo ""
+#          echo "*************** TERRAFORM INIT ******************"
+#          echo "******* At environment: ${env} ********"
+#          echo "*************************************************"
+#          terraform plan \
+#              -input=false \
+#              -out="./${BUILD_ID}_${PROJECT_NUMBER}.plan" || exit 1
+#          cd -
+#        done
+#artifacts:
+#  objects:
+#    location: 'gs://cloudbuild_artifacts_gcs/terraform/cloudbuild/plan/$BUILD_ID'
+#    paths: ['cloudbuild_pull_request.yaml', 'tfplan']
