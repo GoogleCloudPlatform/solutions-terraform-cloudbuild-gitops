@@ -17,7 +17,7 @@ timeout: 1200s
 steps:
 - id: 'tf init'
   name: hashicorp/terraform:0.15.3
-  dir: 'environments/workstream'
+  dir: 'environments/'
   entrypoint: 'sh'
   args: 
   - '-c'
@@ -25,80 +25,17 @@ steps:
       
         for dir in $(ls -d */);
         do 
-          cd ${dir}   
-          env=${dir%*/}
-          env=${env#*/}
-          echo ""
-          echo "*************** TERRAFORM INIT ******************"
-          echo "******* At environment: ${env} ********"
-          echo "*************************************************"
-          terraform init || exit 1
-          cd -
+          cd ${dir}
+          for folder in $(ls -d */);
+            cd ${folder}
+            env=${folder%*/}
+            env=${env#*/}
+            echo ""
+            echo "*************** TERRAFORM INIT ******************"
+            echo "******* At environment: ${env} ********"
+            echo "*************************************************"
+            terraform init || exit 1
+            cd -
+           done
+          cd ../ 
         done
-  
-- id: 'tf validate'
-  name: hashicorp/terraform:0.15.3
-  dir: 'environments/workstream'
-  entrypoint: 'sh'
-  args: 
-  - '-c'
-  - |
-      
-        for dir in $(ls -d */);
-        do 
-          cd ${dir}   
-          env=${dir%*/}
-          env=${env#*/}
-          echo ""
-          echo "*************** TERRAFORM INIT ******************"
-          echo "******* At environment: ${env} ********"
-          echo "*************************************************"
-          terraform validate || exit 1
-          cd -
-        done
-- id: 'tf plan'
-  name: hashicorp/terraform:0.15.3
-  dir: 'environments/workstream'
-  entrypoint: 'sh'
-  args: 
-  - '-c'
-  - |
-      
-        for dir in $(ls -d */);
-        do 
-          cd ${dir}   
-          env=${dir%*/}
-          env=${env#*/}
-          echo ""
-          echo "*************** TERRAFORM INIT ******************"
-          echo "******* At environment: ${env} ********"
-          echo "*************************************************"
-          terraform plan -input=false  || exit 1
-          cd -
-        done
-#- id: 'tf plan'
-#  name: hashicorp/terraform:0.15.3
-#  dir: '.'
-#  entrypoint: 'sh'
-#  args: 
-#  - '-c'
-#  - |
-      
-#        for dir in $(ls -d */);
-#        do 
-#          cd ${dir}   
-#          env=${dir%*/}
-#          env=${env#*/}
-#          echo ""
-#          echo "*************** TERRAFORM INIT ******************"
-#          echo "******* At environment: ${env} ********"
-#          echo "*************************************************"
-#          terraform plan \
-#              -input=false \
-#              -out="./${BUILD_ID}_${PROJECT_NUMBER}.plan" || exit 1
-#          cd -
-#        done
-#artifacts:
-#  objects:
-#    location: 'gs://cloudbuild_artifacts_gcs/terraform/cloudbuild/plan/$BUILD_ID'
-#    paths: ['cloudbuild_pull_request.yaml', 'tfplan']
