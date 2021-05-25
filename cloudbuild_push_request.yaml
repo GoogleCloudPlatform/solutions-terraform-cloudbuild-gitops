@@ -41,12 +41,12 @@ steps:
         done
         
  - id: 'tf validate'
-  name: hashicorp/terraform:0.15.3
-  dir: 'environments/workstream'
-  entrypoint: 'sh'
-  args: 
-  - '-c'
-  - |
+   name: hashicorp/terraform:0.15.3
+   dir: 'environments/workstream'
+   entrypoint: 'sh'
+   args: 
+   - '-c'
+   - |
       
         for dir in $(ls -d */);
         do 
