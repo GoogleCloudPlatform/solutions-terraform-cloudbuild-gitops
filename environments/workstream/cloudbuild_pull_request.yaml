@@ -42,7 +42,7 @@ steps:
               env=${env#*/}
               echo ""
               echo "*************** TERRAFORM INIT ******************"
-              echo "******* At environment: ${dir}${env} *************"
+              echo "******* At environment: ${dir}${env} ************"
               echo "*************************************************"
               terraform init || exit 1
               cd -
