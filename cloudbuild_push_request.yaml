@@ -17,7 +17,7 @@ steps:
             env=${env#*/}
             echo ""
             echo "*************** TERRAFORM INIT ******************"
-            echo "******* At environment: ${dir}/${env} ********"
+            echo "******* At environment: ${dir} ${env} ********"
             echo "*************************************************"
             terraform init || exit 1
             cd -
@@ -27,7 +27,7 @@ steps:
   
 - id: 'tf validate'
   name: hashicorp/terraform:0.15.3
-  dir: 'environments/workstream'
+  dir: 'environments'
   entrypoint: 'sh'
   args: 
   - '-c'
@@ -42,7 +42,7 @@ steps:
             env=${env#*/}
             echo ""
             echo "*************** TERRAFORM INIT ******************"
-            echo "******* At environment: ${dir}/${env} ********"
+            echo "******* At environment: ${dir} ${env} ********"
             echo "*************************************************"
             terraform init || exit 1
             cd -
@@ -52,7 +52,7 @@ steps:
 
 - id: 'tf apply'
   name: hashicorp/terraform:0.15.3
-  dir: 'environments/workstream'
+  dir: 'environments'
   entrypoint: 'sh'
   args: 
   - '-c'
@@ -67,7 +67,7 @@ steps:
             env=${env#*/}
             echo ""
             echo "*************** TERRAFORM INIT ******************"
-            echo "******* At environment: ${dir}/${env} ********"
+            echo "******* At environment: ${dir} ${env} ********"
             echo "*************************************************"
             terraform init || exit 1
             cd -
