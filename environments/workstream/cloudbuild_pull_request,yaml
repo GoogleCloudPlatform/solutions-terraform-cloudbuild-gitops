@@ -15,8 +15,8 @@
 
 timeout: 1200s
 steps:
-# terraform init -input=false
-- name: hashicorp/terraform:0.15.3
+- id: 'tf init'
+  name: hashicorp/terraform:0.15.3
   dir: 'environments/workstream/dev/'
   args: 
   - '-c'
@@ -35,8 +35,8 @@ steps:
           cd -
         done
   
-# terraform validate
-- name: hashicorp/terraform:0.15.3
+- id: 'tf validate'
+  name: hashicorp/terraform:0.15.3
   dir: 'environments/workstream/dev/'
   args: 
   - '-c'
@@ -54,8 +54,8 @@ steps:
           terraform validate || exit 1
           cd -
         done
-# terraform plan -input=false -out=tfplan
-- name: hashicorp/terraform:0.15.3
+- id: 'tf plan'
+  name: hashicorp/terraform:0.15.3
   args:
   dir: 'environments/workstream/dev/'
   args: 
