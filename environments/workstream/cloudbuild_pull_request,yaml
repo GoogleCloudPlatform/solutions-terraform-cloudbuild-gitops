@@ -17,19 +17,63 @@ timeout: 1200s
 steps:
 # terraform init -input=false
 - name: hashicorp/terraform:0.15.3
-  args:
-  - init
-  - -input=false
+  dir: 'environments/workstream/dev/'
+  args: 
+  - '-c'
+  - |
+      
+        for dir in environments/workstream/*/
+        do 
+          cd ${dir}   
+          env=${dir%*/}
+          env=${env#*/}
+          echo ""
+          echo "*************** TERRAFORM INIT ******************"
+          echo "******* At environment: ${env} ********"
+          echo "*************************************************"
+          terraform init || exit 1
+          cd -
+        done
+  
 # terraform validate
 - name: hashicorp/terraform:0.15.3
-  args:
-  - validate
+  dir: 'environments/workstream/dev/'
+  args: 
+  - '-c'
+  - |
+      
+        for dir in environments/workstream/*/
+        do 
+          cd ${dir}   
+          env=${dir%*/}
+          env=${env#*/}
+          echo ""
+          echo "*************** TERRAFORM INIT ******************"
+          echo "******* At environment: ${env} ********"
+          echo "*************************************************"
+          terraform validate || exit 1
+          cd -
+        done
 # terraform plan -input=false -out=tfplan
 - name: hashicorp/terraform:0.15.3
   args:
-  - plan
-  - -input=false
-  - -out=tfplan
+  dir: 'environments/workstream/dev/'
+  args: 
+  - '-c'
+  - |
+      
+        for dir in environments/workstream/*/
+        do 
+          cd ${dir}   
+          env=${dir%*/}
+          env=${env#*/}
+          echo ""
+          echo "*************** TERRAFORM INIT ******************"
+          echo "******* At environment: ${env} ********"
+          echo "*************************************************"
+          terraform plan -input=false || exit 1
+          cd -
+        done
 artifacts:
   objects:
     location: 'gs://${_ARTIFACT_BUCKET_NAME}/terraform/cloudbuild/plan/$BUILD_ID'
