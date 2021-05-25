@@ -1,11 +1,13 @@
 # [START tf-apply]
-- id: 'tf apply'
-  name: 'hashicorp/terraform:0.15.3'
+steps:
+- id: 'tf init'
+  name: hashicorp/terraform:0.15.3
   dir: 'environments/workstream'
   entrypoint: 'sh'
   args: 
   - '-c'
-  - | 
+  - |
+      
         for dir in $(ls -d */);
         do 
           cd ${dir}   
@@ -15,8 +17,8 @@
           echo "*************** TERRAFORM INIT ******************"
           echo "******* At environment: ${env} ********"
           echo "*************************************************"
-          terraform plan || exit 1
+          terraform init || exit 1
           cd -
         done
-
+        
 # [END tf-apply]  
