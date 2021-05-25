@@ -32,9 +32,34 @@ steps:
             env=${env#*/}
             echo ""
             echo "*************** TERRAFORM INIT ******************"
-            echo "******* At environment: ${env} ********"
+            echo "******* At environment: ${dir}/${env} ********"
             echo "*************************************************"
             terraform init || exit 1
+            cd -
+           done
+          cd ../ 
+        done
+        
+ - id: 'tf validate'
+  name: hashicorp/terraform:0.15.3
+  dir: 'environments/workstream'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - |
+      
+        for dir in $(ls -d */);
+        do 
+          cd ${dir}
+          for folder in $(ls -d */); do
+            cd ${folder}
+            env=${folder%*/}
+            env=${env#*/}
+            echo ""
+            echo "*************** TERRAFORM INIT ******************"
+            echo "******* At environment: ${dir}/${env} ********"
+            echo "*************************************************"
+            terraform validate || exit 1
             cd -
            done
           cd ../ 
