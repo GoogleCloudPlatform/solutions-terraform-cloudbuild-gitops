@@ -17,7 +17,7 @@ timeout: 1200s
 steps:
 - id: 'tf init'
   name: hashicorp/terraform:0.15.3
-  dir: '.'
+  dir: 'environments/workstream'
   entrypoint: 'sh'
   args: 
   - '-c'
@@ -38,7 +38,7 @@ steps:
   
 - id: 'tf validate'
   name: hashicorp/terraform:0.15.3
-  dir: '.'
+  dir: 'environments/workstream'
   entrypoint: 'sh'
   args: 
   - '-c'
@@ -58,7 +58,7 @@ steps:
         done
 - id: 'tf plan'
   name: hashicorp/terraform:0.15.3
-  dir: '.'
+  dir: 'environments/workstream'
   entrypoint: 'sh'
   args: 
   - '-c'
