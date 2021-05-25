@@ -12,7 +12,7 @@ steps:
         do 
           cd ${dir}
           for folder in $(ls -d */); do
-            if [ "$folder" != prod ];then
+            if [ $folder != prod ];then
               cd ${folder}
               env=${folder%*/}
               env=${env#*/}
