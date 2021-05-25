@@ -13,7 +13,7 @@ steps:
           cd ${dir}
           for folder in $(ls -d */); do
             echo "$$$$$$$$$$$$$$$$$$ At environment: ${folder} ************"
-            if [ ${folder} == dev ];then
+            if [ "${folder}" == "dev/" ];then
               cd ${folder}
               env=${folder%*/}
               env=${env#*/}
