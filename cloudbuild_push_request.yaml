@@ -44,7 +44,7 @@ steps:
               env=${folder%*/}
               env=${env#*/}
               echo ""
-              echo "*************** TERRAFORM INIT ******************"
+              echo "*************** TERRAFORM VALIDATE ******************"
               echo "******* At environment: ${dir} ${env} ********"
               echo "*************************************************"
               terraform validate || exit 1
@@ -71,7 +71,7 @@ steps:
               env=${folder%*/}
               env=${env#*/}
               echo ""
-              echo "*************** TERRAFORM INIT ******************"
+              echo "*************** TERRAFORM APPLY ******************"
               echo "******* At environment: ${dir} ${env} ********"
               echo "*************************************************"
               terraform plan || exit 1
