@@ -69,7 +69,7 @@ steps:
             echo "*************** TERRAFORM INIT ******************"
             echo "******* At environment: ${dir} ${env} ********"
             echo "*************************************************"
-            terraform init || exit 1
+            terraform plan || exit 1
             cd -
            done
           cd ../ 
