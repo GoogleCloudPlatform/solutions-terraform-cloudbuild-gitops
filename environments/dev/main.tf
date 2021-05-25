@@ -41,7 +41,7 @@
 
 locals {
   env = "dev"
-  project_id = "atos-cloudbuild-01"
+  project_id = "cbt-01-314805"
   region  = "us-central1"
 }
 
