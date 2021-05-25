@@ -12,15 +12,17 @@ steps:
         do 
           cd ${dir}
           for folder in $(ls -d */); do
-            cd ${folder}
-            env=${folder%*/}
-            env=${env#*/}
-            echo ""
-            echo "*************** TERRAFORM INIT ******************"
-            echo "******* At environment: ${dir} ${env} ********"
-            echo "*************************************************"
-            terraform init || exit 1
-            cd -
+            if [ "$folder" != prod ];then
+              cd ${folder}
+              env=${folder%*/}
+              env=${env#*/}
+              echo ""
+              echo "*************** TERRAFORM INIT ******************"
+              echo "******* At environment: ${dir} ${env} ********"
+              echo "*************************************************"
+              terraform init || exit 1
+              cd -
+            fi
            done
           cd ../ 
         done
@@ -37,15 +39,17 @@ steps:
         do 
           cd ${dir}
           for folder in $(ls -d */); do
-            cd ${folder}
-            env=${folder%*/}
-            env=${env#*/}
-            echo ""
-            echo "*************** TERRAFORM INIT ******************"
-            echo "******* At environment: ${dir} ${env} ********"
-            echo "*************************************************"
-            terraform init || exit 1
-            cd -
+            if [ "$folder" != prod ];then
+              cd ${folder}
+              env=${folder%*/}
+              env=${env#*/}
+              echo ""
+              echo "*************** TERRAFORM INIT ******************"
+              echo "******* At environment: ${dir} ${env} ********"
+              echo "*************************************************"
+              terraform init || exit 1
+              cd -
+            fi
            done
           cd ../ 
         done
@@ -62,15 +66,17 @@ steps:
         do 
           cd ${dir}
           for folder in $(ls -d */); do
-            cd ${folder}
-            env=${folder%*/}
-            env=${env#*/}
-            echo ""
-            echo "*************** TERRAFORM INIT ******************"
-            echo "******* At environment: ${dir} ${env} ********"
-            echo "*************************************************"
-            terraform plan || exit 1
-            cd -
+            if [ "$folder" != prod ];then
+              cd ${folder}
+              env=${folder%*/}
+              env=${env#*/}
+              echo ""
+              echo "*************** TERRAFORM INIT ******************"
+              echo "******* At environment: ${dir} ${env} ********"
+              echo "*************************************************"
+              terraform init || exit 1
+              cd -
+            fi
            done
           cd ../ 
         done
