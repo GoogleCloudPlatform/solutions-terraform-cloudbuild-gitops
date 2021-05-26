@@ -41,10 +41,10 @@ steps:
               env=${dir%*/}
               env=${env#*/}
               echo ""
-              echo "*************** TERRAFORM INIT ******************"
+              echo "*************** TERRAFORM VALIDATE ******************"
               echo "******* At environment: workload/${env} *********"
               echo "*************************************************"
-              terraform init || exit 1
+              terraform validate || exit 1
               cd -
             fi
          cd ../ 
@@ -66,10 +66,10 @@ steps:
               env=${dir%*/}
               env=${env#*/}
               echo ""
-              echo "*************** TERRAFORM INIT ******************"
+              echo "*************** TERRAFORM PLAN ******************"
               echo "******* At environment: workload/${env} *********"
               echo "*************************************************"
-              terraform init || exit 1
+              terraform plan || exit 1
               cd -
             fi
          cd ../ 
