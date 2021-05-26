@@ -92,7 +92,7 @@ steps:
               echo "*************************************************"
               ls
               terraform apply -auto-approve -input=false tfplan || exit 1
-              if [ $? != 0 ]; then
+              if [ $? == 0 ]; then
                  gsutil cp tfplan gs://${_ARTIFACT_BUCKET_NAME}/terraform/cloudbuild/apply/workload/$dir/$BUILD_ID
               fi
               cd -
