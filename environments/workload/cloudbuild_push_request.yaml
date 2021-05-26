@@ -76,7 +76,7 @@ steps:
 - id: 'tf apply'
   name: hashicorp/terraform:0.15.3
   dir: 'environments/workload'
-  entrypoint: 'bash'
+  entrypoint: 'sh'
   args: 
   - '-c'
   - |
