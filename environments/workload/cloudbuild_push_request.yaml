@@ -10,7 +10,6 @@ steps:
       
         for dir in $(ls -d */);
         do 
-          cd ${dir}
             if [ "${dir}" == "dev/" ];then
               cd ${dir}
               env=${dir%*/}
@@ -35,7 +34,6 @@ steps:
       
         for dir in $(ls -d */);
         do 
-          cd ${dir}
             if [ "${dir}" == "dev/" ];then
               cd ${dir}
               env=${dir%*/}
@@ -60,7 +58,6 @@ steps:
       
         for dir in $(ls -d */);
         do 
-          cd ${dir}
             if [ "${dir}" == "dev/" ];then
               cd ${dir}
               env=${dir%*/}
@@ -84,8 +81,7 @@ steps:
   - |
         for dir in $(ls -d */);
         do 
-          cd ${dir}
-            if [ "${dir}" == "dev/" ];then
+          if [ "${dir}" == "dev/" ];then
               env=${dir%*/}
               env=${env#*/}
               echo ""
