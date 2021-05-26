@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "tf-environments"
+    bucket = "dol-terraform-project-tfstate"
     prefix = "terraform/state/workstream/dev"
   }
 }
