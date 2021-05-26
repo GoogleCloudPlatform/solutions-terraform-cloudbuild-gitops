@@ -86,12 +86,11 @@ steps:
         do 
           cd ${dir}
             if [ "${dir}" == "dev/" ];then
-              cd ${dir}
               env=${dir%*/}
               env=${env#*/}
               echo ""
               echo "*************** TERRAFORM APPLY ******************"
-              echo "******* At environment: workload/${env} *************"
+              echo "******* At environment: workload/${env} ***********"
               echo "*************************************************"
               terraform apply -auto-approve -input=false tfpan || exit 1
               cd -
