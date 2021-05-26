@@ -97,4 +97,4 @@ steps:
 #artifacts:
 #  objects:
 #    location: 'gs://cloudbuild_artifacts_gcs/terraform/cloudbuild/plan/$BUILD_ID'
-#    paths: ['cloudbuild_pull_request.yaml', 'tfplan'] 
+#    paths: ['cloudbuild_pull_request.yaml', 'tfplan']
