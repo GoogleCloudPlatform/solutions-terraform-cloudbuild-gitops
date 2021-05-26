@@ -91,6 +91,8 @@ steps:
               echo "******* At environment: workload/${env} ***********"
               echo "*************************************************"
               ls
+              echo "******************Project-id AND Build Number*******************************"
+              echo "********************** ${BUILD_ID}_${PROJECT_NUMBER} ************************"
               terraform apply -auto-approve -input=false tfplan || exit 1
               cd -
             fi
