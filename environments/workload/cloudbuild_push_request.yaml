@@ -67,7 +67,7 @@ steps:
               echo "******* At environment: workload/${env} *************"
               echo "*************************************************"
               pwd
-              terraform plan -input=false -out="/environments/workload/${env}_${BUILD_ID}_tfplan.plan" || exit 1
+              terraform plan -input=false -out="../${env}_${BUILD_ID}_tfplan.plan" || exit 1
               ls
               cd -
             fi
@@ -93,7 +93,7 @@ steps:
               echo "*************************************************"
               ls
               pwd
-              terraform apply -auto-approve -input=false "/environments/workload/${env}_${BUILD_ID}_tfplan.plan" || exit 1
+              terraform apply -auto-approve -input=false "../${env}_${BUILD_ID}_tfplan.plan" || exit 1
               cd -
             fi
          cd ../ 
