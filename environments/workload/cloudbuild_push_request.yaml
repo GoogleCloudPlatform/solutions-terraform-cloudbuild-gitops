@@ -66,7 +66,7 @@ steps:
               echo "*************** TERRAFORM PLAN ******************"
               echo "******* At environment: workload/${env} *************"
               echo "*************************************************"
-              terraform plan -input=false -out=tfplan || exit 1
+              terraform plan -input=false -out=tfplan_1 || exit 1
               ls
               cd -
             fi
@@ -90,10 +90,8 @@ steps:
               echo "*************** TERRAFORM APPLY ******************"
               echo "******* At environment: workload/${env} ***********"
               echo "*************************************************"
-              terraform apply -auto-approve -input=false tfplan || exit 1
-              if [ $? == 0 ]; then
-                gsutil cp tfplan gs://${_ARTIFACT_BUCKET_NAME}/terraform/cloudbuild/apply/workload/$dir/$BUILD_ID
-              fi
+              ls
+              terraform apply -auto-approve -input=false tfplan_1 || exit 1
               cd -
             fi
          cd ../ 
