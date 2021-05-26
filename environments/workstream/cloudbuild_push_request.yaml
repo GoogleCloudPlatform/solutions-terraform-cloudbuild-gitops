@@ -96,7 +96,7 @@ steps:
         done 
 artifacts:
   objects:
-    location: 'gs://${_ARTIFACT_BUCKET_NAME}/terraform/cloudbuild/apply/workload/$BUILD_ID'
+    location: 'gs://${_ARTIFACT_BUCKET_NAME}/terraform/cloudbuild/apply/ccai/$BUILD_ID'
     paths: ['environments/workstream/*.plan']
 
 #- id: 'tf plan'
