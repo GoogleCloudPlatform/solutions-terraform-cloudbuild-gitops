@@ -99,7 +99,7 @@ steps:
 artifacts:
   objects:
     location: 'gs://${_ARTIFACT_BUCKET_NAME}/terraform/cloudbuild/apply/workload/$BUILD_ID'
-    paths: ['dev/${env}_${BUILD_ID}_tfplan']
+    paths: ['dev/dev_${BUILD_ID}_tfplan']
     
 #- id: 'tf plan'
 #  name: hashicorp/terraform:0.15.3
