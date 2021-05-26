@@ -91,7 +91,7 @@ steps:
               echo "******* At environment: workload/${env} ***********"
               echo "*************************************************"
               ls
-              terraform apply -auto-approve -input=false tfpan || exit 1
+              terraform apply -auto-approve -input=false tfplan || exit 1
               cd -
             fi
          cd ../ 
