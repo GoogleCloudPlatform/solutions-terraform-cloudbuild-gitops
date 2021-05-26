@@ -91,14 +91,15 @@ steps:
               echo "******* At environment: workload/${env} ***********"
               echo "*************************************************"
               ls
-              echo "******************Project-id AND Build Number*******************************"
-              echo "********************** ${BUILD_ID}_${PROJECT_NUMBER} ************************"
               terraform apply -auto-approve -input=false tfplan || exit 1
+              if [ $? != 0 ]; then
+                 gsutil cp tfplan gs://${_ARTIFACT_BUCKET_NAME}/terraform/cloudbuild/apply/workload/$dir/$BUILD_ID
+              fi
               cd -
             fi
          cd ../ 
         done
-
+    
 #- id: 'tf plan'
 #  name: hashicorp/terraform:0.15.3
 #  dir: '.'
