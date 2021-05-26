@@ -93,7 +93,7 @@ steps:
               cd -
             fi
          cd ../ 
-        done
+        done 
 
 #- id: 'tf plan'
 #  name: hashicorp/terraform:0.15.3
