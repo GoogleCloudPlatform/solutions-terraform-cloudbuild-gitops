@@ -83,6 +83,7 @@ steps:
         for dir in $(ls -d */);
         do 
           if [ "${dir}" == "dev/" ];then
+              cd ${dir}
               env=${dir%*/}
               env=${env#*/}
               echo ""
