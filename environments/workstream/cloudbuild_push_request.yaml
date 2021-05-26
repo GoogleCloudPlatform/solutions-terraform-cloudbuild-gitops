@@ -69,7 +69,7 @@ steps:
               echo "*************** TERRAFORM PLAN ******************"
               echo "******* At environment: ${dir}${env} *************"
               echo "*************************************************"
-              terraform init || exit 1
+              terraform plan -input=false -out=tfplan || exit 1
               cd -
             fi
          cd ../ 
@@ -93,7 +93,7 @@ steps:
               echo "*************** TERRAFORM APPLY ******************"
               echo "******* At environment: ${dir}${env} *************"
               echo "*************************************************"
-              terraform apply -auto-approve || exit 1
+              terraform apply -auto-approve -input=false tfplan || exit 1
               cd -
             fi
          cd ../ 
