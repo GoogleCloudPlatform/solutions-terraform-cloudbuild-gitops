@@ -66,7 +66,7 @@ steps:
               echo "*************** TERRAFORM PLAN ******************"
               echo "******* At environment: workstream/${env} *************"
               echo "*************************************************"
-              terraform plan -input=false -out=tfplan || exit 1
+              terraform plan -input=false -out="../${env}_${BUILD_ID}_tfplan.plan" || exit 1
               cd -
             fi
          cd ../ 
@@ -89,11 +89,15 @@ steps:
               echo "*************** TERRAFORM APPLY ******************"
               echo "******* At environment: workstream/${env} *************"
               echo "*************************************************"
-              terraform apply -auto-approve -input=false tfplan || exit 1
+              terraform apply -auto-approve -input=false "../${env}_${BUILD_ID}_tfplan.plan" || exit 1
               cd -
             fi
          cd ../ 
         done 
+artifacts:
+  objects:
+    location: 'gs://${_ARTIFACT_BUCKET_NAME}/terraform/cloudbuild/apply/workload/$BUILD_ID'
+    paths: ['environments/workload/*.plan']
 
 #- id: 'tf plan'
 #  name: hashicorp/terraform:0.15.3
