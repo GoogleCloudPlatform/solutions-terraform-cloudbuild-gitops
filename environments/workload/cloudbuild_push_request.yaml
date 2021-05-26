@@ -44,7 +44,7 @@ steps:
               echo "*************** TERRAFORM VALIDATE ******************"
               echo "******* At environment: ${dir}${env} *************"
               echo "*************************************************"
-              terraform init || exit 1
+              terraform validate || exit 1
               cd -
             fi
          cd ../ 
@@ -69,7 +69,7 @@ steps:
               echo "*************** TERRAFORM PLAN ******************"
               echo "******* At environment: ${dir}${env} *************"
               echo "*************************************************"
-              terraform init || exit 1
+              terraform plan || exit 1
               cd -
             fi
          cd ../ 
