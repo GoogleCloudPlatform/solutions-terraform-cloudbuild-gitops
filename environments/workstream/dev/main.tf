@@ -41,7 +41,7 @@
 
 locals {
   env = "dev"
-  project_id = "cbt-02"
+  project_id = "ny-dol-ccai"
   region  = "us-central1"
 }
 
