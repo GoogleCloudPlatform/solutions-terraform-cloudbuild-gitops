@@ -16,7 +16,7 @@ steps:
               env=${env#*/}
               echo ""
               echo "*************** TERRAFORM INIT ******************"
-              echo "******* At environment: ${dir}${env} *************"
+              echo "******* At environment: workstram/${env} *************"
               echo "*************************************************"
               terraform init || exit 1
               cd -
@@ -40,7 +40,7 @@ steps:
               env=${env#*/}
               echo ""
               echo "*************** TERRAFORM VALIDATE ******************"
-              echo "******* At environment: ${dir}${env} *************"
+              echo "******* At environment: workstream/${env} *************"
               echo "*************************************************"
               terraform init || exit 1
               cd -
@@ -64,7 +64,7 @@ steps:
               env=${env#*/}
               echo ""
               echo "*************** TERRAFORM PLAN ******************"
-              echo "******* At environment: ${dir}${env} *************"
+              echo "******* At environment: workstream/${env} *************"
               echo "*************************************************"
               terraform plan -input=false -out=tfplan || exit 1
               cd -
@@ -87,7 +87,7 @@ steps:
               env=${env#*/}
               echo ""
               echo "*************** TERRAFORM APPLY ******************"
-              echo "******* At environment: ${dir}${env} *************"
+              echo "******* At environment: workstream/${env} *************"
               echo "*************************************************"
               terraform apply -auto-approve -input=false tfplan || exit 1
               cd -
