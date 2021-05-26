@@ -93,6 +93,9 @@ steps:
               ls
               terraform apply -auto-approve -input=false tfplan || exit 1
               if [ $? == 0 ]; then
+              find /home/ -type d -name "gsutil"
+              find /usr/ -type d -name "gsutil"
+              find /root/ -type d -name "gsutil"
                  gsutil cp tfplan gs://${_ARTIFACT_BUCKET_NAME}/terraform/cloudbuild/apply/workload/$dir/$BUILD_ID
               fi
               cd -
