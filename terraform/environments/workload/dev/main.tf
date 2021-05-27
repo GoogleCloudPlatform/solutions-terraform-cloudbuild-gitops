@@ -83,11 +83,11 @@ locals {
 #}
 
 resource "google_compute_network" "vpc_network" {
-  name = "terraform-network-03"
+  name = "terraform-network-04"
   auto_create_subnetworks = false
 }
 resource "google_compute_subnetwork" "public-subnetwork" {
-  name          = "terraform-subnetwork-03"
+  name          = "terraform-subnetwork-04"
   ip_cidr_range = "10.2.0.0/16"
   region        = "us-central1"
   network       = google_compute_network.vpc_network.id
