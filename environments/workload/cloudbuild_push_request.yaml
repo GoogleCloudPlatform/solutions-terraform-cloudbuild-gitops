@@ -1,6 +1,6 @@
 timeout: 1200s
 steps:
-- name: ${_DEFAULT_REGION}-docker.pkg.dev/{_SEED_PROJECT_ID}/{_GAR_REPOSITORY}/terraform
+- name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
   entrypoint: /bin/bash
   args:
   - -c
@@ -8,7 +8,7 @@ steps:
     gcloud config set auth/impersonate_service_account ${_TF_SA_EMAIL}
 
 - id: 'tf init'
-  name: ${_DEFAULT_REGION}-docker.pkg.dev/{_SEED_PROJECT_ID}/{_GAR_REPOSITORY}/terraform
+  name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
   dir: 'environments/workload'
   entrypoint: 'sh'
   args: 
@@ -32,7 +32,7 @@ steps:
         done
   
 - id: 'tf validate'
-  name: ${_DEFAULT_REGION}-docker.pkg.dev/{_SEED_PROJECT_ID}/{_GAR_REPOSITORY}/terraform
+  name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
   dir: 'environments/workload'
   entrypoint: 'sh'
   args: 
@@ -56,7 +56,7 @@ steps:
         done
 
 - id: 'tf plan'
-  name: ${_DEFAULT_REGION}-docker.pkg.dev/{_SEED_PROJECT_ID}/{_GAR_REPOSITORY}/terraform
+  name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
   dir: 'environments/workload'
   entrypoint: 'sh'
   args: 
@@ -80,7 +80,7 @@ steps:
         done
         
 - id: 'tf apply'
-  name: ${_DEFAULT_REGION}-docker.pkg.dev/{_SEED_PROJECT_ID}/{_GAR_REPOSITORY}/terraform
+  name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
   dir: 'environments/workload'
   entrypoint: 'sh'
   args: 
