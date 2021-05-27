@@ -82,7 +82,7 @@ steps:
 - id: 'tf apply'
   name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
   dir: 'environments/workload'
-  entrypoint: bin/bash
+  entrypoint: /bin/bash
   args: 
   - '-c'
   - |
