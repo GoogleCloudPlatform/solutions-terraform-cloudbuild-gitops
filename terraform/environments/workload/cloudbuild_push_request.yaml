@@ -104,7 +104,7 @@ steps:
 artifacts:
   objects:
     location: 'gs://${_ARTIFACT_BUCKET_NAME}/terraform/cloudbuild/apply/analytics/$BUILD_ID'
-    paths: ['environments/workload/*.plan']
+    paths: ['terraform/environments/workload/*.plan']
 #- id: 'tf plan'
 #  name: hashicorp/terraform:0.15.3
 #  dir: '.'
