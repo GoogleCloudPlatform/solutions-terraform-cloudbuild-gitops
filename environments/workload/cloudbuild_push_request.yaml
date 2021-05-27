@@ -94,7 +94,6 @@ steps:
             fi
          cd ../ 
         done
-serviceAccount: 'projects/nycv-terraform/serviceAccounts/nycv-environments@nycv-terraform.iam.gserviceaccount.com'      
 artifacts:
   objects:
     location: 'gs://${_ARTIFACT_BUCKET_NAME}/terraform/cloudbuild/apply/analytics/$BUILD_ID'
