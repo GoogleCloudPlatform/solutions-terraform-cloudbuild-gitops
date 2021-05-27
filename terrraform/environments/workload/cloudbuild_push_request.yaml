@@ -1,15 +1,15 @@
 timeout: 1200s
 steps:
-- name: us-central1-docker.pkg.dev/ny-dol-cloudbuild/ny-dol-tf-runners/terraform
+- name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
   entrypoint: /bin/bash
   args:
   - -c
   - |
     gcloud config set auth/impersonate_service_account ${_TF_SA_EMAIL}
-    
+
 - id: 'tf init'
-  name: us-central1-docker.pkg.dev/ny-dol-cloudbuild/ny-dol-tf-runners/terraform
-  dir: 'environments/workload'
+  name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
+  dir: 'terraform/environments/workload'
   entrypoint: 'sh'
   args: 
   - '-c'
@@ -32,8 +32,8 @@ steps:
         done
   
 - id: 'tf validate'
-  name: us-central1-docker.pkg.dev/ny-dol-cloudbuild/ny-dol-tf-runners/terraform
-  dir: 'environments/workload'
+  name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
+  dir: 'terraform/environments/workload'
   entrypoint: 'sh'
   args: 
   - '-c'
@@ -56,8 +56,8 @@ steps:
         done
 
 - id: 'tf plan'
-  name: us-central1-docker.pkg.dev/ny-dol-cloudbuild/ny-dol-tf-runners/terraform
-  dir: 'environments/workload'
+  name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
+  dir: 'terraform/environments/workload'
   entrypoint: 'sh'
   args: 
   - '-c'
@@ -80,15 +80,15 @@ steps:
         done
         
 - id: 'tf apply'
-  name: us-central1-docker.pkg.dev/ny-dol-cloudbuild/ny-dol-tf-runners/terraform
-  dir: 'environments/workload'
-  entrypoint: 'sh'
+  name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
+  dir: 'terraform/environments/workload'
+  entrypoint: /bin/bash
   args: 
   - '-c'
   - |
         for dir in $(ls -d */);
         do 
-          if [ "${dir}" = "dev/" ];then
+          if [ "${dir}" == "dev/" ];then
               cd ${dir}
               env=${dir%*/}
               env=${env#*/}
