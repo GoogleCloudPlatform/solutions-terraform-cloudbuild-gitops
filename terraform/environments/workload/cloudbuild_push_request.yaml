@@ -89,7 +89,7 @@ steps:
               echo "*************** TERRAFORM APPLY ******************"
               echo "******* At environment: workload/${env} ***********"
               echo "*************************************************"
-              gcloud config set auth/impersonate_service_account ${_TF_SA_EMAIL}
+              gcloud config set auth/impersonate_service_account tf-dol-ewa-analytics-dev@nycv-terraform.iam.gserviceaccount.com
               terraform apply -auto-approve -input=false "../${env}_${BUILD_ID}_tfplan.plan" || exit 1
               cd -
             fi
