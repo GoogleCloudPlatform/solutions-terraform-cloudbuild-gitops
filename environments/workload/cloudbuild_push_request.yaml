@@ -3,7 +3,7 @@ steps:
 - id: 'tf init'
   name: us-central1-docker.pkg.dev/ny-dol-cloudbuild/ny-dol-tf-runners/terraform
   dir: 'environments/workload'
-  entrypoint: 'sh'
+  entrypoint: 'bash'
   args: 
   - '-c'
   - |
@@ -27,7 +27,7 @@ steps:
 - id: 'tf validate'
   name: us-central1-docker.pkg.dev/ny-dol-cloudbuild/ny-dol-tf-runners/terraform
   dir: 'environments/workload'
-  entrypoint: 'sh'
+  entrypoint: 'bash'
   args: 
   - '-c'
   - |
@@ -51,7 +51,7 @@ steps:
 - id: 'tf plan'
   name: us-central1-docker.pkg.dev/ny-dol-cloudbuild/ny-dol-tf-runners/terraform
   dir: 'environments/workload'
-  entrypoint: 'sh'
+  entrypoint: 'bash'
   args: 
   - '-c'
   - |
