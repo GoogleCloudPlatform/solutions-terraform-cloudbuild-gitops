@@ -1,5 +1,12 @@
 timeout: 1200s
 steps:
+- name: us-central1-docker.pkg.dev/ny-dol-cloudbuild/ny-dol-tf-runners/terraform
+  entrypoint: /bin/bash
+  args:
+  - -c
+  - |
+    gcloud config set auth/impersonate_service_account ${_TF_SA_EMAIL}
+    
 - id: 'tf init'
   name: us-central1-docker.pkg.dev/ny-dol-cloudbuild/ny-dol-tf-runners/terraform
   dir: 'environments/workload'
