@@ -1,0 +1,100 @@
+timeout: 1200s
+steps:
+- id: 'tf init'
+  name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
+  dir: 'terraform/environments/workload'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - |
+      
+        for dir in $(ls -d */);
+        do 
+            if [ "${dir}" == "dev/" ];then
+              cd ${dir}
+              env=${dir%*/}
+              env=${env#*/}
+              echo ""
+              echo "*************** TERRAFORM INIT ******************"
+              echo "******* At environment: workload/${env} *********"
+              echo "*************************************************"
+              terraform init || exit 1
+              cd -
+            fi
+         cd ../ 
+        done
+  
+- id: 'tf validate'
+  name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
+  dir: 'terraform/environments/workload'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - |
+      
+        for dir in $(ls -d */);
+        do 
+            if [ "${dir}" == "dev/" ];then
+              cd ${dir}
+              env=${dir%*/}
+              env=${env#*/}
+              echo ""
+              echo "*************** TERRAFORM VALIDATE ******************"
+              echo "******* At environment: workload/${env} *********"
+              echo "*************************************************"
+              terraform validate || exit 1
+              cd -
+            fi
+         cd ../ 
+        done
+
+- id: 'tf plan'
+  name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
+  dir: 'terraform/environments/workload'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - |
+      
+        for dir in $(ls -d */);
+        do 
+            if [ "${dir}" == "dev/" ];then
+              cd ${dir}
+              env=${dir%*/}
+              env=${env#*/}
+              echo ""
+              echo "*************** TERRAFORM PLAN ******************"
+              echo "******* At environment: workload/${env} *********"
+              echo "*************************************************"
+              terraform plan || exit 1
+              cd -
+            fi
+         cd ../ 
+        done
+
+#- id: 'tf plan'
+#  name: hashicorp/terraform:0.15.3
+#  dir: '.'
+#  entrypoint: 'sh'
+#  args: 
+#  - '-c'
+#  - |
+      
+#        for dir in $(ls -d */);
+#        do 
+#          cd ${dir}   
+#          env=${dir%*/}
+#          env=${env#*/}
+#          echo ""
+#          echo "*************** TERRAFORM INIT ******************"
+#          echo "******* At environment: ${env} ********"
+#          echo "*************************************************"
+#          terraform plan \
+#              -input=false \
+#              -out="./${BUILD_ID}_${PROJECT_NUMBER}.plan" || exit 1
+#          cd -
+#        done
+#artifacts:
+#  objects:
+#    location: 'gs://cloudbuild_artifacts_gcs/terraform/cloudbuild/plan/$BUILD_ID'
+#    paths: ['cloudbuild_pull_request.yaml', 'tfplan']
