@@ -49,7 +49,7 @@ provider "google" {
 
 data "google_service_account_access_token" "default" {
   provider               = google.impersonate
-  target_service_account = "nycv-environments@nycv-terraform.iam.gserviceaccount.com"
+  target_service_account = "nycv-environments"
   scopes                 = ["userinfo-email", "cloud-platform"]
   lifetime               = "900s"
 }
