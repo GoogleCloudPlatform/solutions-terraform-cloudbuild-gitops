@@ -38,6 +38,7 @@
 #  project = "${var.project}"
 #  subnet  = "${module.vpc.subnet}"
 #}
+
 provider "google" {
   alias = "impersonate"
 
