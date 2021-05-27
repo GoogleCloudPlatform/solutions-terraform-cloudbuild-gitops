@@ -57,6 +57,9 @@ data "google_service_account_access_token" "default" {
 provider "google" {
   access_token = data.google_service_account_access_token.default.access_token
   version      = "~> 3.12"
+  project = local.project_id
+  region  = "us-central1"
+  zone    = "us-central1-c"
 }
 
 provider "google-beta" {
@@ -70,13 +73,14 @@ locals {
   region  = "us-central1"
 }
 
-provider "google" {
-  version = "3.5.0"
+#provider "google" {
+#  version = "3.5.0"
   #credentials = file("/downloads/instance.json")
-  project = local.project_id
-  region  = "us-central1"
-  zone    = "us-central1-c"
-}
+#  project = local.project_id
+#  region  = "us-central1"
+#  zone    = "us-central1-c"
+#}
+
 resource "google_compute_network" "vpc_network" {
   name = "terraform-network-01"
   auto_create_subnetworks = false
