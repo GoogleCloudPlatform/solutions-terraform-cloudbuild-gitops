@@ -1,12 +1,5 @@
 timeout: 1200s
 steps:
-- name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
-  entrypoint: /bin/bash
-  args:
-  - -c
-  - |
-    gcloud config set auth/impersonate_service_account ${_TF_SA_EMAIL}
-
 - id: 'tf init'
   name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
   dir: 'terraform/environments/workload'
@@ -96,6 +89,7 @@ steps:
               echo "*************** TERRAFORM APPLY ******************"
               echo "******* At environment: workload/${env} ***********"
               echo "*************************************************"
+              gcloud config set auth/impersonate_service_account ${_TF_SA_EMAIL}
               terraform apply -auto-approve -input=false "../${env}_${BUILD_ID}_tfplan.plan" || exit 1
               cd -
             fi
