@@ -82,13 +82,13 @@ steps:
 - id: 'tf apply'
   name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
   dir: 'environments/workload'
-  entrypoint: 'sh'
+  entrypoint: /bin/bash
   args: 
   - '-c'
   - |
         for dir in $(ls -d */);
         do 
-          if [ "${dir}" = "dev/" ];then
+          if [ "${dir}" == "dev/" ];then
               cd ${dir}
               env=${dir%*/}
               env=${env#*/}
