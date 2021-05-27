@@ -1,8 +1,8 @@
 timeout: 1200s
 steps:
 - id: 'tf init'
-  name: us-central1-docker.pkg.dev/ny-dol-cloudbuild/ny-dol-tf-runners/terraform
-  dir: 'environments/workload'
+  name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
+  dir: 'terraform/environments/workload'
   entrypoint: 'sh'
   args: 
   - '-c'
@@ -25,8 +25,8 @@ steps:
         done
   
 - id: 'tf validate'
-  name: us-central1-docker.pkg.dev/ny-dol-cloudbuild/ny-dol-tf-runners/terraform
-  dir: 'environments/workload'
+  name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
+  dir: 'terraform/environments/workload'
   entrypoint: 'sh'
   args: 
   - '-c'
@@ -49,8 +49,8 @@ steps:
         done
 
 - id: 'tf plan'
-  name: us-central1-docker.pkg.dev/ny-dol-cloudbuild/ny-dol-tf-runners/terraform
-  dir: 'environments/workload'
+  name: ${_DEFAULT_REGION}-docker.pkg.dev/${_SEED_PROJECT_ID}/${_GAR_REPOSITORY}/terraform
+  dir: 'terraform/environments/workload'
   entrypoint: 'sh'
   args: 
   - '-c'
