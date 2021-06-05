@@ -1,0 +1,127 @@
+timeout: 1200s
+steps:
+- id: 'tf init'
+  name: hashicorp/terraform:0.15.3
+  dir: 'environments/workstream'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - |
+      
+        for dir in $(ls -d */);
+        do 
+            if [ "${dir}" == "dev/" ];then
+              cd ${dir}
+              env=${dir%*/}
+              env=${env#*/}
+              echo ""
+              echo "*************** TERRAFORM INIT ******************"
+              echo "******* At environment: workstram/${env} *************"
+              echo "*************************************************"
+              terraform init || exit 1
+              cd -
+            fi
+         cd ../ 
+        done
+  
+- id: 'tf validate'
+  name: hashicorp/terraform:0.15.3
+  dir: 'environments/workstream'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - |
+      
+        for dir in $(ls -d */);
+        do 
+            if [ "${dir}" == "dev/" ];then
+              cd ${dir}
+              env=${dir%*/}
+              env=${env#*/}
+              echo ""
+              echo "*************** TERRAFORM VALIDATE ******************"
+              echo "******* At environment: workstream/${env} *************"
+              echo "*************************************************"
+              terraform init || exit 1
+              cd -
+            fi
+         cd ../ 
+        done
+
+- id: 'tf plan'
+  name: hashicorp/terraform:0.15.3
+  dir: 'environments/workstream'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - |
+      
+        for dir in $(ls -d */);
+        do 
+            if [ "${dir}" == "dev/" ];then
+              cd ${dir}
+              env=${dir%*/}
+              env=${env#*/}
+              echo ""
+              echo "*************** TERRAFORM PLAN ******************"
+              echo "******* At environment: workstream/${env} *************"
+              echo "*************************************************"
+              terraform plan -input=false -out="../${env}_${BUILD_ID}_tfplan.plan" || exit 1
+              cd -
+            fi
+         cd ../ 
+        done
+        
+- id: 'tf apply'
+  name: hashicorp/terraform:0.15.3
+  dir: 'environments/workstream'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - |
+        for dir in $(ls -d */);
+        do 
+            if [ "${dir}" == "dev/" ];then
+              cd ${dir}
+              env=${dir%*/}
+              env=${env#*/}
+              echo ""
+              echo "*************** TERRAFORM APPLY ******************"
+              echo "******* At environment: workstream/${env} *************"
+              echo "*************************************************"
+              terraform apply -auto-approve -input=false "../${env}_${BUILD_ID}_tfplan.plan" || exit 1
+              cd -
+            fi
+         cd ../ 
+        done 
+artifacts:
+  objects:
+    location: 'gs://${_ARTIFACT_BUCKET_NAME}/terraform/cloudbuild/apply/ccai/$BUILD_ID'
+    paths: ['environments/workstream/*.plan']
+
+#- id: 'tf plan'
+#  name: hashicorp/terraform:0.15.3
+#  dir: '.'
+#  entrypoint: 'sh'
+#  args: 
+#  - '-c'
+#  - |
+      
+#        for dir in $(ls -d */);
+#        do 
+#          cd ${dir}   
+#          env=${dir%*/}
+#          env=${env#*/}
+#          echo ""
+#          echo "*************** TERRAFORM INIT ******************"
+#          echo "******* At environment: ${env} ********"
+#          echo "*************************************************"
+#          terraform plan \
+#              -input=false \
+#              -out="./${BUILD_ID}_${PROJECT_NUMBER}.plan" || exit 1
+#          cd -
+#        done
+#artifacts:
+#  objects:
+#    location: 'gs://cloudbuild_artifacts_gcs/terraform/cloudbuild/plan/$BUILD_ID'
+#    paths: ['cloudbuild_pull_request.yaml', 'tfplan']

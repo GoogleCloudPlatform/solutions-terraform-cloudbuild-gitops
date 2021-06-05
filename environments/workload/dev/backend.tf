@@ -12,22 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#Test
 
-locals {
-  network = "${element(split("-", var.subnet), 0)}"
-}
-
-resource "google_compute_firewall" "allow-http" {
-  name    = "${local.network}-allow-http"
-  network = "${local.network}"
-  project = "${var.project}"
-
-  allow {
-    protocol = "tcp"
-    ports    = ["80"]
+terraform {
+  backend "gcs" {
+    bucket = "dol-terraform-project-tfstate"
+    prefix = "terraform/state/workload/dev"
   }
-
-  target_tags   = ["http-server2"]
-  source_ranges = ["0.0.0.0/0"]
 }
