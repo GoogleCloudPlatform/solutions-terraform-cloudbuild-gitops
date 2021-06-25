@@ -17,7 +17,7 @@ locals {
   network = "${element(split("-", var.subnet), 0)}"
 }
 
-resource "google_compute_instance" "http_server" {
+resource "google_compute_instance" "web_server" {
   project      = "${var.project}"
   zone         = "us-west1-a"
   name         = "${local.network}-apache2-instance"
