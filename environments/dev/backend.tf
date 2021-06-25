@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "imposing-eye-317719-tfstate"
     prefix = "env/dev"
   }
 }
