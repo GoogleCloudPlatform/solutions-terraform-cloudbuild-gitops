@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="gnd-gandolfi-generali-gke1"
