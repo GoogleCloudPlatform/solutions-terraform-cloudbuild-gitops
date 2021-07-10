@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "cloudbuild-kf-tfstate"
     prefix = "env/dev"
   }
 }
