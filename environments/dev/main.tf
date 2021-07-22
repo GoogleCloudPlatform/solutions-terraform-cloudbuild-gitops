@@ -42,6 +42,6 @@ resource "google_monitoring_alert_policy" "alert_policy0" {
     }
   }
   documentation {
-    content = "The load balancer rule $${condition.display_name} has generated this alert for the $${metric.display_name}."
+    content = "The load rule $${condition.display_name} has generated this alert for the $${metric.display_name}."
   }
 }
