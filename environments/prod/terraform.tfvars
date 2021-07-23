@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="cicd-dev-1-tfstate"

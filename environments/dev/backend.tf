@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "gcp-ref-arch-codebuild-gitops-tfstate"
+    bucket = "cicd-dev-1-tfstate"
     prefix = "env/dev"
   }
 }

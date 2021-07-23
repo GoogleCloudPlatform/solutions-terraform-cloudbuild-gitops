@@ -1,1 +1,1 @@
-project="gcp-ref-arch-codebuild-gitops"
+project="cicd-dev-1"
