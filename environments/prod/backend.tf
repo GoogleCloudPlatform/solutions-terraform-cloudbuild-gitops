@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "aeros-sandbox-surdi-tfstate"
     prefix = "env/prod"
   }
 }
