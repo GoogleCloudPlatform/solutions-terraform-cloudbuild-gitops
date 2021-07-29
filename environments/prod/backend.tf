@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "aesthetic-genre-319815-tfstate"
     prefix = "env/prod"
   }
 }
