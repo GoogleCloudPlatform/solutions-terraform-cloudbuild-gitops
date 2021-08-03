@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "test-optik-cdn-lab-130f21-tfstate"
     prefix = "env/prod"
   }
 }
