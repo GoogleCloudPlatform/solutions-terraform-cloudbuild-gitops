@@ -18,6 +18,7 @@ locals {
 }
 resource "google_compute_address" "static" {
   name         = "ipv4-address"
+  region = "northamerica-northeast1"
 }
 
 resource "google_compute_instance" "http_server" {
