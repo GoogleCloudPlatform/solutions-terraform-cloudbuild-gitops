@@ -16,10 +16,15 @@
 locals {
   network = "${element(split("-", var.subnet), 0)}"
 }
+resource "google_compute_address" "static" {
+  project      = "${var.project}"
+  name         = "ipv4-address"
+  region = "northamerica-northeast1"
+}
 
 resource "google_compute_instance" "http_server" {
   project      = "${var.project}"
-  zone         = "us-west1-a"
+  zone         = "northamerica-northeast1-a"
   name         = "${local.network}-apache2-instance"
   machine_type = "f1-micro"
 
@@ -33,8 +38,9 @@ resource "google_compute_instance" "http_server" {
 
   network_interface {
     subnetwork = "${var.subnet}"
-
-    access_config {
+    
+        access_config {
+          nat_ip = google_compute_address.static.address
       # Include this section to give the VM an external ip address
     }
   }
