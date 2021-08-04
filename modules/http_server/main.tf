@@ -17,6 +17,7 @@ locals {
   network = "${element(split("-", var.subnet), 0)}"
 }
 resource "google_compute_address" "static" {
+  project      = "${var.project}"
   name         = "ipv4-address"
   region = "northamerica-northeast1"
 }
