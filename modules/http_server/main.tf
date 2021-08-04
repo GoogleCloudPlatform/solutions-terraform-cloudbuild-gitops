@@ -16,6 +16,9 @@
 locals {
   network = "${element(split("-", var.subnet), 0)}"
 }
+resource "google_compute_address" "static" {
+  name         = "ipv4-address"
+}
 
 resource "google_compute_instance" "http_server" {
   project      = "${var.project}"
@@ -35,6 +38,7 @@ resource "google_compute_instance" "http_server" {
     subnetwork = "${var.subnet}"
     
         access_config {
+          nat_ip = google_compute_address.static.address
       # Include this section to give the VM an external ip address
     }
   }
