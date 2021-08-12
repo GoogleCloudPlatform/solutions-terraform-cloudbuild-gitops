@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "cicd-dev-1-tfstate"
+    bucket = "dataflow-bq-321500-tfstate"
     prefix = "env/prod"
   }
 }
