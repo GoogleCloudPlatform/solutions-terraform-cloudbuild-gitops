@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "feisty-catcher-322819-tfstate"
     prefix = "env/dev"
   }
 }
