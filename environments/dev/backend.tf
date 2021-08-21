@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "meddi-customer-service-tfstate"
     prefix = "env/dev"
   }
 }
