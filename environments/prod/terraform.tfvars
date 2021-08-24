@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="workspace-01-gcp"
