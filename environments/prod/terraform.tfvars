@@ -1,1 +1,1 @@
-project="$terraform-20210831"
+project="terraform-20210831"
