@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "$terraform-20210831-tfstate"
+    bucket = "terraform-20210831-tfstate"
     prefix = "env/prod"
   }
 }
