@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "anthos-test-project-324407-tfstate"
     prefix = "env/dev"
   }
 }
