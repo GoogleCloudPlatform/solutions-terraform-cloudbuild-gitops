@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "nonprod-prosper-logging-tfstate"
     prefix = "env/prod"
   }
 }
