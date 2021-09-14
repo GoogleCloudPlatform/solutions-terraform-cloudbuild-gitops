@@ -24,7 +24,7 @@ provider "google" {
 
 
 module "kubernetes_engine" {
-	source = "./modules/kubernetes_engine"
+	source = "../../modules/kubernetes_engine"
 	count = var.kubernetes_engine-create ? var.kubernetes_engine-count : 0
 	k8s_cluster_name 		    = var.k8s_cluster_name
 	k8s_cluster_location 	  = var.k8s_cluster_location
