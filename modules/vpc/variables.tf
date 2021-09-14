@@ -15,3 +15,59 @@
 
 variable "project" {}
 variable "env" {}
+variable "k8s_cluster_name" {
+	type = string
+}
+
+variable "k8s_cluster_location" {
+	type = string
+}
+
+variable "k8s_remove_default_node_pool" {
+	type = bool
+}
+
+variable "k8s_initial_node_count" {
+	type = number
+}
+
+variable "k8s_username" {
+	type = string
+}
+
+variable "k8s_password" {
+	type = string
+}
+
+variable "k8s_issue_client_certificate" {
+	type = bool
+}
+
+variable "k8s_pool_name" {
+	type = string
+}
+
+variable "k8s_pool_location" {
+	type = string
+	default = "us-central1-a"
+}
+
+variable "k8s_pool_node_count" {
+	type = number
+}
+
+variable "k8s_pool_preemptible" {
+	type = bool
+}
+
+variable "k8s_pool_machine_type" {
+	type = string
+}
+
+variable "k8s_pool_disable-legacy-endpoints" {
+	type = bool
+}
+
+variable "k8s_pool_oauth_scopes" {
+	type = list(string)
+}
