@@ -13,22 +13,18 @@
 # limitations under the License.
 
 
-output "network" {
-  value = "${module.vpc.network}"
+output "cluster_id" {
+	value = module.kubernetes_engine[*].cluster_id
 }
 
-output "subnet" {
-  value = "${module.vpc.subnet}"
+output "cluster_endpoint" {
+	value = module.kubernetes_engine[*].cluster_endpoint
 }
 
-output "firewall_rule" {
-  value = "${module.firewall.firewall_rule}"
+output "pool_id" {
+	value = module.kubernetes_engine[*].pool_id
 }
 
-output "instance_name" {
-  value = "${module.http_server.instance_name}"
-}
-
-output "external_ip" {
-  value = "${module.http_server.external_ip}"
+output "pool_instance_group_urls" {
+	value = module.kubernetes_engine[*].pool_instance_group_urls
 }
