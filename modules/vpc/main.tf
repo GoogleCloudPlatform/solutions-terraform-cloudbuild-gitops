@@ -13,22 +13,36 @@
 # limitations under the License.
 
 
-module "vpc" {
-  source  = "terraform-google-modules/network/google"
-  version = "3.3.0"
+resource "google_container_cluster" "primary" {
+  name     = var.k8s_cluster_name
+  location = var.k8s_cluster_location
+  # We can't create a cluster with no node pool defined, but we want to only use
+  # separately managed node pools. So we create the smallest possible default
+  # node pool and immediately delete it.
+  remove_default_node_pool = var.k8s_remove_default_node_pool
+  initial_node_count       = var.k8s_initial_node_count
+ 
+  master_auth {
+    username = var.k8s_username
+    password = var.k8s_password
 
-  project_id   = "${var.project}"
-  network_name = "${var.env}"
+    client_certificate_config {
+      issue_client_certificate = var.k8s_issue_client_certificate
+    }
+  }
+}
 
-  subnets = [
-    {
-      subnet_name   = "${var.env}-subnet-01"
-      subnet_ip     = "10.${var.env == "dev" ? 10 : 20}.10.0/24"
-      subnet_region = "us-west1"
-    },
-  ]
-
-  secondary_ranges = {
-    "${var.env}-subnet-01" = []
+resource "google_container_node_pool" "primary_preemptible_nodes" {
+  name       = var.k8s_pool_name
+  location   = var.k8s_pool_location
+  cluster    = google_container_cluster.primary.name
+  node_count = var.k8s_pool_node_count
+  node_config {
+    preemptible  = var.k8s_pool_preemptible
+    machine_type = var.k8s_pool_machine_type
+    metadata = {
+      disable-legacy-endpoints = var.k8s_pool_disable-legacy-endpoints
+    }
+    oauth_scopes = var.k8s_pool_oauth_scopes
   }
 }
