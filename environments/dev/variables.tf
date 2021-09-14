@@ -26,7 +26,7 @@ variable "kubernetes_engine-count" {
 
 variable "k8s_cluster_name" {
 	type = string
-	default = "tf-gke-cluster"
+	default = "tf-gke-cluster1"
 }
 
 variable "k8s_cluster_location" {
