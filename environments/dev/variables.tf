@@ -16,7 +16,7 @@
 variable "project" {}
 variable "kubernetes_engine-create" {
 	type = bool
-	default = false
+	default = true
 }
 
 variable "kubernetes_engine-count" {
