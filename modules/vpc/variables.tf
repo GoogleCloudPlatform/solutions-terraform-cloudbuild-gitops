@@ -31,14 +31,6 @@ variable "k8s_initial_node_count" {
 	type = number
 }
 
-variable "k8s_username" {
-	type = string
-}
-
-variable "k8s_password" {
-	type = string
-}
-
 variable "k8s_issue_client_certificate" {
 	type = bool
 }
