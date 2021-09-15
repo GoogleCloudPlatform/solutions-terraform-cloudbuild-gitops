@@ -44,15 +44,6 @@ variable "k8s_initial_node_count" {
 	default = 1
 }
 
-variable "k8s_username" {
-	type = string
-	default = "clusterusername"
-}
-
-variable "k8s_password" {
-	type = string
-	default = "clusterspassword"
-}
 
 variable "k8s_issue_client_certificate" {
 	type = bool
