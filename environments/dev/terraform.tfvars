@@ -14,11 +14,6 @@ k8s_remove_default_node_pool=true
 
 k8s_initial_node_count=1
 
-k8s_username="clusterusername"
-
-
-k8s_password="clusterspassword"
-
 k8s_issue_client_certificate=false
 
 k8s_pool_name="tf-node-pool"
