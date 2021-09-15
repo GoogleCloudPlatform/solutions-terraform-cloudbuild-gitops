@@ -23,8 +23,7 @@ resource "google_container_cluster" "primary" {
   initial_node_count       = var.k8s_initial_node_count
  
   master_auth {
-    username = {}
-    password = {}
+ 
 
     client_certificate_config {
       issue_client_certificate = var.k8s_issue_client_certificate
