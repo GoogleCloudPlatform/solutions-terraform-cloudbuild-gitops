@@ -30,8 +30,8 @@ module "kubernetes_engine" {
 	k8s_cluster_location 	  = var.k8s_cluster_location
 	k8s_remove_default_node_pool = var.k8s_remove_default_node_pool
 	k8s_initial_node_count 	= var.k8s_initial_node_count
-	k8s_username 			      = var.k8s_username
-	k8s_password 			      = var.k8s_password
+	#k8s_username 			      = var.k8s_username
+	#k8s_password 			      = var.k8s_password
 	k8s_issue_client_certificate = var.k8s_issue_client_certificate
 	k8s_pool_name 			    = var.k8s_pool_name
 	k8s_pool_location 		  = var.k8s_pool_location
