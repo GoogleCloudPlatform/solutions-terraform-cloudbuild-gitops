@@ -21,20 +21,43 @@ provider "google" {
   project = "${var.project}"
 }
 
-module "vpc" {
-  source  = "../../modules/vpc"
-  project = "${var.project}"
-  env     = "${local.env}"
+#module "vpc" {
+#  source  = "../../modules/vpc"
+#  project = "${var.project}"
+#  env     = "${local.env}"
+#}
+#
+#module "http_server" {
+#  source  = "../../modules/http_server"
+#  project = "${var.project}"
+#  subnet  = "${module.vpc.subnet}"
+#}
+#
+#module "firewall" {
+#  source  = "../../modules/firewall"
+#  project = "${var.project}"
+#  subnet  = "${module.vpc.subnet}"
+#}
+#
+#module "notebook" {
+#   source  = "../../modules/notebook"
+#   project = "${var.project}"
+#   subnet  = "${module.vpc.subnet}"
+# }
+
+
+resource "google_notebooks_instance" "instance" {
+  name = "${var.notebook_name}-python3"
+  location = "us-west1-b"
+  machine_type = "n1-standard-1"
+  data_disk_type = "PD_STANDARD"
+  vm_image {
+    project      = "deeplearning-platform-release"
+    image_family = "common-cpu-notebooks"
+  }
 }
 
-module "http_server" {
-  source  = "../../modules/http_server"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
-
-module "firewall" {
-  source  = "../../modules/firewall"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
+resource "google_service_account" "service_account" {
+  account_id   = "${var.service_account}"
+  display_name = "${var.user_name} Service Account"
 }

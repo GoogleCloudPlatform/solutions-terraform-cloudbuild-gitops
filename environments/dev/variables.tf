@@ -14,3 +14,6 @@
 
 
 variable "project" {}
+variable "notebook_name" {}
+variable "user_name" {}
+variable "service_account" {} #must be six characeters min
