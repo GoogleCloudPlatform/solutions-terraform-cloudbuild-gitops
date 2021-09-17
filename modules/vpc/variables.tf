@@ -56,8 +56,16 @@ variable "k8s_pool_machine_type" {
 	type = string
 }
 
+
 variable "k8s_pool_disable-legacy-endpoints" {
 	type = bool
+}
+
+variable "k8s_min_node_count" {
+	type = number
+}
+variable "k8s_max_node_count" {
+    type = number
 }
 
 variable "k8s_pool_oauth_scopes" {
