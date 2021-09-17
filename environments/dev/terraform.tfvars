@@ -22,12 +22,14 @@ k8s_pool_name="tf-node-pool"
 k8s_pool_location="us-central1-a"
 
 
-k8s_pool_node_count=1
+k8s_pool_node_count=2
 
 k8s_pool_preemptible=true
 
 k8s_pool_machine_type="e2-micro"
 
+k8s_min_node_count=1
+k8s_max_node_count=3
 
 k8s_pool_disable-legacy-endpoints=true
 k8s_pool_oauth_scopes= [
