@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "onboard-demo-egitim-tfstate"
     prefix = "env/prod"
   }
 }
