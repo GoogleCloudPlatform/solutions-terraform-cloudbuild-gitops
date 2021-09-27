@@ -40,6 +40,8 @@ module "kubernetes_engine" {
 	k8s_pool_machine_type 	= var.k8s_pool_machine_type
 	k8s_pool_disable-legacy-endpoints = var.k8s_pool_disable-legacy-endpoints
 	k8s_pool_oauth_scopes 	= var.k8s_pool_oauth_scopes
+	k8s_min_node_count = var.k8s_min_node_count
+	k8s_max_node_count = var.k8s_max_node_count
   	project = "${var.project}"
   	env     = "${local.env}"
 }
