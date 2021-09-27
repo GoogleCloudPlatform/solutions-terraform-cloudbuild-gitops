@@ -62,7 +62,7 @@ variable "k8s_pool_location" {
 
 variable "k8s_pool_node_count" {
 	type = number
-	default = 1
+	default = 2
 }
 
 variable "k8s_pool_preemptible" {
@@ -72,12 +72,21 @@ variable "k8s_pool_preemptible" {
 
 variable "k8s_pool_machine_type" {
 	type = string
-	default = "e2-micro"
+	default = "e2-small"
 }
 
 variable "k8s_pool_disable-legacy-endpoints" {
 	type = bool
 	default = true
+}
+variable "k8s_min_node_count" {
+	type = number
+	default = 1
+}
+
+variable "k8s_max_node_count" {
+	type = number
+	default = 3
 }
 
 variable "k8s_pool_oauth_scopes" {
