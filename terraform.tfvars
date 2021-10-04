@@ -1,2 +1,3 @@
 project="smacloudbuild"
-bucket_name = "sma-testbucket-48693"
+bucket_name = "sma-testbucket-48694"
+
