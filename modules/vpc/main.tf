@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+#added a comment to trigger a pull
 
 module "vpc" {
   source  = "terraform-google-modules/network/google"
@@ -24,7 +24,7 @@ module "vpc" {
     {
       subnet_name   = "${var.env}-subnet-01"
       subnet_ip     = "10.${var.env == "dev" ? 10 : 20}.10.0/24"
-      subnet_region = "us-west1"
+      subnet_region = "northamerica-northeast2"
     },
   ]
 
