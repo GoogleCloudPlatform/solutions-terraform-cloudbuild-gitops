@@ -1,1 +1,1 @@
-project="gitops-infra"
+project = "gitops-infra"
