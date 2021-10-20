@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="git-ops-tut"
