@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="kubernetes-monitoring-315412"
