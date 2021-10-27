@@ -20,3 +20,15 @@ output "instance_name" {
 output "external_ip" {
   value = "${google_compute_instance.http_server.network_interface.0.access_config.0.nat_ip}"
 }
+
+output "element_split_before" {
+  value = var.subnet
+}
+
+output "element_split_after" {
+  value = "${element(split(".", var.subnet), 0)}" 
+}
+
+output "telus" {
+  value = "HELLO" 
+}
