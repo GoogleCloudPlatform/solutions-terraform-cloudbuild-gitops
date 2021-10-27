@@ -15,7 +15,7 @@
 
 module "vpc" {
   source  = "terraform-google-modules/network/google"
-  version = "0.6.0"
+  version = "3.3.0"
 
   project_id   = "${var.project}"
   network_name = "${var.env}"
@@ -31,4 +31,10 @@ module "vpc" {
   secondary_ranges = {
     "${var.env}-subnet-01" = []
   }
+
+  
+}
+
+output "lookup" {
+  value = lookup({dev="10", prod="20", qa="30"}, var.env, "ERROR")
 }

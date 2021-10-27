@@ -42,3 +42,11 @@ resource "google_compute_instance" "http_server" {
   # Apply the firewall rule to allow external IPs to access this instance
   tags = ["http-server"]
 }
+
+output "element_split_before" {
+  value = var.subnet
+}
+
+output "element_split_after" {
+  value = "${element(split("-", var.subnet), 0)}" # 1-2-3-4 = 1,2,3,4 
+}
