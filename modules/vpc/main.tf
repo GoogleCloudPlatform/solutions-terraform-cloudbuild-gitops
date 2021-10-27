@@ -31,4 +31,10 @@ module "vpc" {
   secondary_ranges = {
     "${var.env}-subnet-01" = []
   }
+
+  
+}
+
+output "lookup" {
+  value = lookup({dev="10", prod="20", qa="30"}, var.env, "ERROR")
 }
