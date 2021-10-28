@@ -27,6 +27,6 @@ locals {
 #     ports    = ["80"]
 #   }
 
-#   target_tags   = ["http-server2"]
-#   source_ranges = ["0.0.0.0/0"]
+  # target_tags   = ["http-server"]
+  # source_ranges = ["0.0.0.0/0"]
 # }
