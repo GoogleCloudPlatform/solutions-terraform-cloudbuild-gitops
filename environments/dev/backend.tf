@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "savvy-pagoda-294917-tfstate"
     prefix = "env/dev"
   }
 }
