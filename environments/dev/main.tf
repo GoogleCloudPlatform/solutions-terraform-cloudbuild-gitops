@@ -27,10 +27,17 @@ module "vpc" {
   env     = "${local.env}"
 }
 
-module "http_server" {
-  source  = "../../modules/http_server"
+module "instance_template" {
+  source  = "../../modules/instance_template"
   project = "${var.project}"
   subnet  = "${module.vpc.subnet}"
+}
+
+module "load_balancer" {
+  source  = "../../modules/load_balancer"
+  project = "${var.project}"
+  subnet  = "${module.vpc.subnet}"
+  instance_template_self_link = "${module.instance_template.instance_template_self_link}"
 }
 
 module "firewall" {
