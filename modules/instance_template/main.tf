@@ -4,6 +4,7 @@ locals {
 
 resource "google_compute_instance_template" "instance_template" {
   project      = "${var.project}"
+  region       = "us-west1"
   name         = "${local.network}-webserver-template"
   description  = "Template used to create web server instances"
   machine_type = "f1-micro"
