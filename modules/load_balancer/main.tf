@@ -16,7 +16,8 @@ module "load_balancer" {
 module "managed_instance_group" {
   source            = "terraform-google-modules/vm/google//modules/mig"
   version           = "~> 1.0.0"
-  project           = "${var.project}"
+  project_id        = "${var.project}"
+  subnetwork        = "${var.subnet}"
   region            = "us-west1"
   target_size       = 2
   hostname          = "mig-simple"
