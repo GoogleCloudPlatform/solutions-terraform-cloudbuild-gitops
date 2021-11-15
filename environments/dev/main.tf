@@ -45,3 +45,9 @@ module "firewall" {
   project = "${var.project}"
   subnet  = "${module.vpc.subnet}"
 }
+
+module "cloud_nat" {
+  source  = "../../modules/cloud_nat"
+  project = "${var.project}"
+  subnet  = "${module.vpc.subnet}"
+}
