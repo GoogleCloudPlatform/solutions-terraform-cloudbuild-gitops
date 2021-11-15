@@ -6,7 +6,7 @@ module "load_balancer" {
   source       = "GoogleCloudPlatform/lb/google"
   version      = "~> 2.0.0"
   region       = "us-west1"
-  name         = "load-balancer"
+  name         = "${local.network}-load-balancer"
   service_port = 80
   target_tags  = ["allow-lb-service"]
   project      = "${var.project}"
@@ -29,5 +29,13 @@ resource "google_compute_region_instance_group_manager" "webserver" {
   named_port {
     name = "http"
     port = 80
+  }
+
+  update_policy {
+    type                         = "PROACTIVE"
+    instance_redistribution_type = "PROACTIVE"
+    minimal_action               = "REPLACE"
+    max_unavailable_fixed        = 2
+    replacement_method           = "RECREATE"
   }
 }
