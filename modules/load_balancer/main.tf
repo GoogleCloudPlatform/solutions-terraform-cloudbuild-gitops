@@ -13,18 +13,21 @@ module "load_balancer" {
   network      = "${local.network}"
 }
 
-module "managed_instance_group" {
-  source            = "terraform-google-modules/vm/google//modules/mig"
-  version           = "~> 1.0.0"
-  subnetwork        = "${var.subnet}"
-  subnetwork_project= "${var.project}"
-  region            = "us-west1"
+resource "google_compute_region_instance_group_manager" "webserver" {
+  name               = "${local.network}-webserver-igm"
+  base_instance_name = "${local.network}-webserver"
+  project            = "${var.project}"
+  region             = "us-west1"
+  
+  version {
+    instance_template = "${var.instance_template_id}"
+  }
+  
   target_size       = 2
-  hostname          = "mig-simple"
-  instance_template = "${var.instance_template_self_link}"
   target_pools      = [module.load_balancer.target_pool]
-  named_ports = [{
+  
+  named_port {
     name = "http"
     port = 80
-  }]
+  }
 }
