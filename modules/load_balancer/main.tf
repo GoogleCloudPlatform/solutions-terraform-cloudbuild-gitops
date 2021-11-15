@@ -26,8 +26,8 @@ resource "google_compute_region_instance_group_manager" "webserver" {
   target_size       = 2
   target_pools      = [module.load_balancer.target_pool]
   
-  named_port = [{
+  named_port = {
     name = "http"
     port = 80
-  }]
+  }
 }
