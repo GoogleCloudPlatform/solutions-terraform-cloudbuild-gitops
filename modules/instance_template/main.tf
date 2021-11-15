@@ -25,6 +25,10 @@ resource "google_compute_instance_template" "instance_template" {
     subnetwork = "${var.subnet}"
   }
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   # Apply the firewall rule to allow external IPs to access this instance
   tags = ["webserver"]
 }
