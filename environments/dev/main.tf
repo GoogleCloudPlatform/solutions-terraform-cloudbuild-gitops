@@ -37,7 +37,7 @@ module "load_balancer" {
   source  = "../../modules/load_balancer"
   project = "${var.project}"
   subnet  = "${module.vpc.subnet}"
-  instance_template_self_link = "${module.instance_template.instance_template_id}"
+  instance_template_id = "${module.instance_template.instance_template_id}"
 }
 
 module "firewall" {
