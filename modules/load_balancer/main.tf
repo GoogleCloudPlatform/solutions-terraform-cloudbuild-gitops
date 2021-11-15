@@ -1,3 +1,7 @@
+locals {
+  network = "${element(split("-", var.subnet), 0)}"
+}
+
 module "load_balancer" {
   source       = "GoogleCloudPlatform/lb/google"
   version      = "~> 2.0.0"
@@ -6,7 +10,7 @@ module "load_balancer" {
   service_port = 80
   target_tags  = ["allow-lb-service"]
   project      = "${var.project}"
-  network      = "${var.env}"
+  network      = "${local.network}"
 }
 
 module "managed_instance_group" {
@@ -15,7 +19,7 @@ module "managed_instance_group" {
   region            = "us-west1"
   target_size       = 2
   hostname          = "mig-simple"
-  instance_template = module.instance_template.self_link
+  instance_template = "${var.instance_template_self_link}"
   target_pools      = [module.load_balancer.target_pool]
   named_ports = [{
     name = "http"
