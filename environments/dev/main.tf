@@ -40,12 +40,6 @@ module "load_balancer" {
   instance_template_id = "${module.instance_template.instance_template_id}"
 }
 
-module "firewall" {
-  source  = "../../modules/firewall"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
-
 module "cloud_nat" {
   source  = "../../modules/cloud_nat"
   project = "${var.project}"

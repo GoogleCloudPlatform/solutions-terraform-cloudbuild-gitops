@@ -8,7 +8,7 @@ module "load_balancer" {
   region       = "us-west1"
   name         = "${local.network}-load-balancer"
   service_port = 80
-  target_tags  = ["allow-lb-service"]
+  target_tags  = ["webserver"]
   project      = "${var.project}"
   network      = "${local.network}"
 }
