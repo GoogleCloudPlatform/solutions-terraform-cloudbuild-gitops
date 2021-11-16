@@ -27,14 +27,21 @@ module "vpc" {
   env     = "${local.env}"
 }
 
-module "http_server" {
-  source  = "../../modules/http_server"
+module "instance_template" {
+  source  = "../../modules/instance_template"
   project = "${var.project}"
   subnet  = "${module.vpc.subnet}"
 }
 
-module "firewall" {
-  source  = "../../modules/firewall"
+module "load_balancer" {
+  source  = "../../modules/load_balancer"
+  project = "${var.project}"
+  subnet  = "${module.vpc.subnet}"
+  instance_template_id = "${module.instance_template.instance_template_id}"
+}
+
+module "cloud_nat" {
+  source  = "../../modules/cloud_nat"
   project = "${var.project}"
   subnet  = "${module.vpc.subnet}"
 }
