@@ -35,7 +35,5 @@ resource "google_compute_region_instance_group_manager" "webserver" {
     type                         = "PROACTIVE"
     instance_redistribution_type = "PROACTIVE"
     minimal_action               = "REPLACE"
-    max_surge_fixed              = 3
-    replacement_method           = "RECREATE"
   }
 }
