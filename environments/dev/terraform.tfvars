@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="gnd-tim-automation-gitops"
