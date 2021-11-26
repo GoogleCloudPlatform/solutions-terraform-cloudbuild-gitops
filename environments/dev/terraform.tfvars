@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="kubenetes-275211-330902"
