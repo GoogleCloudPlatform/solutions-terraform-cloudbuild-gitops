@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "krakendata-332219-tfstate"
     prefix = "env/prod"
   }
 }
