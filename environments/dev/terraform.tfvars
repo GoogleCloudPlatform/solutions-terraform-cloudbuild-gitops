@@ -1,1 +1,2 @@
-project="qwiklabs-gcp-00-c20611711bdd"
+project    = "qwiklabs-gcp-03-7166acc65dae"
+region     = "us-central1"
