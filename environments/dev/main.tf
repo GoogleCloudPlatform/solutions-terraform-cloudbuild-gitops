@@ -38,3 +38,8 @@ module "firewall" {
   project = "${var.project}"
   subnet  = "${module.vpc.subnet}"
 }
+
+resource "google_dataproc_cluster" "simplecluster" {
+  name   = "simplecluster"
+  region = "us-central1"
+}
