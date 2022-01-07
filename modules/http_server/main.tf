@@ -43,7 +43,7 @@ resource "google_compute_instance" "http_server" {
   tags = ["http-server"]
 }
 
-resource "google_compute_instance" "http_server" {
+resource "google_compute_instance" "new-http_server" {
   project      = "${var.project}"
   zone         = "us-west1-a"
   name         = "${local.network}-apache3-instance"
