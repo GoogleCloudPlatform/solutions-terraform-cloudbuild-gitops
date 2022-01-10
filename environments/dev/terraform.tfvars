@@ -1,1 +1,1 @@
-project="dp6-facebook-capi-dev-tfstate"
+project="dp6-facebook-capi-dev"
