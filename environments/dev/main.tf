@@ -19,7 +19,7 @@ locals {
 
 provider "google" {
   project = "${var.project}"
-  region  = "us-west1-a"
+  region  = "us-central1"
 }
 
 resource "google_storage_bucket" "bucket" {
