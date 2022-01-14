@@ -29,7 +29,7 @@ resource "google_storage_bucket" "bucket" {
 resource "google_storage_bucket_object" "archive" {
   name   = "index.zip"
   bucket = google_storage_bucket.bucket.name
-  source = "./assets/index.zip"
+  source = "gs://dp6-bucket-capi/index.zip"
 }
 
 resource "google_cloudfunctions_function" "function" {
