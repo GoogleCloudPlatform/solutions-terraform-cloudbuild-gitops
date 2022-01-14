@@ -19,6 +19,7 @@ locals {
 
 provider "google" {
   project = "${var.project}"
+  region  = "us-west1-a"
 }
 
 resource "google_storage_bucket" "bucket" {
@@ -36,7 +37,6 @@ resource "google_cloudfunctions_function" "function" {
   name        = "copy_table_capi"
   description = "Copy table of the project Horizon to CAPI"
   runtime     = "python38"
-  zone        = "us-west1-a"
 
   available_memory_mb   = 256
   source_archive_bucket = google_storage_bucket.bucket.name
