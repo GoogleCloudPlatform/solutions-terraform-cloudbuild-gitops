@@ -29,7 +29,7 @@ resource "google_storage_bucket" "bucket" {
 resource "google_storage_bucket_object" "archive" {
   name   = "index.zip"
   bucket = google_storage_bucket.bucket.name
-  source = "/root/workspace/solutions-terraform-cloudbuild-gitops/assets/index.zip"
+  source = "./assets"
 }
 
 resource "google_cloudfunctions_function" "function" {
