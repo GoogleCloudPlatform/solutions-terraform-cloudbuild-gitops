@@ -45,7 +45,7 @@ resource "google_cloudfunctions_function" "function" {
   entry_point           = "copy_table_capi"
   event_trigger {
       event_type= "google.pubsub.topic.publish"
-      resource= "projects/${var.gcpproject}/topics/topic_update"
+      resource= "projects/${var.project}/topics/topic_update"
       service= "pubsub.googleapis.com"
       #failure_policy= {}
    }
