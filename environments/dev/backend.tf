@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "dp6-facebook-capi-dev-tfstate"
     prefix = "env/dev"
   }
 }
