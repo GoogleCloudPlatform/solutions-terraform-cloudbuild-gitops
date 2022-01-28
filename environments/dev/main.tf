@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#teste cleber
+#teste cleber2
 locals {
   env = "dev"
 }
@@ -23,7 +23,7 @@ provider "google" {
 }
 
 resource "google_storage_bucket" "bucket" {
-  name     = "dp6-bucket-capi"
+  name     = "dp6-estudos-bucket"
   location = "US"
 }
 
@@ -34,15 +34,15 @@ resource "google_storage_bucket_object" "archive" {
 }
 
 resource "google_cloudfunctions_function" "function" {
-  name        = "copy_table_capi"
-  description = "Copy table of the project Horizon to CAPI"
+  name        = "copy_table_estudos"
+  description = "Copy table of the project dp6-estudos"
   runtime     = "python38"
 
   available_memory_mb   = 256
   source_archive_bucket = google_storage_bucket.bucket.name
   source_archive_object = google_storage_bucket_object.archive.name
   # trigger_topic          = true
-  entry_point           = "copy_table_capi"
+  entry_point           = "copy_table_estudos"
   event_trigger {
       event_type= "google.pubsub.topic.publish"
       resource= "projects/${var.project}/topics/topic_update"
