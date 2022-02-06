@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "pandhtest-tfstate"
+    bucket = "fiery-outpost-325706"
     prefix = "env/dev"
   }
 }
