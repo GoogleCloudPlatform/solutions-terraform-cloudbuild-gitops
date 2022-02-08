@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+# Define a local variable
 locals {
   network = "${element(split("-", var.subnet), 0)}"
 }
 
+# Create a firewall rule
 resource "google_compute_firewall" "allow-http" {
   name    = "${local.network}-allow-http"
   network = "${local.network}"
