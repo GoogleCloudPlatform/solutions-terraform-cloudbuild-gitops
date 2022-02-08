@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "amw-dna-ingestion-dev-tfstate"
     prefix = "env/prod"
   }
 }
