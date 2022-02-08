@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="amw-dna-ingestion-dev"
