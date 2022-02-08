@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="ntochizawa-gke-demo01"
