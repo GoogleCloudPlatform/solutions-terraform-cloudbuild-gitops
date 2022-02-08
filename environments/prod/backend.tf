@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "load-balancer-internal-tfstate"
     prefix = "env/prod"
   }
 }
