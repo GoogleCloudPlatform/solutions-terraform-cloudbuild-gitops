@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "fiery-outpost-325706-tfstate"
     prefix = "env/dev"
   }
 }
