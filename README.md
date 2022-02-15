@@ -20,6 +20,14 @@ git add --all
 git commit -m "Update project IDs and buckets"
 git push origin dev
 ```
+# Configuring cloud Build
+Retrieves cloud build service account and grant it roles/editor rights
+```bash
+CLOUDBUILD_SA="$(gcloud projects describe $PROJECT_ID \
+    --format 'value(projectNumber)')@cloudbuild.gserviceaccount.com"
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member serviceAccount:$CLOUDBUILD_SA --role roles/editor
+```
 
 ## Configuring your **dev** environment
 
