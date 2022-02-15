@@ -2,6 +2,25 @@
 
 This is the repo for the [Managing infrastructure as code with Terraform, Cloud Build, and GitOps](https://cloud.google.com/solutions/managing-infrastructure-as-code) tutorial. This tutorial explains how to manage infrastructure as code with Terraform and Cloud Build using the popular GitOps methodology. 
 
+# Configuring the project
+Create the state buckets
+```bash
+PROJECT_ID=$(gcloud config get-value project)
+gsutil mb gs://${PROJECT_ID}-tfstate
+```
+Update the projectID value on the terraform.tfvars and backend.tf files
+```bash
+cd ~/solutions-terraform-cloudbuild-gitops
+sed -i s/PROJECT_ID/$PROJECT_ID/g environments/*/terraform.tfvars
+sed -i s/PROJECT_ID/$PROJECT_ID/g environments/*/backend.tf
+```
+If everything is ok then push the changes to your repo
+```bash
+git add --all
+git commit -m "Update project IDs and buckets"
+git push origin dev
+```
+
 ## Configuring your **dev** environment
 
 Just for demostration, this step will:
