@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "newfold-anthos-devqa-tfstate"
     prefix = "env/dev"
   }
 }
