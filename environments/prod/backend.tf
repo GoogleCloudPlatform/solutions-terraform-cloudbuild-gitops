@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "monumetric-pythian-sandbox-tfstate"
     prefix = "env/prod"
   }
 }
