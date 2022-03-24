@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "rbadawi-openx-sandboc-tfstate"
     prefix = "env/prod"
   }
 }
