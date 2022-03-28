@@ -23,6 +23,6 @@ provider "google" {
 
 module "saccount" {
   source  = "../../modules/saccount"
-  account_id   = "arindambuild9"
-  display_name = "arindamsvc"
+  account_id   = arindambuild9
+  display_name = arindamsvc
 }
