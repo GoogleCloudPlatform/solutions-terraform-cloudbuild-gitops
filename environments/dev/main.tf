@@ -21,7 +21,7 @@ provider "google" {
   project = "${var.project}"
 }
 
-module "asccount" {
+module "saccount" {
   source  = "../../modules/saccount"
   account_id   = "arindambuild9"
   display_name = "arindamsvc"
