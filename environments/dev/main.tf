@@ -21,8 +21,8 @@ provider "google" {
   project = "${var.project}"
 }
 
-module "saccount" {
+/*module "saccount" {
   source  = "../../modules/saccount"
   account_id   = arindambuild9
   display_name = arindamsvc
-}
+}*/
