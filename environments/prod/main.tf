@@ -21,8 +21,7 @@ provider "google" {
   project = "${var.project}"
 }
 
-/*module "saccount" {
-  source  = "../../modules/saccount"
-  account_id   = arindambuild9
-  display_name = arindamsvc
-}*/
+resource "google_service_account" "saprod" {
+  account_id   = "saaccountprod"
+  display_name = "arindamsvcp"
+}
