@@ -34,9 +34,9 @@ resource "google_compute_instance" "http_server" {
   network_interface {
     subnetwork = "${var.subnet}"
 
-#     access_config {
-#       # Include this section to give the VM an external ip address
-#     }
+    access_config {
+      # Include this section to give the VM an external ip address
+    }
   }
   shielded_instance_config {
     enable_secure_boot = true
