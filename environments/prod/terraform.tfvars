@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="terraform-gitops-demo-345722"
