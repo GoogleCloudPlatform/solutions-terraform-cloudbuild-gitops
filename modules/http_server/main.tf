@@ -34,11 +34,13 @@ resource "google_compute_instance" "http_server" {
   network_interface {
     subnetwork = "${var.subnet}"
 
-    access_config {
+# wvdg remove becuase not allowed    
+#    access_config {
       # Include this section to give the VM an external ip address
-    }
+#    }
   }
 
   # Apply the firewall rule to allow external IPs to access this instance
-  tags = ["http-server"]
+  # wvdg - force test #4
+  tags = ["http-server1"]
 }

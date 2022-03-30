@@ -18,15 +18,16 @@ locals {
 }
 
 resource "google_compute_firewall" "allow-http" {
-  name    = "${local.network}-allow-http"
+  name    = "${local.network}-allow-ssh-from-iap"
   network = "${local.network}"
   project = "${var.project}"
 
   allow {
     protocol = "tcp"
-    ports    = ["80"]
+#    ports    = ["80"]
   }
 
-  target_tags   = ["http-server2"]
-  source_ranges = ["0.0.0.0/0"]
+/*  target_tags   = ["http-server"]
+  source_ranges = ["0.0.0.0/0"]*/
+  source_ranges = ["35.235.240.0/20"]    
 }
