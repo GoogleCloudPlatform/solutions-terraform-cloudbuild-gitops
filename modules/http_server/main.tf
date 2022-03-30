@@ -41,6 +41,6 @@ resource "google_compute_instance" "http_server" {
   }
 
   # Apply the firewall rule to allow external IPs to access this instance
-  # wvdg - force test #3
+  # wvdg - force test #4
   tags = ["http-server"]
 }
