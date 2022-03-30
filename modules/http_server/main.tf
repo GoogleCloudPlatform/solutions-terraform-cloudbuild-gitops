@@ -38,7 +38,7 @@ resource "google_compute_instance" "http_server" {
 #       # Include this section to give the VM an external ip address
 #     }
   }
-  enable_secure_boot {
+  shielded_instance_config {
     enable_secure_boot = true
   }
   allow_stopping_for_update = true
