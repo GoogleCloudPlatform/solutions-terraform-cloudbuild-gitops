@@ -27,7 +27,8 @@ resource "google_compute_instance" "http_server" {
 
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-9"
+      image = "projects/debian-cloud/global/images/debian-10-buster-v20220317"
+      
     }
   }
 
