@@ -14,7 +14,7 @@
 
 
 locals {
-  env = "prod"
+  env = "kumba-prod"
 }
 
 provider "google" {

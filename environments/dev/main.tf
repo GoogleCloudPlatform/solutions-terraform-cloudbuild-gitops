@@ -14,7 +14,7 @@
 
 
 locals {
-  env = "dev"
+  env = "kumba-dev"
 }
 
 provider "google" {
