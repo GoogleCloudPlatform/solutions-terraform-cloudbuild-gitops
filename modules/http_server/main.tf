@@ -34,9 +34,14 @@ resource "google_compute_instance" "http_server" {
   network_interface {
     subnetwork = "${var.subnet}"
 
-    access_config {
-      # Include this section to give the VM an external ip address
-    }
+#     access_config {
+#       # Include this section to give the VM an external ip address
+#     }
+    
+  enable_secure_boot {
+    enable_secure_boot = true
+  }
+  allow_stopping_for_update = true
   }
 
   # Apply the firewall rule to allow external IPs to access this instance
