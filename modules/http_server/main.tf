@@ -17,6 +17,14 @@ locals {
   network = "${element(split("-", var.subnet), 0)}"
 }
 
+data "template_file" "group-startup-script" {
+  template = file(format("%s/gceme.sh.tpl", path.module))
+
+  vars = {
+    PROXY_PATH = ""
+  }
+}
+
 resource "google_compute_instance" "http_server" {
   project      = "${var.project}"
   zone         = "us-west1-a"
