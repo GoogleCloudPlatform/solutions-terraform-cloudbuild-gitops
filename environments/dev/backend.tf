@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "neon-dryad-345315-tfstate"
     prefix = "env/dev"
   }
 }
