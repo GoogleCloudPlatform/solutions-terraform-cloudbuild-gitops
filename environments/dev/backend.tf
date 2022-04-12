@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "crypto-catfish-344201-tfstate"
     prefix = "env/dev"
   }
 }
