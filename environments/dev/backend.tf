@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "amoros-sandbox-344216-tfstate"
     prefix = "env/dev"
   }
 }
