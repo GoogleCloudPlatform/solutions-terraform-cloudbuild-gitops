@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "hiroki-sandbox-tfstate"
     prefix = "env/prod"
   }
 }
