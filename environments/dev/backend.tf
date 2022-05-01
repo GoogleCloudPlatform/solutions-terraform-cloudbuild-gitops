@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "infinite-loop-347810-tfstate"
     prefix = "env/dev"
   }
 }
