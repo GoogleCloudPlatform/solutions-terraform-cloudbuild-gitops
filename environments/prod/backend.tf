@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "jolenkinton-tfstate"
+    bucket = "infinite-loop-347810-tfstate"
     prefix = "env/prod"
   }
 }
