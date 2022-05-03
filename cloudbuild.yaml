@@ -19,8 +19,8 @@ steps:
   entrypoint: 'sh'  
   args: 
   - '-c'
-  - pwd
   - | 
+      pwd
       echo "****************************"
       echo "repo name  : $REPO_NAME     "
       echo "branch name: $BRANCH_NAME   "
@@ -29,11 +29,10 @@ steps:
       echo "****************************"
 
 - id: 'tf init'
-  name: 'hashicorp/terraform:1.0.0'
+  name: 'hashicorp/terraform:1.1.0'
   entrypoint: 'sh'
   args: 
   - '-c'
-  - pwd
   - |
       if [ -d "environments/$BRANCH_NAME/" ]; then
         cd environments/$BRANCH_NAME
@@ -55,7 +54,7 @@ steps:
 
 # [START tf-plan]
 - id: 'tf plan'
-  name: 'hashicorp/terraform:1.0.0'
+  name: 'hashicorp/terraform:1.1.0'
   entrypoint: 'sh'
   args: 
   - '-c'
@@ -81,7 +80,7 @@ steps:
 
 # [START tf-apply]
 - id: 'tf apply'
-  name: 'hashicorp/terraform:1.0.0'
+  name: 'hashicorp/terraform:1.1.0'
   entrypoint: 'sh'
   args: 
   - '-c'
