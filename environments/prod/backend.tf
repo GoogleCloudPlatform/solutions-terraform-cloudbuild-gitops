@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "sg-cicd-boot-1ee5ba49"
+    bucket = "sg-cicd-boot-1ee5ba49-tfstate"
     prefix = "env/prod"
   }
 }
