@@ -20,12 +20,13 @@ steps:
   args: 
   - '-c'
   - | 
-      pwd
       echo "****************************"
       echo "repo name  : $REPO_NAME     "
       echo "branch name: $BRANCH_NAME   "
       echo "project ID : $PROJECT_ID    "
       echo "location   : $LOCATION      "
+      echo "workdir    : ${pwd}         "
+      echo "ls -al     : ${ls -al}      "
       echo "****************************"
 
 - id: 'tf init'
