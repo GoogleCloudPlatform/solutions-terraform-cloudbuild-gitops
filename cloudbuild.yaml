@@ -25,8 +25,8 @@ steps:
       echo "branch name: $BRANCH_NAME   "
       echo "project ID : $PROJECT_ID    "
       echo "location   : $LOCATION      "
-      echo "workdir    : ${pwd}         "
-      echo "ls -al     : ${ls -al}      "
+      echo "workdir    : $(pwd)         "
+      echo "ls -al     : $(ls -al)      "
       echo "****************************"
 
 - id: 'tf init'
