@@ -20,12 +20,17 @@ steps:
   args: 
   - '-c'
   - | 
-      echo "***********************"
-      echo "$BRANCH_NAME"
-      echo "***********************"
+      echo "****************************"
+      echo "repo name  : $REPO_NAME     "
+      echo "branch name: $BRANCH_NAME   "
+      echo "project ID : $PROJECT_ID    "
+      echo "location   : $LOCATION      "
+      echo "workdir    : $(pwd)         "
+      echo "ls -al     : $(ls -al)      "
+      echo "****************************"
 
 - id: 'tf init'
-  name: 'hashicorp/terraform:1.0.0'
+  name: 'hashicorp/terraform:1.1.0'
   entrypoint: 'sh'
   args: 
   - '-c'
@@ -50,7 +55,7 @@ steps:
 
 # [START tf-plan]
 - id: 'tf plan'
-  name: 'hashicorp/terraform:1.0.0'
+  name: 'hashicorp/terraform:1.1.0'
   entrypoint: 'sh'
   args: 
   - '-c'
@@ -76,7 +81,7 @@ steps:
 
 # [START tf-apply]
 - id: 'tf apply'
-  name: 'hashicorp/terraform:1.0.0'
+  name: 'hashicorp/terraform:1.1.0'
   entrypoint: 'sh'
   args: 
   - '-c'
