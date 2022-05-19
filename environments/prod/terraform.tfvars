@@ -1,1 +1,1 @@
-project="gitopsterraform"
+project="gcptfvm"
