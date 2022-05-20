@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "liquid-fulcrum-350813-tfstate"
     prefix = "env/dev"
   }
 }
