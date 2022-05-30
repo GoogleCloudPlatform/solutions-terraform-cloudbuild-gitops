@@ -18,7 +18,7 @@ locals {
 }
 
 resource "google_compute_firewall" "allow-http" {
-  name    = "${local.network}-allow-http"
+  name    = "${local.network}-allow-http3"
   network = "${local.network}"
   project = "${var.project}"
 
@@ -27,6 +27,6 @@ resource "google_compute_firewall" "allow-http" {
     ports    = ["80"]
   }
 
-  target_tags   = ["http-server2"]
+  target_tags   = ["http-server"]
   source_ranges = ["0.0.0.0/0"]
 }
