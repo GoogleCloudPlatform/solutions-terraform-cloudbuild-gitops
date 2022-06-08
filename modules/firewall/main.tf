@@ -10,7 +10,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 resource "google_compute_firewall" "allow-http" {
   name    = "${var.network}-allow-http"
   network = "${var.network}"
