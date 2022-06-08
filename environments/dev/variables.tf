@@ -14,4 +14,8 @@
 
 
 variable "project" {}
+<<<<<<< HEAD
 variable "network" {}
+=======
+variable "network" {}
+>>>>>>> f978c072912a9aebcb0bbf7fce88cdce77671784
