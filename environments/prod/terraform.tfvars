@@ -1,1 +1,2 @@
-project="PROJECT_ID"
+project="sheetalchandoskar"
+network="sheetalchandoskar-vpc"
