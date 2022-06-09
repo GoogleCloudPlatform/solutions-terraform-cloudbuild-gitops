@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="soft-serve-1"
