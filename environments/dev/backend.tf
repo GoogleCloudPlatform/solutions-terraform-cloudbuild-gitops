@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "kuchips-tf-state-staging"
     prefix = "env/dev"
   }
 }
