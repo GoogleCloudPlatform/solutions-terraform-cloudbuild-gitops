@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "kuchips-tf-state-prod"
+    bucket = "kuchips-tf-state-staging"
     prefix = "env/prod"
   }
 }
