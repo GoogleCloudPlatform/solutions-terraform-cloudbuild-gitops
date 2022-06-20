@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "dark-safeguard-326909-tfstate"
     prefix = "env/dev"
   }
 }
