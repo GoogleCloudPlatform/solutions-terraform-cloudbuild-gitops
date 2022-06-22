@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "spry-cortex-353514-tfstate"
     prefix = "env/dev"
   }
 }
