@@ -15,7 +15,6 @@
 
 locals {
   env = "dev"
-  parent = var.parent_folder != "" ? "folders/${var.parent_folder}" : "organizations/${var.org_id}"
 }
 
 provider "google" {
@@ -24,10 +23,10 @@ provider "google" {
 
 resource "google_folder" "development" {
   display_name = "dnc-${var.folder_prefix}-dev"
-  parent       = local.parent
+  parent       = "organizations/${var.org_id}"
 }
 
 resource "google_folder" "production" {
   display_name = "dnc-${var.folder_prefix}-dev"
-  parent       = local.parent
+  parent       = "organizations/${var.org_id}"
 }
