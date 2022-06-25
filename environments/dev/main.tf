@@ -14,27 +14,19 @@
 
 
 locals {
-  "env" = "dev"
+  env = "dev"
 }
 
 provider "google" {
   project = "${var.project}"
 }
 
-module "vpc" {
-  source  = "../../modules/vpc"
-  project = "${var.project}"
-  env     = "${local.env}"
+resource "google_folder" "development" {
+  display_name = "dnc-${var.folder_prefix}-dev"
+  parent       = "organizations/${var.org_id}"
 }
 
-module "http_server" {
-  source  = "../../modules/http_server"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
-
-module "firewall" {
-  source  = "../../modules/firewall"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
+resource "google_folder" "production" {
+  display_name = "dnc-${var.folder_prefix}-dev"
+  parent       = "organizations/${var.org_id}"
 }
