@@ -15,26 +15,19 @@
 
 locals {
   env = "dev"
+  parent = var.parent_folder != "" ? "folders/${var.parent_folder}" : "organizations/${var.org_id}"
 }
 
 provider "google" {
   project = "${var.project}"
 }
 
-module "vpc" {
-  source  = "../../modules/vpc"
-  project = "${var.project}"
-  env     = "${local.env}"
+resource "google_folder" "development" {
+  display_name = "dnc-${var.folder_prefix}-dev"
+  parent       = local.parent
 }
 
-module "http_server" {
-  source  = "../../modules/http_server"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
-
-module "firewall" {
-  source  = "../../modules/firewall"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
+resource "google_folder" "production" {
+  display_name = "dnc-${var.folder_prefix}-dev"
+  parent       = local.parent
 }
