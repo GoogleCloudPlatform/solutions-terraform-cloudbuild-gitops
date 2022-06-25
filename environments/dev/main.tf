@@ -23,10 +23,10 @@ provider "google" {
 
 resource "google_folder" "development" {
   display_name = "dnc-${var.folder_prefix}-dev"
-  parent       = "organizations/${var.organization_id}"
+  parent       = "organizations/${var.org_id}"
 }
 
 resource "google_folder" "production" {
   display_name = "dnc-${var.folder_prefix}-dev"
-  parent       = "organizations/${var.organization_id}"
+  parent       = "organizations/${var.org_id}"
 }
