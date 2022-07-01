@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-/*
+
 locals {
   env = "prod"
 }
@@ -29,8 +29,8 @@ module "vpc" {
 
 module "http_server" {
   source  = "../../modules/http_server"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
+  #project = "${var.project}"
+  #subnet  = "${module.vpc.subnet}"
 }
 
 module "firewall" {
@@ -38,4 +38,3 @@ module "firewall" {
   project = "${var.project}"
   subnet  = "${module.vpc.subnet}"
 }
-*/
