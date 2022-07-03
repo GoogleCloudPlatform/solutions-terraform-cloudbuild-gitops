@@ -1,7 +1,7 @@
 
 module "http_lb" {
   source            = "GoogleCloudPlatform/lb-http/google"
-  version           = "~> 5.1"
+  version           = "~> 4.4"
 
   project           = "${var.project}"
   name              = "${var.network}-http-lb"
@@ -77,8 +77,6 @@ resource "google_compute_region_instance_group_manager" "webserver" {
   }
   
   target_size       = 2
-  #target_pools      = [module.http_lb.target_pool]
-  
   named_port {
     name = "http"
     port = 80

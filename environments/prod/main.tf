@@ -36,7 +36,7 @@ module "instance_template" {
 module "http_lb" {
   source  = "../../modules/http_lb"
   project = "${var.project}"
-  subnet  = "${module.vpc.network}"
+  network  = "${module.vpc.network}"
   instance_template_id = "${module.instance_template.instance_template_id}"
 }
 
