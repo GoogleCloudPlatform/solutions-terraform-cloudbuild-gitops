@@ -21,6 +21,12 @@ resource "google_compute_instance_template" "instance_template" {
       boot         = true
   }
 
+  shielded_instance_config {
+      enable_secure_boot = true
+      enable_vtpm = true
+      enable_integrity_monitoring = true
+  }
+
   network_interface {
     subnetwork = "${var.subnet}"
   }
