@@ -33,10 +33,10 @@ module "instance_template" {
   subnet  = "${module.vpc.subnet}"
 }
 
-module "load_balancer" {
-  source  = "../../modules/load_balancer"
+module "http_lb" {
+  source  = "../../modules/http_lb"
   project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
+  subnet  = "${module.vpc.network}"
   instance_template_id = "${module.instance_template.instance_template_id}"
 }
 
