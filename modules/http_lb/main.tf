@@ -1,7 +1,7 @@
 
 module "http_lb" {
   source            = "GoogleCloudPlatform/lb-http/google"
-  version           = "~> 4.4"
+  version           = "~> 5.1"
 
   project           = "${var.project}"
   name              = "${var.network}-http-lb"
