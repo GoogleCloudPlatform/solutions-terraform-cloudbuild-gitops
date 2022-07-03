@@ -14,5 +14,5 @@
 
 
 output "external_ip" {
-  value = "${module.load_balancer.external_ip}"
+  value = "${module.http_lb.external_ip}"
 }

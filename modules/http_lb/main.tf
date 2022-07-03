@@ -13,7 +13,7 @@ module "http_lb" {
       description                     = null
       protocol                        = "HTTP"
       port                            = 80
-      port_name                       = http
+      port_name                       = "http"
       timeout_sec                     = 10
       enable_cdn                      = false
       custom_request_headers          = null
