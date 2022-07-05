@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "speedy-aurora-351809-tfstate"
     prefix = "env/prod"
   }
 }
