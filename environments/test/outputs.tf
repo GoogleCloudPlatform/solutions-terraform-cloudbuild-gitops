@@ -13,28 +13,22 @@
 # limitations under the License.
 
 
-locals {
-  env = "prod"
+output "network" {
+  value = "${module.vpc.network}"
 }
 
-provider "google" {
-  project = "${var.project}"
+output "subnet" {
+  value = "${module.vpc.subnet}"
 }
 
-module "vpc" {
-  source  = "../../modules/vpc"
-  project = "${var.project}"
-  env     = "${local.env}"
+output "firewall_rule" {
+  value = "${module.firewall.firewall_rule}"
 }
 
-module "http_server" {
-  source  = "../../modules/http_server"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
+output "instance_name" {
+  value = "${module.http_server.instance_name}"
 }
 
-module "firewall" {
-  source  = "../../modules/firewall"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
+output "external_ip" {
+  value = "${module.http_server.external_ip}"
 }
