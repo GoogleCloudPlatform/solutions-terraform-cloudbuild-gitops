@@ -31,3 +31,4 @@ resource "google_compute_firewall" "allow-http" {
   source_ranges = ["0.0.0.0/0"]
 }
 # to do
+# to do 2
