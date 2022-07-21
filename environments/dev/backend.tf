@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "healthy-coil-346109-tfstate"
     prefix = "env/dev"
   }
 }
