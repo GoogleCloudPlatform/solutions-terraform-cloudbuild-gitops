@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="gke-tutorial-test-357015"
