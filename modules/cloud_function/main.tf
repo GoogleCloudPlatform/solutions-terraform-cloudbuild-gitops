@@ -18,7 +18,7 @@ resource "google_cloudfunctions_function" "function" {
   source_archive_object = google_storage_bucket_object.archive.name
   trigger_http          = true
   ingress_settings      = "ALLOW_ALL"
-  entry_point           = "${var.function-name}"
+  entry_point           = "${var.entry-point}"
   service_account_email = google_service_account.service_account.email
 }
 
