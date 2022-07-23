@@ -2,13 +2,19 @@ resource "google_storage_bucket" "bucket" {
   name                          = "${var.project}-source-code"
   location                      = "us-central1"
   uniform_bucket_level_access   = true
+}
 
+data "archive_file" "cf_source_zip" {
+  type        = "zip"
+  source_dir  = "../../functions/${var.function-name}"
+  output_path = "${path.module}/tmp/some-name.zip"
 }
 
 resource "google_storage_bucket_object" "archive" {
-  name   = "${var.function-name}-index.zip"
-  bucket = google_storage_bucket.bucket.name
-  source = "../../functions/${var.function-name}"
+  name          = "${var.function-name}-index.zip"
+  bucket        = google_storage_bucket.bucket.name
+  source        = data.archive_file.cf_source_zip.output_path
+  content_type  = "application/zip"
 }
 
 resource "google_cloudfunctions_function" "function" {
