@@ -18,6 +18,8 @@ resource "google_storage_bucket_object" "archive" {
 }
 
 resource "google_cloudfunctions_function" "function" {
+  project     = "${var.project}"
+  region      = "us-central1"
   name        = "${var.function-name}"
   description = "${var.function-desc}"
   runtime     = "python39"
