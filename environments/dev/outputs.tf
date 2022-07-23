@@ -16,3 +16,11 @@ output "external_ip" {
   value = "${module.load_balancer.external_ip}"
 }
 */
+
+output "function_trigger_url" {
+  value       = "${module.cloud_function.function_trigger_url}"
+}
+
+output "sa-email" {
+  value       = "${module.cloud_function.sa-email}"
+}

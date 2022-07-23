@@ -20,6 +20,14 @@ locals {
 provider "google" {
   project = "${var.project}"
 }
+
+module "cloud_function" {
+    source          = "../../modules/cloud_function"
+    project         = "${var.project}"
+    function-name   = "admin_access"
+    function-desc   = "intakes requests from slack for just-in-time admin access to a project"
+}
+
 /*
 module "vpc" {
   source  = "../../modules/vpc"
