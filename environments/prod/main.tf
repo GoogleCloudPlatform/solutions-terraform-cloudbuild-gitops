@@ -25,6 +25,15 @@ provider "google-beta" {
   project     = "${var.project}"
   region      = "${var.region}"
 }
+
+module "cloud_function" {
+    source          = "../../modules/cloud_function"
+    project         = "${var.project}"
+    function-name   = "admin-access"
+    function-desc   = "intakes requests from slack for just-in-time admin access to a project"
+    entry-point     = "admin_access"
+}
+
 /*
 module "vpc" {
   source  = "../../modules/vpc"
