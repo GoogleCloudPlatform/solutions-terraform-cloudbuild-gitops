@@ -75,7 +75,7 @@ resource "google_secret_manager_secret" "slack-access-admin-secret" {
 }
 
 # IAM entry for service account of admin-access function to use the slack bot token
-resource "google_secret_manager_secret_iam_member" "member" {
+resource "google_secret_manager_secret_iam_binding" "binding" {
   project   = google_secret_manager_secret.slack-access-admin-secret.project
   secret_id = google_secret_manager_secret.slack-access-admin-secret.secret_id
   role      = "roles/secretmanager.secretAccessor"
