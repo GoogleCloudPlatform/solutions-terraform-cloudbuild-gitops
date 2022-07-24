@@ -19,9 +19,5 @@ output "external_ip" {
 */
 
 output "function_trigger_url" {
-  value       = "${module.cloud_function.function_trigger_url}"
-}
-
-output "sa-email" {
-  value       = "${module.cloud_function.sa-email}"
+  value       = "${module.admin-access-cloud-function.function_trigger_url}"
 }

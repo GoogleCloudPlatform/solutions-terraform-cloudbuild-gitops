@@ -30,16 +30,12 @@ resource "google_cloudfunctions_function" "function" {
   ingress_settings      = "ALLOW_ALL"
   entry_point           = "${var.entry-point}"
   service_account_email = google_service_account.service_account.email
-}
-
-# IAM entry for all users to invoke the function
-resource "google_cloudfunctions_function_iam_member" "invoker" {
-  project        = google_cloudfunctions_function.function.project
-  region         = google_cloudfunctions_function.function.region
-  cloud_function = google_cloudfunctions_function.function.name
-
-  role   = "roles/cloudfunctions.invoker"
-  member = "allUsers"
+  
+  secret_environment_variables = {
+    key     = "SLACK_ACCESS_TOKEN"
+    secret  = "${var.secret-id}"
+    version = "latest"
+  }
 }
 
 resource "google_service_account" "service_account" {
