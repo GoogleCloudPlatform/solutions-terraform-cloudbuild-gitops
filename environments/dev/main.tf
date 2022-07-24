@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 locals {
   env = "dev"
 }
@@ -21,12 +20,59 @@ provider "google" {
   project = "${var.project}"
 }
 
-module "cloud_function" {
+module "admin-access-cloud-function" {
     source          = "../../modules/cloud_function"
     project         = "${var.project}"
     function-name   = "admin-access"
     function-desc   = "intakes requests from slack for just-in-time admin access to a project"
     entry-point     = "admin_access"
+    secret-id       = google_secret_manager_secret.slack-access-admin-secret.secret_id
+}
+
+# IAM entry for all users to invoke the admin-access function
+resource "google_cloudfunctions_function_iam_member" "admin-access-invoker" {
+  project        = "${module.admin-access-cloud-function.project}"
+  region         = "${module.admin-access-cloud-function.region}"
+  cloud_function = "${module.admin-access-cloud-function.name}"
+
+  role   = "roles/cloudfunctions.invoker"
+  member = "allUsers"
+}
+
+module "provision-access-cloud-function" {
+    source          = "../../modules/cloud_function"
+    project         = "${var.project}"
+    function-name   = "provision-access"
+    function-desc   = "processes approvals for just-in-time admin access to a project"
+    entry-point     = "provision_access"
+    secret-id       = google_secret_manager_secret.slack-access-admin-secret.secret_id
+}
+
+# IAM entry for service account of admin-access function to invoke the provision-access function
+resource "google_cloudfunctions_function_iam_member" "provision-access-invoker" {
+  project        = "${module.provision-access-cloud-function.project}"
+  region         = "${module.provision-access-cloud-function.region}"
+  cloud_function = "${module.provision-access-cloud-function.name}"
+
+  role   = "roles/cloudfunctions.invoker"
+  member = "${module.admin-access-cloud-function.sa-email}"
+}
+
+resource "google_secret_manager_secret" "slack-access-admin-secret" {
+  project = "${var.project}"
+  secret_id = "slack-access-admin-bot-token"
+
+  replication {
+    automatic = true
+  }
+}
+
+# IAM entry for service account of provision-access function to use the slack bot token
+resource "google_secret_manager_secret_iam_member" "member" {
+  project   = google_secret_manager_secret.slack-access-admin-secret.project
+  secret_id = google_secret_manager_secret.slack-access-admin-secret.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "${module.provision-access-cloud-function.sa-email}"
 }
 
 /*

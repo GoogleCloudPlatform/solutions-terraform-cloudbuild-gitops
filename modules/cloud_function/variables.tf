@@ -2,6 +2,8 @@ variable "project" {}
 variable "function-name" {}
 variable "function-desc" {}
 variable "entry-point" {}
+variable "secret-id" {}
+/*
 variable "secret" {
     type = object({
         key = string
@@ -12,3 +14,4 @@ variable "secret" {
         id  = null
     }
 }
+*/
