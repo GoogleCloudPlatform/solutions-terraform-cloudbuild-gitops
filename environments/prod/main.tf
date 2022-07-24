@@ -86,7 +86,7 @@ resource "google_secret_manager_secret_iam_binding" "binding" {
   role      = "roles/secretmanager.secretAccessor"
   members    = [
       "serviceAccount:${module.admin-access-cloud-function.sa-email}",
-      "serviceAccount:${module.provision-access-cloud-function.sa-email}"
+      "serviceAccount:${module.provision-access-cloud-function.sa-email}",
   ]
 }
 
