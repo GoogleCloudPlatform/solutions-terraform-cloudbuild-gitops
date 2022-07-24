@@ -28,7 +28,7 @@ provider "google-beta" {
 # GCS bucket to store cloud function source codes
 resource "google_storage_bucket" "bucket" {
   name                          = "${var.project}-source-code"
-  location                      = "us-central1"
+  location                      = var.region
   uniform_bucket_level_access   = true
 }
 
@@ -44,8 +44,8 @@ module "admin-access-cloud-function" {
 # IAM entry for all users to invoke the admin-access function
 resource "google_cloudfunctions_function_iam_member" "admin-access-invoker" {
   project        = var.project
-  region         = "us-central1"
-  cloud_function = "admin-access"
+  region         = var.region
+  cloud_function = module.admin-access-cloud-function.function_name
 
   role   = "roles/cloudfunctions.invoker"
   member = "allUsers"
@@ -63,8 +63,8 @@ module "provision-access-cloud-function" {
 # IAM entry for service account of admin-access function to invoke the provision-access function
 resource "google_cloudfunctions_function_iam_member" "provision-access-invoker" {
   project        = var.project
-  region         = "us-central1"
-  cloud_function = "provision-access"
+  region         = var.region
+  cloud_function = module.provision-access-cloud-function.function_name
 
   role   = "roles/cloudfunctions.invoker"
   member = "serviceAccount:${module.admin-access-cloud-function.sa-email}"

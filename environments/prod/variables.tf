@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 variable "project" {
   type        = string
   description = "Google Cloud Platform Project ID"
