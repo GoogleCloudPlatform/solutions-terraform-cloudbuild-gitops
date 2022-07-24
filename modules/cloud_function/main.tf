@@ -1,9 +1,3 @@
-resource "google_storage_bucket" "bucket" {
-  name                          = "${var.project}-source-code"
-  location                      = "us-central1"
-  uniform_bucket_level_access   = true
-}
-
 data "archive_file" "cf_source_zip" {
   type        = "zip"
   source_dir  = "../../functions/${var.function-name}"
@@ -12,7 +6,7 @@ data "archive_file" "cf_source_zip" {
 
 resource "google_storage_bucket_object" "archive" {
   name          = "${var.function-name}-index.zip"
-  bucket        = google_storage_bucket.bucket.name
+  bucket        = "${var.project}-source-code"
   source        = data.archive_file.cf_source_zip.output_path
   content_type  = "application/zip"
 }
@@ -24,7 +18,7 @@ resource "google_cloudfunctions_function" "function" {
   description = var.function-desc
   runtime     = "python39"
 
-  source_archive_bucket = google_storage_bucket.bucket.name
+  source_archive_bucket = "${var.project}-source-code"
   source_archive_object = google_storage_bucket_object.archive.name
   trigger_http          = true
   ingress_settings      = "ALLOW_ALL"

@@ -20,6 +20,13 @@ provider "google" {
   project = var.project
 }
 
+# GCS bucket to store cloud function source codes
+resource "google_storage_bucket" "bucket" {
+  name                          = "${var.project}-source-code"
+  location                      = "us-central1"
+  uniform_bucket_level_access   = true
+}
+
 module "admin-access-cloud-function" {
     source          = "../../modules/cloud_function"
     project         = var.project
@@ -55,7 +62,7 @@ resource "google_cloudfunctions_function_iam_member" "provision-access-invoker" 
   cloud_function = "provision-access"
 
   role   = "roles/cloudfunctions.invoker"
-  member = module.admin-access-cloud-function.sa-email
+  member = "serviceAccount:${module.admin-access-cloud-function.sa-email}"
 }
 
 resource "google_secret_manager_secret" "slack-access-admin-secret" {
@@ -67,12 +74,12 @@ resource "google_secret_manager_secret" "slack-access-admin-secret" {
   }
 }
 
-# IAM entry for service account of provision-access function to use the slack bot token
+# IAM entry for service account of admin-access function to use the slack bot token
 resource "google_secret_manager_secret_iam_member" "member" {
   project   = google_secret_manager_secret.slack-access-admin-secret.project
   secret_id = google_secret_manager_secret.slack-access-admin-secret.secret_id
   role      = "roles/secretmanager.secretAccessor"
-  member    = module.provision-access-cloud-function.sa-email
+  member    = "serviceAccount:${module.admin-access-cloud-function.sa-email}"
 }
 
 /*
