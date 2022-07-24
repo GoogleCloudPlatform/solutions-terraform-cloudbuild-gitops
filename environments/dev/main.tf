@@ -79,7 +79,10 @@ resource "google_secret_manager_secret_iam_member" "member" {
   project   = google_secret_manager_secret.slack-access-admin-secret.project
   secret_id = google_secret_manager_secret.slack-access-admin-secret.secret_id
   role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${module.admin-access-cloud-function.sa-email}"
+  members    = [
+      "serviceAccount:${module.admin-access-cloud-function.sa-email}",
+      "serviceAccount:${module.provision-access-cloud-function.sa-email}"
+  ]
 }
 
 /*
