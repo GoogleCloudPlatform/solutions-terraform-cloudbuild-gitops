@@ -31,7 +31,7 @@ resource "google_cloudfunctions_function" "function" {
   entry_point           = var.entry-point
   service_account_email = google_service_account.service_account.email
   
-  secret_environment_variables = {
+  secret_environment_variables {
     key     = "SLACK_ACCESS_TOKEN"
     secret  = var.secret-id
     version = "latest"

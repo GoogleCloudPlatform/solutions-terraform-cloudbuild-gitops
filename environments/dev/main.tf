@@ -22,7 +22,7 @@ provider "google" {
 
 module "admin-access-cloud-function" {
     source          = "../../modules/cloud_function"
-    project         = "${var.project}"
+    project         = var.project
     function-name   = "admin-access"
     function-desc   = "intakes requests from slack for just-in-time admin access to a project"
     entry-point     = "admin_access"
@@ -31,9 +31,9 @@ module "admin-access-cloud-function" {
 
 # IAM entry for all users to invoke the admin-access function
 resource "google_cloudfunctions_function_iam_member" "admin-access-invoker" {
-  project        = "${module.admin-access-cloud-function.project}"
-  region         = "${module.admin-access-cloud-function.region}"
-  cloud_function = "${module.admin-access-cloud-function.name}"
+  project        = var.project
+  region         = "us-central1"
+  cloud_function = "admin-access"
 
   role   = "roles/cloudfunctions.invoker"
   member = "allUsers"
@@ -50,9 +50,9 @@ module "provision-access-cloud-function" {
 
 # IAM entry for service account of admin-access function to invoke the provision-access function
 resource "google_cloudfunctions_function_iam_member" "provision-access-invoker" {
-  project        = "${module.provision-access-cloud-function.project}"
-  region         = "${module.provision-access-cloud-function.region}"
-  cloud_function = "${module.provision-access-cloud-function.name}"
+  project        = var.project
+  region         = "us-central1"
+  cloud_function = "provision-access"
 
   role   = "roles/cloudfunctions.invoker"
   member = "${module.admin-access-cloud-function.sa-email}"
