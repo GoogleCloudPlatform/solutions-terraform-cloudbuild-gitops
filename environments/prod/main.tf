@@ -31,6 +31,10 @@ module "admin-access-cloud-function" {
     function-name   = "admin-access"
     function-desc   = "intakes requests from slack for just-in-time admin access to a project"
     entry-point     = "admin_access"
+    secret          = {
+        key = "SLACK_ACCESS_TOKEN"
+        id = google_secret_manager_secret.slack-access-admin-secret.secret_id
+    }
 }
 
 # IAM entry for all users to invoke the admin-access function

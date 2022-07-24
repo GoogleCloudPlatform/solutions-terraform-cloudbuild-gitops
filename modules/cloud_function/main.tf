@@ -18,22 +18,22 @@ resource "google_storage_bucket_object" "archive" {
 }
 
 resource "google_cloudfunctions_function" "function" {
-  project     = "${var.project}"
+  project     = var.project
   region      = "us-central1"
-  name        = "${var.function-name}"
-  description = "${var.function-desc}"
+  name        = var.function-name
+  description = var.function-desc
   runtime     = "python39"
 
   source_archive_bucket = google_storage_bucket.bucket.name
   source_archive_object = google_storage_bucket_object.archive.name
   trigger_http          = true
   ingress_settings      = "ALLOW_ALL"
-  entry_point           = "${var.entry-point}"
+  entry_point           = var.entry-point
   service_account_email = google_service_account.service_account.email
   
   secret_environment_variables = {
-    key     = "SLACK_ACCESS_TOKEN"
-    secret  = "${var.secret-id}"
+    key     = var.secret.key
+    secret  = var.secret.id
     version = "latest"
   }
 }
