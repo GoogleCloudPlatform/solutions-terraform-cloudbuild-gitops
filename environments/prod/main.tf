@@ -34,7 +34,7 @@ module "admin-access-cloud-function" {
 }
 
 # IAM entry for all users to invoke the admin-access function
-resource "google_cloudfunctions_function_iam_member" "invoker" {
+resource "google_cloudfunctions_function_iam_member" "admin-access-invoker" {
   project        = "${module.admin-access-cloud-function.project}"
   region         = "${module.admin-access-cloud-function.region}"
   cloud_function = "${module.admin-access-cloud-function.name}"
@@ -52,7 +52,7 @@ module "provision-access-cloud-function" {
 }
 
 # IAM entry for service account of admin-access function to invoke the provision-access function
-resource "google_cloudfunctions_function_iam_member" "invoker" {
+resource "google_cloudfunctions_function_iam_member" "provision-access-invoker" {
   project        = "${module.provision-access-cloud-function.project}"
   region         = "${module.provision-access-cloud-function.region}"
   cloud_function = "${module.provision-access-cloud-function.name}"
