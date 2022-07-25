@@ -38,7 +38,16 @@ module "admin-access-cloud-function" {
     function-name   = "admin-access"
     function-desc   = "intakes requests from slack for just-in-time admin access to a project"
     entry-point     = "admin_access"
-    secret-id       = google_secret_manager_secret.slack-access-admin-secret.secret_id
+    secrets         = [
+        {
+            key = "SLACK_ACCESS_TOKEN"
+            id  = google_secret_manager_secret.slack-access-admin-bot-token.secret_id
+        },
+        {
+            key = "SLACK_SIGNING_SECRET"
+            id  = google_secret_manager_secret.slack-access-admin-signing-secret.secret_id
+        }
+    ]
 }
 
 # IAM entry for all users to invoke the admin-access function
@@ -57,7 +66,6 @@ module "provision-access-cloud-function" {
     function-name   = "provision-access"
     function-desc   = "processes approvals for just-in-time admin access to a project"
     entry-point     = "provision_access"
-    secret-id       = google_secret_manager_secret.slack-access-admin-secret.secret_id
 }
 
 # IAM entry for service account of admin-access function to invoke the provision-access function
@@ -70,7 +78,7 @@ resource "google_cloudfunctions_function_iam_member" "provision-access-invoker" 
   member = "serviceAccount:${module.admin-access-cloud-function.sa-email}"
 }
 
-resource "google_secret_manager_secret" "slack-access-admin-secret" {
+resource "google_secret_manager_secret" "slack-access-admin-bot-token" {
   project   = var.project
   secret_id = "slack-access-admin-bot-token"
 
@@ -80,13 +88,31 @@ resource "google_secret_manager_secret" "slack-access-admin-secret" {
 }
 
 # IAM entry for service account of admin-access function to use the slack bot token
-resource "google_secret_manager_secret_iam_binding" "binding" {
-  project   = google_secret_manager_secret.slack-access-admin-secret.project
-  secret_id = google_secret_manager_secret.slack-access-admin-secret.secret_id
+resource "google_secret_manager_secret_iam_binding" "bot_token_binding" {
+  project   = google_secret_manager_secret.slack-access-admin-bot-token.project
+  secret_id = google_secret_manager_secret.slack-access-admin-bot-token.secret_id
   role      = "roles/secretmanager.secretAccessor"
   members    = [
       "serviceAccount:${module.admin-access-cloud-function.sa-email}",
-      "serviceAccount:${module.provision-access-cloud-function.sa-email}",
+  ]
+}
+
+resource "google_secret_manager_secret" "slack-access-admin-signing-secret" {
+  project   = var.project
+  secret_id = "slack-access-admin-signing-secret"
+
+  replication {
+    automatic = true
+  }
+}
+
+# IAM entry for service account of admin-access function to use the slack signing secret
+resource "google_secret_manager_secret_iam_binding" "signing_secret_binding" {
+  project   = google_secret_manager_secret.slack-access-admin-signing-secret.project
+  secret_id = google_secret_manager_secret.slack-access-admin-signing-secret.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  members    = [
+      "serviceAccount:${module.admin-access-cloud-function.sa-email}",
   ]
 }
 
