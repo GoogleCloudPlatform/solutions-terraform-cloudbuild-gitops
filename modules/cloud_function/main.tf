@@ -25,10 +25,13 @@ resource "google_cloudfunctions_function" "function" {
   entry_point           = var.entry-point
   service_account_email = google_service_account.service_account.email
   
-  secret_environment_variables {
-    key     = "SLACK_ACCESS_TOKEN"
-    secret  = var.secret-id
-    version = "latest"
+  dynamic "secret_environment_variables" {
+    for_each = var.secrets
+    content {
+        key     = secret_environment_variables.value.key
+        secret  = secret_environment_variables.value.id
+        version = "latest"
+    }
   }
 }
 
