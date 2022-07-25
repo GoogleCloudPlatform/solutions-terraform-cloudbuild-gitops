@@ -83,7 +83,7 @@ resource "google_secret_manager_secret" "slack-access-admin-bot-token" {
 }
 
 # IAM entry for service account of admin-access function to use the slack bot token
-resource "google_secret_manager_secret_iam_binding" "binding" {
+resource "google_secret_manager_secret_iam_binding" "bot_token_binding" {
   project   = google_secret_manager_secret.slack-access-admin-bot-token.project
   secret_id = google_secret_manager_secret.slack-access-admin-bot-token.secret_id
   role      = "roles/secretmanager.secretAccessor"
@@ -102,7 +102,7 @@ resource "google_secret_manager_secret" "slack-access-admin-signing-secret" {
 }
 
 # IAM entry for service account of admin-access function to use the slack signing secret
-resource "google_secret_manager_secret_iam_binding" "binding" {
+resource "google_secret_manager_secret_iam_binding" "signing_secret_binding" {
   project   = google_secret_manager_secret.slack-access-admin-signing-secret.project
   secret_id = google_secret_manager_secret.slack-access-admin-signing-secret.secret_id
   role      = "roles/secretmanager.secretAccessor"
