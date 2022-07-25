@@ -26,7 +26,7 @@ resource "google_cloudfunctions_function" "function" {
   service_account_email = google_service_account.service_account.email
   
   dynamic "secret_environment_variables" {
-    for_each = var.secrets
+    for_each = var.secrets == null ? [] : var.secrets
     content {
         key     = secret_environment_variables.value.key
         secret  = secret_environment_variables.value.id
