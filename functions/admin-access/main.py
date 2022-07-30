@@ -337,3 +337,6 @@ def post_slack_message(slack_channel, slack_text, slack_message):
 def post_slack_response(url, slack_message):
     response = requests.post(url, data=json.dumps(slack_message), headers={'Content-Type': 'application/json'})
     print(f"Slack responded with Status Code: {response.status_code}")
+    return {
+        'statusCode': response.status_code
+    }
