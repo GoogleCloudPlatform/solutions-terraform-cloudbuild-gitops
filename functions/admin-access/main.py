@@ -20,14 +20,14 @@ def admin_access(request):
         if payload.startswith("token="):
             # handling the request action
             url = urllib.parse.unquote(payload.split("response_url=")[1].split("&")[0])
-            requestor_name = payload.split("user_name=")[1].split("&")[0],
-            requestor_id = payload.split("user_id=")[1].split("&")[0],
-            request_text = payload.split("text=")[1].split("&")[0],
+            requestor_name = payload.split("user_name=")[1].split("&")[0]
+            requestor_id = payload.split("user_id=")[1].split("&")[0]
+            request_text = payload.split("text=")[1].split("&")[0]
             print(requestor_name, requestor_id, request_text)
             input_text = request_text.split("+",2)
             if(len(input_text)<3):
                 print('Invalid request')
-                ack_text = "One or more request elements missing. Please include project `project_id` duration `hours.mins` and `reason for access`"
+                slack_ack(url, "One or more request elements missing. Please include project `project_id` duration `hours.mins` and `reason for access`")
             else:
                 project_id = input_text[0].lower()
                 duration = input_text[1]
@@ -44,15 +44,169 @@ def admin_access(request):
                 except Exception as e:
                     print("Invalid request")
                     print("Error: ", e)
-                    ack_text = "The duration doesn't conform to the hours `0-4` dot `.` mins `0-59` pattern."
-                send_slack_chat_notification(requestor_name, requestor_id, project_id, duration_hours, duration_mins, reason)
+                    slack_ack(url, "The duration doesn't conform to the hours `0-4` dot `.` mins `0-59` pattern.")
+                
+                slack_message = [ 
+                    {
+                        "type": "header",
+                        "text": {
+                            "type": "plain_text",
+                            "text": f"New Access Request from {requestor_name}!"
+                        }
+                    },
+                    {
+                        "type": "divider"
+                    },
+                    {
+                        "type": "section",
+                        "fields": [
+                            {
+                                "type": "mrkdwn",
+                                "text": f"*Project:*\n{project_id}"
+                            },
+                            {
+                                "type": "mrkdwn",
+                                "text": f"*Reason:*\n{reason}"
+                            },
+                            {
+                                "type": "mrkdwn",
+                                "text": f"*Hours:*\n{duration_hours}"
+                            },
+                            {
+                                "type": "mrkdwn",
+                                "text": f"*Mins:*\n{duration_mins}"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "actions",
+                        "elements": [
+                            {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "emoji": True,
+                                    "text": "Approve"
+                                },
+                                "style": "primary",
+                                "value": f"requestor_name={requestor_name}+requestor_id={requestor_id}+project_id={project_id}+duration_hours={duration_hours}+duration_mins={duration_mins}+decision=Approved",
+                                "confirm": {
+                                    "title": {
+                                        "type": "plain_text",
+                                        "text": "Are you sure?"
+                                    },
+                                    "text": {
+                                        "type": "mrkdwn",
+                                        "text": f"Do you want to approve admin access from {requestor_name}?"
+                                    },
+                                    "confirm": {
+                                        "type": "plain_text",
+                                        "text": "Yes, approved!"
+                                    },
+                                    "deny": {
+                                        "type": "plain_text",
+                                        "text": "Stop, I've changed my mind!"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "emoji": True,
+                                    "text": "Reject"
+                                },
+                                "style": "danger",
+                                "value": f"requestor_name={requestor_name}+requestor_id={requestor_id}+project_id={project_id}+duration_hours={duration_hours}+duration_mins={duration_mins}+decision=Rejected",
+                                "confirm": {
+                                    "title": {
+                                        "type": "plain_text",
+                                        "text": "Are you sure?"
+                                    },
+                                    "text": {
+                                        "type": "mrkdwn",
+                                        "text": f"Do you want to reject admin access from {requestor_name}?"
+                                    },
+                                    "confirm": {
+                                        "type": "plain_text",
+                                        "text": "Yes, rejected!"
+                                    },
+                                    "deny": {
+                                        "type": "plain_text",
+                                        "text": "Stop, I've changed my mind!"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+                post_slack_message("C03RFE89508", f"New Access Request from {requestor_name}!", slack_message)
                 print("Request Succeeded!")
-                ack_text = "Hey, _slash commando_, we got your request!"
+                slack_ack(url, "Hey, _slash commando_, we got your request!")
+        elif payload.startswith("payload="):
+            # handling the response action
+            response_json = json.loads(urllib.parse.unquote(payload.split("payload=")[1]))
+            value = response_json['actions'][0]['value']
+            requestor_id = value.split("requestor_id=")[1].split("+")[0]
+            project_id = value.split("project_id=")[1].split("+")[0]
+            decision = value.split("decision=")[1].split("+")[0]
+            
+            # compose slack message used for response back to requestor
+            slack_message = [ 
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "NEW_TEXT"
+                    }
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": f"*Project:*\n{project_id}"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": f"*Actioned by:*\n{response_json['user']['name']}"
+                        }
+                    ]
+                }
+            ]
+
+            if decision == "Approved":
+                slack_ack(response_json['response_url'], "Hey, _secops commando_, access is being provisioned!")
+                print(f"Provisioning access approved by Caller Name: {response_json['user']['name']}, Caller ID: {response_json['user']['id']}")
+                http_endpoint = "https://us-central1-secops-project-348011.cloudfunctions.net/provision-access"
+                response_payload = {
+                    "caller_name": response_json['user']['name'],
+                    "caller_id": response_json['user']['id'],
+                    "value": value,
+                    "response_url": response_json['response_url']
+                }
+                response_statuscode = call_function(http_endpoint, response_payload)
+                if response_statuscode == 200:
+                    response_subject = "This access request was approved but executed failed!"
+                else:
+                    response_subject = "This access request was approved and executed!"
+            
+            elif decision == "Rejected":
+                slack_ack(response_json['response_url'], "Hey, _secops commando_, access request has been declined!")
+                response_subject = "This access request was rejected!"
+            
+            # post message back to the requestor
+            slack_message[0]['text']['text'] = f"_Hey there!_ :wave: _{response_subject}_"
+            if post_slack_message(requestor_id, response_subject, slack_message):
+                response_body = "The access requestor has been informed about this action."
+            else:
+                response_body = "We couldn't inform the access requestor due to an error."
+            print(response_body)
+
         else:
             print("Not a valid payload!")
-            ack_text = "Hey, _slash commando_, that was not a valid payload!"
+            slack_ack(url, "Hey, _slash commando_, that was not a valid payload!")
         
-        slack_ack(url, ack_text)
         return {
                 'statusCode': 200
             }
@@ -98,108 +252,13 @@ def slack_ack(url, ack_text):
     response = requests.post(url, data=json.dumps(ack_message), headers={'Content-Type': 'application/json'})
     print(f"Slack responded with Status Code: {response.status_code}")
 
-def send_slack_chat_notification(requestor_name, requestor_email, project_id, duration_hours, duration_mins, reason):
-    slack_message = [ 
-            {
-                "type": "header",
-                "text": {
-                    "type": "plain_text",
-                    "text": f"New Access Request from {requestor_name}!"
-                }
-            },
-            {
-                "type": "divider"
-            },
-            {
-                "type": "section",
-                "fields": [
-                    {
-                        "type": "mrkdwn",
-                        "text": f"*Project:*\n{project_id}"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": f"*Reason:*\n{reason}"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": f"*Hours:*\n{duration_hours}"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": f"*Mins:*\n{duration_mins}"
-                    }
-                ]
-            },
-            {
-                "type": "actions",
-                "elements": [
-                    {
-                        "type": "button",
-                        "text": {
-                            "type": "plain_text",
-                            "emoji": True,
-                            "text": "Approve"
-                        },
-                        "style": "primary",
-                        "value": f"requestor_email={requestor_email}+project_id={project_id}+duration_hours={duration_hours}+duration_mins={duration_mins}+decision=Approved",
-                        "confirm": {
-                            "title": {
-                                "type": "plain_text",
-                                "text": "Are you sure?"
-                            },
-                            "text": {
-                                "type": "mrkdwn",
-                                "text": f"Do you want to approve admin access from {requestor_name}?"
-                            },
-                            "confirm": {
-                                "type": "plain_text",
-                                "text": "Yes, approved!"
-                            },
-                            "deny": {
-                                "type": "plain_text",
-                                "text": "Stop, I've changed my mind!"
-                            }
-                        }
-                    },
-                    {
-                        "type": "button",
-                        "text": {
-                            "type": "plain_text",
-                            "emoji": True,
-                            "text": "Reject"
-                        },
-                        "style": "danger",
-                        "value": f"requestor_email={requestor_email}+project_id={project_id}+duration_hours={duration_hours}+duration_mins={duration_mins}+decision=Rejected",
-                        "confirm": {
-                            "title": {
-                                "type": "plain_text",
-                                "text": "Are you sure?"
-                            },
-                            "text": {
-                                "type": "mrkdwn",
-                                "text": f"Do you want to reject admin access from {requestor_name}?"
-                            },
-                            "confirm": {
-                                "type": "plain_text",
-                                "text": "Yes, rejected!"
-                            },
-                            "deny": {
-                                "type": "plain_text",
-                                "text": "Stop, I've changed my mind!"
-                            }
-                        }
-                    }
-                ]
-            }
-        ]
+def post_slack_message(slack_channel, slack_text, slack_message):
     try:
         slack_token = os.environ.get('SLACK_ACCESS_TOKEN', 'Specified environment variable is not set.')
-        slack_channel = "C03RFE89508"
         response = requests.post("https://slack.com/api/chat.postMessage", data={
             "token": slack_token,
             "channel": slack_channel,
-            "text": f"New Admin Access Request from {requestor_email}!",
+            "text": slack_text,
             "blocks": json.dumps(slack_message)
         })
         print(f"Slack responded with Status Code: {response.status_code}")

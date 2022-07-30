@@ -9,8 +9,9 @@ from datetime import datetime, timedelta
 def provision_access(request):
     # provisioning the requested access
     event = json.loads(request.get_data().decode('UTF-8'))
-    
-    requestor_email = event['value'].split("requestor_email=")[1].split("+")[0]
+
+    requestor_name = event['value'].split("requestor_name=")[1].split("+")[0]
+    requestor_email = requestor_name + "@agarsand.altostrat.com"
     project_id = event['value'].split("project_id=")[1].split("+")[0]
     duration_hours = event['value'].split("duration_hours=")[1].split("+")[0]
     duration_mins = event['value'].split("duration_mins=")[1].split("+")[0]
