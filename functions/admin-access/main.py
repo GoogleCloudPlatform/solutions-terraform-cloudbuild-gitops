@@ -15,6 +15,7 @@ def admin_access(request):
     payload = request.get_data().decode('utf-8')
     slack_signature = request.headers['X-Slack-Signature']
     slack_signing_secret = os.environ.get('SLACK_SIGNING_SECRET', 'Specified environment variable is not set.')
+    slack_approver_channel = "C03RFE89508"
 
     if verify_request(timestamp,payload,slack_signature,slack_signing_secret):
         if payload.startswith("token="):
@@ -26,8 +27,11 @@ def admin_access(request):
             print(requestor_name, requestor_id, request_text)
             input_text = request_text.split("+",2)
             if(len(input_text)<3):
-                print('Invalid request')
+                print("Invalid request - one or more request elements missing.")
                 slack_ack(url, "One or more request elements missing. Please include project `project_id` duration `hours.mins` and `reason for access`")
+                return {
+                    'statusCode': 200
+                }
             else:
                 project_id = input_text[0].lower()
                 duration = input_text[1]
@@ -42,11 +46,13 @@ def admin_access(request):
                     if duration_hours < 0 or duration_mins < 0 or duration_hours > 4 or duration_mins > 59:
                         raise Exception("Invalid user input. Hours and mins are outside of allowed ranges.")
                 except Exception as e:
-                    print("Invalid request")
-                    print("Error: ", e)
+                    print(f"Invalid request - {e}")
                     slack_ack(url, "The duration doesn't conform to the hours `0-4` dot `.` mins `0-59` pattern.")
                 
-                slack_message = [ 
+                slack_ack(url, "Hey, _slash commando_, we got your request!")
+                
+                # compose slack message used for approvers 
+                slack_message = [
                     {
                         "type": "header",
                         "text": {
@@ -140,19 +146,51 @@ def admin_access(request):
                         ]
                     }
                 ]
-                post_slack_message("C03RFE89508", f"New Access Request from {requestor_name}!", slack_message)
+                post_slack_message(slack_approver_channel, f"New Access Request from {requestor_name}!", slack_message)
                 print("Request Succeeded!")
-                slack_ack(url, "Hey, _slash commando_, we got your request!")
+                # send a confirmation to requestor
+                slack_message = [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": "Hey there! Access request sent to approvers!"
+                        }
+                    },
+                    {
+                        "type": "section",
+                        "fields": [
+                            {
+                                "type": "mrkdwn",
+                                "text": f"*Project:*\n{project_id}"
+                            },
+                            {
+                                "type": "mrkdwn",
+                                "text": f"*Reason:*\n{reason}"
+                            },
+                            {
+                                "type": "mrkdwn",
+                                "text": f"*Hours:*\n{duration_hours}"
+                            },
+                            {
+                                "type": "mrkdwn",
+                                "text": f"*Mins:*\n{duration_mins}"
+                            }
+                        ]
+                    }
+                ]
+                return post_slack_response(url, slack_message)
         elif payload.startswith("payload="):
             # handling the response action
             response_json = json.loads(urllib.parse.unquote(payload.split("payload=")[1]))
             value = response_json['actions'][0]['value']
+            requestor_name = value.split("requestor_name=")[1].split("+")[0]
             requestor_id = value.split("requestor_id=")[1].split("+")[0]
             project_id = value.split("project_id=")[1].split("+")[0]
             decision = value.split("decision=")[1].split("+")[0]
             
             # compose slack message used for response back to requestor
-            slack_message = [ 
+            slack_message = [
                 {
                     "type": "section",
                     "text": {
@@ -187,33 +225,62 @@ def admin_access(request):
                 }
                 response_statuscode = call_function(http_endpoint, response_payload)
                 if response_statuscode == 200:
-                    response_subject = "This access request was approved but executed failed!"
-                else:
                     response_subject = "This access request was approved and executed!"
+                else:
+                    response_subject = "This access request was approved but execution failed!"
             
             elif decision == "Rejected":
                 slack_ack(response_json['response_url'], "Hey, _secops commando_, access request has been declined!")
                 response_subject = "This access request was rejected!"
             
             # post message back to the requestor
-            slack_message[0]['text']['text'] = f"_Hey there!_ :wave: _{response_subject}_"
+            slack_message[0]['text']['text'] = f"_Hey {requestor_name}!_ :wave: _{response_subject}_"
             if post_slack_message(requestor_id, response_subject, slack_message):
-                response_body = "The access requestor has been informed about this action."
+                response_footer = "The access requestor has been informed about this action."
             else:
-                response_body = "We couldn't inform the access requestor due to an error."
-            print(response_body)
-
+                response_footer = "We couldn't inform the access requestor due to an error."
+            print(response_footer)
+            
+            # compose message to respond back to the caller
+            slack_message = {
+                "attachments": [
+                    {
+                        "mrkdwn_in": ["text"],
+                        "color": "#36a64f",
+                        "pretext": response_subject,
+                        "title": "Request Details",
+                        "fields": [
+                            {
+                                "title": "Requestor",
+                                "value": requestor_name,
+                                "short": True
+                            },
+                            {
+                                "title": "Project",
+                                "value": project_id,
+                                "short": True
+                            },
+                            {
+                                "title": "Actioned By",
+                                "value": response_json['user']['name'],
+                                "short": True
+                            }
+                        ],
+                        "footer": response_footer
+                    }
+                ]
+            }
+            return post_slack_response(response_json['response_url'], slack_message)
         else:
             print("Not a valid payload!")
-            slack_ack(url, "Hey, _slash commando_, that was not a valid payload!")
-        
-        return {
+            return {
                 'statusCode': 200
             }
     else:
+        print("Unauthorized request!")
         return {
             'statusCode': 401,
-            'body': json.dumps("Unauthorized!")
+            'body': json.dumps("Unauthorized request!")
         }
 
 def verify_request(timestamp,payload,slack_signature,slack_signing_secret):
@@ -266,3 +333,7 @@ def post_slack_message(slack_channel, slack_text, slack_message):
     except Exception as e:
         print(e)
         raise(e)
+
+def post_slack_response(url, slack_message):
+    response = requests.post(url, data=json.dumps(slack_message), headers={'Content-Type': 'application/json'})
+    print(f"Slack responded with Status Code: {response.status_code}")
