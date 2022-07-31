@@ -157,36 +157,39 @@ def admin_access(request):
                     slack_text = "Access request to approvers failed!"
 
                 # send a confirmation to requestor
-                slack_message = [
-                    {
-                        "type": "section",
-                        "text": {
-                            "type": "mrkdwn",
-                            "text": f"Hey there! {slack_text}"
+                slack_message = {
+                    "attachments": [
+                        {
+                            "mrkdwn_in": ["text"],
+                            "color": "#36a64f",
+                            "pretext": f"Hey {requestor_name}! Your access request has been processed!",
+                            "title": "Request Details",
+                            "fields": [
+                                {
+                                    "title": "Project",
+                                    "value": project_id,
+                                    "short": True
+                                },
+                                {
+                                    "title": "Reason",
+                                    "value": reason,
+                                    "short": True
+                                },
+                                {
+                                    "title": "Hours",
+                                    "value": duration_hours,
+                                    "short": True
+                                },
+                                {
+                                    "title": "Mins",
+                                    "value": duration_mins,
+                                    "short": True
+                                }
+                            ],
+                            "footer": slack_text
                         }
-                    },
-                    {
-                        "type": "section",
-                        "fields": [
-                            {
-                                "type": "mrkdwn",
-                                "text": f"*Project:*\n{project_id}"
-                            },
-                            {
-                                "type": "mrkdwn",
-                                "text": f"*Reason:*\n{reason}"
-                            },
-                            {
-                                "type": "mrkdwn",
-                                "text": f"*Hours:*\n{duration_hours}"
-                            },
-                            {
-                                "type": "mrkdwn",
-                                "text": f"*Mins:*\n{duration_mins}"
-                            }
-                        ]
-                    }
-                ]
+                    ]
+                }
                 return post_slack_response(url, slack_message)
         elif payload.startswith("payload="):
             # handling the response action
