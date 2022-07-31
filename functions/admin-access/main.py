@@ -19,7 +19,7 @@ def admin_access(request):
 
     if verify_request(timestamp,payload,slack_signature,slack_signing_secret):
         if payload.startswith("token="):
-            # handling the request action
+            # parse the slash command for access request
             url = urllib.parse.unquote(payload.split("response_url=")[1].split("&")[0])
             requestor_name = payload.split("user_name=")[1].split("&")[0]
             requestor_id = payload.split("user_id=")[1].split("&")[0]
@@ -27,9 +27,12 @@ def admin_access(request):
             print(requestor_name, requestor_id, request_text)
             input_text = request_text.split("+",2)
             if(len(input_text)<3):
-                print("Invalid request - one or more request elements missing.")
-                slack_ack(url, "One or more request elements missing. Please include project `project_id` duration `hours.mins` and `reason for access`")
-                return 200
+                print("Invalid user input - one or more request elements missing.")
+                return {
+                    "response_type": "ephemeral",
+                    "type": "mrkdwn",
+                    "text": "One or more request elements missing. Please include project `project_id` duration `hours.mins` and `reason for access`"
+                }
             else:
                 project_id = input_text[0].lower()
                 duration = input_text[1]
@@ -42,15 +45,16 @@ def admin_access(request):
                         duration_hours = float(duration)
                         duration_mins = 0
                     if duration_hours < 0 or duration_mins < 0 or duration_hours > 4 or duration_mins > 59:
-                        raise Exception("Invalid user input. Hours and mins are outside of allowed ranges.")
+                        raise Exception("hours and mins are outside of allowed ranges.")
                 except Exception as e:
-                    print(f"Invalid request - {e}")
-                    slack_ack(url, "The duration doesn't conform to the hours `0-4` dot `.` mins `0-59` pattern.")
-                    return 200
+                    print(f"Invalid user input - {e}")
+                    return {
+                        "response_type": "ephemeral",
+                        "type": "mrkdwn",
+                        "text": "The duration doesn't conform to the hours `0-4` dot `.` mins `0-59` pattern."
+                    }
                 
-                slack_ack(url, "Hey, _slash commando_, we got your request!")
-                
-                # compose slack message used for approvers 
+                # if everything looks good, compose the slack message to be sent for approval 
                 slack_message = [
                     {
                         "type": "header",
@@ -145,15 +149,20 @@ def admin_access(request):
                         ]
                     }
                 ]
-                post_slack_message(slack_approver_channel, f"New Access Request from {requestor_name}!", slack_message)
-                print("Request Succeeded!")
+                if post_slack_message(slack_approver_channel, f"New Access Request from {requestor_name}!", slack_message):
+                    print("Access request sent to approvers!")
+                    slack_text = "Access request sent to approvers!"
+                else:
+                    print("Access request to approvers failed!")
+                    slack_text = "Access request to approvers failed!"
+
                 # send a confirmation to requestor
                 slack_message = [
                     {
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": "Hey there! Access request sent to approvers!"
+                            "text": f"Hey there! {slack_text}"
                         }
                     },
                     {
@@ -183,6 +192,7 @@ def admin_access(request):
             # handling the response action
             response_json = json.loads(urllib.parse.unquote(payload.split("payload=")[1]))
             value = response_json['actions'][0]['value']
+            print(value)
             requestor_name = value.split("requestor_name=")[1].split("+")[0]
             requestor_id = value.split("requestor_id=")[1].split("+")[0]
             project_id = value.split("project_id=")[1].split("+")[0]
@@ -229,7 +239,7 @@ def admin_access(request):
                     response_subject = "This access request was approved but execution failed!"
             
             elif decision == "Rejected":
-                slack_ack(response_json['response_url'], "Hey, _secops commando_, access request has been declined!")
+                print(f"Access request rejected by Caller Name: {response_json['user']['name']}, Caller ID: {response_json['user']['id']}")
                 response_subject = "This access request was rejected!"
             
             # post message back to the requestor
@@ -327,7 +337,7 @@ def post_slack_message(slack_channel, slack_text, slack_message):
             "text": slack_text,
             "blocks": json.dumps(slack_message)
         })
-        print(f"Slack responded with Status Code: {response.status_code}")
+        print(f"Message posted - Slack responded with Status Code: {response.status_code}")
         return True
     except Exception as e:
         print(e)
@@ -335,5 +345,7 @@ def post_slack_message(slack_channel, slack_text, slack_message):
 
 def post_slack_response(url, slack_message):
     response = requests.post(url, data=json.dumps(slack_message), headers={'Content-Type': 'application/json'})
-    print(f"Slack responded with Status Code: {response.status_code}")
-    return response.status_code
+    print(f"Message posted - Slack responded with Status Code: {response.status_code}")
+    return {
+        'statusCode': response.status_code
+    }
