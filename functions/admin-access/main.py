@@ -29,9 +29,7 @@ def admin_access(request):
             if(len(input_text)<3):
                 print("Invalid request - one or more request elements missing.")
                 slack_ack(url, "One or more request elements missing. Please include project `project_id` duration `hours.mins` and `reason for access`")
-                return {
-                    'statusCode': 200
-                }
+                return 200
             else:
                 project_id = input_text[0].lower()
                 duration = input_text[1]
@@ -48,6 +46,7 @@ def admin_access(request):
                 except Exception as e:
                     print(f"Invalid request - {e}")
                     slack_ack(url, "The duration doesn't conform to the hours `0-4` dot `.` mins `0-59` pattern.")
+                    return 200
                 
                 slack_ack(url, "Hey, _slash commando_, we got your request!")
                 
@@ -337,6 +336,4 @@ def post_slack_message(slack_channel, slack_text, slack_message):
 def post_slack_response(url, slack_message):
     response = requests.post(url, data=json.dumps(slack_message), headers={'Content-Type': 'application/json'})
     print(f"Slack responded with Status Code: {response.status_code}")
-    return {
-        'statusCode': response.status_code
-    }
+    return response.status_code
