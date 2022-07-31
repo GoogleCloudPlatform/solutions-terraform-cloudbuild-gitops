@@ -29,16 +29,18 @@ def provision_access(request):
         # Grants your member the 'Editor' role for the project.
         member = f"user:{requestor_email}"
         modify_policy_add_role(crm_service, project_id, role, member, expiry_timestamp)
-        response_subject = f"Access provisioned successfully for {requestor_name}!"
-    except Exception as e:
-        print(e)
-        response_subject = f"Access provisioning failed for {requestor_name}!"
+        print(f"Editor role to project {project_id} provisioned successfully for {requestor_name}!")
+        result = "Success"
+        info = f"Expiry: {expiry_timestamp_ist}"
+    except Exception as error:
+        print(f"Editor role to project {project_id} provisioning failed for {requestor_name}! - {error}")
+        result = "Failure"
+        info = f"Error: {error}" 
     
     data = {
-        "response_subject": response_subject, 
-        "expiry_timestamp_ist": expiry_timestamp_ist
+        "result": result, 
+        "info": info
     }
-    print(data)
     return json.dumps(data), 200, {'Content-Type': 'application/json'}
 
 def initialize_service():
@@ -76,7 +78,7 @@ def modify_policy_add_role(crm_service, project_id, role, member, expiry_timesta
             "condition": {
                 "title": "expirable access", 
                 "description": f"Does not grant access after {expiry_timestamp}",
-                "expression": f"request.time < timestamp('{expiry_timestamp}')"
+                "expression": f"request.time < timestamp(\"{expiry_timestamp}\")"
             }
         }
         policy["bindings"].append(binding)
