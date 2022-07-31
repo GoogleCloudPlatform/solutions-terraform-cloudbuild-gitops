@@ -11,7 +11,7 @@ def provision_access(request):
     event = json.loads(request.get_data().decode('UTF-8'))
 
     requestor_name = event['value'].split("requestor_name=")[1].split("+")[0]
-    requestor_email = requestor_name + "@agarsand.altostrat.com"
+    requestor_email = "slack@agarsand.altostrat.com"
     project_id = event['value'].split("project_id=")[1].split("+")[0]
     duration_hours = event['value'].split("duration_hours=")[1].split("+")[0]
     duration_mins = event['value'].split("duration_mins=")[1].split("+")[0]
@@ -20,81 +20,29 @@ def provision_access(request):
     expiry_timestamp_ist = (datetime.now(timezone('Asia/Kolkata')) + timedelta(hours=float(duration_hours), minutes=float(duration_mins))).strftime('%Y-%m-%d %H:%M:%S')
 
     try:
-        set_iam_policy(project_id, requestor_email, expiry_timestamp)
-        response_subject = f"Access provisioned successfully for {requestor_email}!"
-    except Exception as e:
-        print(e)
-        response_subject = f"Access provisioning failed for {requestor_email}!"
-
-    slack_message = {
-        "text": f"{response_subject}\n",
-        "blocks": [ 
-            {
-                "type": "header",
-                "text": {
-                    "type": "plain_text",
-                    "text": "Access Provisioning Action Taken"
-                }
-            },
-            {
-                "type": "divider"
-            },
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": f"{response_subject}\n"
-                }
-            },
-            {
-                "type": "section",
-                "fields": [
-                    {
-                        "type": "mrkdwn",
-                        "text": f"*Project:*\n{project_id}"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": f"*Expiry:*\n{expiry_timestamp_ist} IST"
-                    }
-                ]
-            }
-        ]
-    }
-    post_slack_response(event['response_url'],slack_message)
-    return {
-        'statusCode': 200,
-        'body': json.dumps("Completed!")
-    }
-
-def set_iam_policy(project_id, requestor_email, expiry_timestamp):
-    try:
-        print(f"Creating IAM Policy...")
         # Role to be granted.
         role = "roles/editor"
-
+        
         # Initializes service.
         crm_service = initialize_service()
 
-        # Grants your member the 'Log Writer' role for the project.
+        # Grants your member the 'Editor' role for the project.
         member = f"user:{requestor_email}"
-        policy = modify_policy_add_role(crm_service, project_id, role, member, expiry_timestamp)
-        print(policy)
+        modify_policy_add_role(crm_service, project_id, role, member, expiry_timestamp)
+        response_subject = f"Access provisioned successfully for {requestor_name}!"
     except Exception as e:
-        raise(e)
-
-def post_slack_response(response_url,slack_message):
-    response = requests.post(response_url, data=json.dumps(slack_message), headers={'Content-Type': 'application/json'})
-    if response.status_code == 200:
-        print("Slack response sent successfully.")
-        return True
-    else:
-        print("Slack response failed.")
-        return False
+        print(e)
+        response_subject = f"Access provisioning failed for {requestor_name}!"
+    
+    data = {
+        "response_subject": response_subject, 
+        "expiry_timestamp_ist": expiry_timestamp_ist
+    }
+    print(data)
+    return json.dumps(data), 200, {'Content-Type': 'application/json'}
 
 def initialize_service():
-    """Initializes a Cloud Resource Manager service."""
-
+    print("Initializing Cloud Resource Manager service...")
     credentials, _ = google.auth.default(
         scopes=["https://www.googleapis.com/auth/cloud-platform"]
     )
@@ -104,9 +52,7 @@ def initialize_service():
     return crm_service
 
 def modify_policy_add_role(crm_service, project_id, role, member, expiry_timestamp):
-    """Adds a new role binding to a policy."""
-
-    """Gets IAM policy for a project."""
+    print(f"Fetching current IAM Policy for project: {project_id}...")
     policy = (
         crm_service.projects()
         .getIamPolicy(
@@ -135,7 +81,7 @@ def modify_policy_add_role(crm_service, project_id, role, member, expiry_timesta
         }
         policy["bindings"].append(binding)
 
-    """Sets IAM policy for a project."""
+    print(f"Setting new IAM Policy for project: {project_id}...")
     policy = (
         crm_service.projects()
         .setIamPolicy(
@@ -143,4 +89,3 @@ def modify_policy_add_role(crm_service, project_id, role, member, expiry_timesta
             body={"policy": policy})
         .execute()
     )
-    return policy

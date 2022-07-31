@@ -235,8 +235,8 @@ def admin_access(request):
                     "value": value,
                     "response_url": response_json['response_url']
                 }
-                response_statuscode = call_function(http_endpoint, response_payload)
-                if response_statuscode == 200:
+                function_response = call_function(http_endpoint, response_payload)
+                if function_response.statuscode == 200:
                     response_subject = "This access request was approved and executed!"
                 else:
                     response_subject = "This access request was approved but execution failed!"
@@ -319,8 +319,7 @@ def call_function(http_endpoint, response_payload):
     headers["Authorization"] = f"Bearer {id_token}"
     headers["Content-Type"] = "application/json"
 
-    response = requests.post(http_endpoint, json=response_payload, headers=headers)
-    return response.status_code
+    return requests.post(http_endpoint, json=response_payload, headers=headers)
 
 def slack_ack(url, ack_text):
     ack_message = {
