@@ -76,7 +76,7 @@ def modify_policy_add_role(crm_service, project_id, role, member, expiry_timesta
             "condition": {
                 "title": "expirable access", 
                 "description": f"Does not grant access after {expiry_timestamp}",
-                "expression": f"request.time < timestamp('f{expiry_timestamp}')"
+                "expression": f"request.time < timestamp('{expiry_timestamp}')"
             }
         }
         policy["bindings"].append(binding)
