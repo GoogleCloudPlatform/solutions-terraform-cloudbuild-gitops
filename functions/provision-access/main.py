@@ -16,9 +16,8 @@ def provision_access(request):
     duration_hours = event['value'].split("duration_hours=")[1].split("+")[0]
     duration_mins = event['value'].split("duration_mins=")[1].split("+")[0]
     
-    access_expiry = datetime.now() + timedelta(hours=duration_hours, minutes=duration_mins)
-    expiry_timestamp = access_expiry.strftime('%Y-%m-%dT%H:%M:%SZ')
-    expiry_timestamp_ist = access_expiry(timezone("Asia/Kolkata")).strftime('%Y-%m-%d %H:%M:%S')
+    expiry_timestamp = (datetime.now() + timedelta(hours=float(duration_hours), minutes=float(duration_mins))).strftime('%Y-%m-%dT%H:%M:%SZ')
+    expiry_timestamp_ist = (datetime.now(timezone('Asia/Kolkata')) + timedelta(hours=float(duration_hours), minutes=float(duration_mins))).strftime('%Y-%m-%d %H:%M:%S')
 
     try:
         set_iam_policy(project_id, requestor_email, expiry_timestamp)

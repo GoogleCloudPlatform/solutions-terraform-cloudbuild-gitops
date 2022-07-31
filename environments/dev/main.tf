@@ -73,6 +73,13 @@ resource "google_cloudfunctions_function_iam_member" "provision-access-invoker" 
   member = "serviceAccount:${module.admin-access-cloud-function.sa-email}"
 }
 
+# IAM entry for service account of provision-access function to manage IAM policies
+resource "google_project_iam_member" "project" {
+  project = "pensande"
+  role    = "roles/resourcemanager.projectIamAdmin"
+  member  = "serviceAccount:${module.provision-access-cloud-function.sa-email}"
+}
+
 resource "google_secret_manager_secret" "slack-access-admin-bot-token" {
   project   = var.project
   secret_id = "slack-access-admin-bot-token"

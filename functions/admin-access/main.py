@@ -24,7 +24,7 @@ def admin_access(request):
             requestor_name = payload.split("user_name=")[1].split("&")[0]
             requestor_id = payload.split("user_id=")[1].split("&")[0]
             request_text = payload.split("text=")[1].split("&")[0]
-            print(requestor_name, requestor_id, request_text)
+            print(f"New Access Request: {requestor_name}, {requestor_id}, {request_text}")
             input_text = request_text.split("+",2)
             if(len(input_text)<3):
                 print("Invalid user input - one or more request elements missing.")
