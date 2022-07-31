@@ -282,17 +282,18 @@ def admin_access(request):
                                 "title": "Actioned By",
                                 "value": response_json['user']['name'],
                                 "short": True
-                            },
-                            {
-                                "title": "Info",
-                                "value": function_response_json['info'],
-                                "short": True
                             }
                         ],
                         "footer": response_footer
                     }
                 ]
             }
+            if decision == "Approved":
+                slack_message['attachments'][0]['fields'].append({
+                    "title": "Info",
+                    "value": function_response_json['info'],
+                    "short": True
+                })
             return post_slack_response(response_json['response_url'], slack_message)
         else:
             print("Not a valid payload!")
