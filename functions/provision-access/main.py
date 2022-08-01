@@ -21,12 +21,12 @@ def provision_access(request):
 
     try:
         # Role to be granted.
-        role = "roles/editor"
+        role = "roles/compute.admin"
         
         # Initializes service.
         crm_service = initialize_service()
 
-        # Grants your member the 'Editor' role for the project.
+        # Grants your member the 'Compute Admin' role for the project.
         member = f"user:{requestor_email}"
         modify_policy_add_role(crm_service, project_id, role, member, expiry_timestamp)
         print(f"Editor role to project {project_id} provisioned successfully for {requestor_name}!")
@@ -63,25 +63,18 @@ def modify_policy_add_role(crm_service, project_id, role, member, expiry_timesta
         )
         .execute()
     )
-
-    binding = None
-    for b in policy["bindings"]:
-        if b["role"] == role:
-            binding = b
-            break
-    if binding is not None:
-        binding["members"].append(member)
-    else:
-        binding = {
-            "role": role, 
-            "members": [member], 
-            "condition": {
-                "title": "expirable access", 
-                "description": f"Does not grant access after {expiry_timestamp}",
-                "expression": f"request.time < timestamp(\"{expiry_timestamp}\")"
-            }
+    
+    binding = {
+        "role": role, 
+        "members": [member], 
+        "condition": {
+            "title": "expirable access", 
+            "description": f"Does not grant access after {expiry_timestamp}",
+            "expression": f"request.time < timestamp(\"{expiry_timestamp}\")"
         }
-        policy["bindings"].append(binding)
+    }
+    policy["bindings"].append(binding)
+    policy['version'] = 3
 
     print(f"Setting new IAM Policy for project: {project_id}...")
     policy = (
