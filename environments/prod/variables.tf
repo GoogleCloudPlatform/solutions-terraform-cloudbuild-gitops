@@ -25,3 +25,7 @@ variable "project" {
 variable "region" {
   type        = string
 }
+
+variable "slack_approver_channel" {
+  type        = string
+}

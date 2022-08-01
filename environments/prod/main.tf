@@ -38,6 +38,11 @@ module "admin-access-cloud-function" {
     function-name   = "admin-access"
     function-desc   = "intakes requests from slack for just-in-time admin access to a project"
     entry-point     = "admin_access"
+    env-vars        = {
+        SLACK_APPROVER_CHANNEL = var.slack_approver_channel,
+        DEPLOYMENT_PROJECT = var.project,
+        DEPLOYMENT_REGION = var.region
+    }
     secrets         = [
         {
             key = "SLACK_ACCESS_TOKEN"

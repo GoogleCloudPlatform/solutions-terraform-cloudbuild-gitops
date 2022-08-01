@@ -15,7 +15,9 @@ def admin_access(request):
     payload = request.get_data().decode('utf-8')
     slack_signature = request.headers['X-Slack-Signature']
     slack_signing_secret = os.environ.get('SLACK_SIGNING_SECRET', 'Specified environment variable is not set.')
-    slack_approver_channel = "C03RFE89508"
+    slack_approver_channel = os.environ.get('SLACK_APPROVER_CHANNEL', 'Specified environment variable is not set.')
+    deployment_project = os.environ.get('DEPLOYMENT_PROJECT', 'Specified environment variable is not set.')
+    deployment_region = os.environ.get('DEPLOYMENT_REGION', 'Specified environment variable is not set.')
 
     if verify_request(timestamp,payload,slack_signature,slack_signing_secret):
         if payload.startswith("token="):
@@ -243,7 +245,7 @@ def admin_access(request):
             if decision == "Approved":
                 slack_ack(response_json['response_url'], "Hey, _secops commando_, access is being provisioned!")
                 print(f"Provisioning access approved by Caller Name: {response_json['user']['name']}, Caller ID: {response_json['user']['id']}")
-                http_endpoint = "https://us-central1-secops-project-348011.cloudfunctions.net/provision-access"
+                http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/provision-access"
                 response_payload = {
                     "caller_name": response_json['user']['name'],
                     "caller_id": response_json['user']['id'],
