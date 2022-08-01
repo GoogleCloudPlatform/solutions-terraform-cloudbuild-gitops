@@ -13,6 +13,7 @@ def provision_access(request):
     requestor_name = event['value'].split("requestor_name=")[1].split("+")[0]
     requestor_email = "slack@agarsand.altostrat.com"
     project_id = event['value'].split("project_id=")[1].split("+")[0]
+    role_name = event['value'].split("role_name=")[1].split("+")[0]
     duration_hours = event['value'].split("duration_hours=")[1].split("+")[0]
     duration_mins = event['value'].split("duration_mins=")[1].split("+")[0]
     
@@ -21,21 +22,21 @@ def provision_access(request):
 
     try:
         # Role to be granted.
-        role = "roles/compute.admin"
+        role = f"roles/{role_name}"
         
         # Initializes service.
         crm_service = initialize_service()
 
-        # Grants your member the 'Compute Admin' role for the project.
+        # Grants your member the requested role for the project.
         member = f"user:{requestor_email}"
         modify_policy_add_role(crm_service, project_id, role, member, expiry_timestamp)
-        print(f"Editor role to project {project_id} provisioned successfully for {requestor_name}!")
+        print(f"{role_name} role to project {project_id} provisioned successfully for {requestor_name}!")
         result = "Success"
         info = f"Expiry: {expiry_timestamp_ist}"
     except Exception as error:
-        print(f"Editor role to project {project_id} provisioning failed for {requestor_name}! - {error}")
+        print(f"{role_name} role to project {project_id} provisioning failed for {requestor_name}! - {error}")
         result = "Failure"
-        info = f"Error: {error}" 
+        info = f"Error: {error}"
     
     data = {
         "result": result, 

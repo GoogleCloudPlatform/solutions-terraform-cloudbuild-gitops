@@ -25,18 +25,28 @@ def admin_access(request):
             requestor_id = payload.split("user_id=")[1].split("&")[0]
             request_text = payload.split("text=")[1].split("&")[0]
             print(f"New Access Request: {requestor_name}, {requestor_id}, {request_text}")
-            input_text = request_text.split("+",2)
-            if(len(input_text)<3):
+            input_text = request_text.split("+",3)
+            if(len(input_text)<4):
                 print("Invalid user input - one or more request elements missing.")
                 return {
                     "response_type": "ephemeral",
                     "type": "mrkdwn",
-                    "text": "One or more request elements missing. Please include project `project_id` duration `hours.mins` and `reason for access`"
+                    "text": "One or more request elements missing. Please include project `project_id` role `role_name` duration `hours.mins` and `reason for access`"
                 }
             else:
                 project_id = input_text[0].lower()
-                duration = input_text[1]
-                reason = input_text[2]
+                role_name = input_text[1]
+                duration = input_text[2]
+                reason = input_text[3]
+                
+                if role_name in ['viewer', 'editor', 'owner']:
+                    print(f"Invalid user input - Primitive/Basic roles are not permitted.")
+                    return {
+                        "response_type": "ephemeral",
+                        "type": "mrkdwn",
+                        "text": "Primitive/Basic roles are not permitted - please use a Predefined role such as `compute.admin`."
+                    }
+                
                 try:
                     if '.' in duration:
                         duration_hours = float(duration.split(".",1)[0])
@@ -75,15 +85,15 @@ def admin_access(request):
                             },
                             {
                                 "type": "mrkdwn",
+                                "text": f"*Role:*\n{role_name}"
+                            },
+                            {
+                                "type": "mrkdwn",
+                                "text": f"*Duration:*\n{duration_hours} hrs {duration_mins} mins"
+                            },
+                            {
+                                "type": "mrkdwn",
                                 "text": f"*Reason:*\n{reason}"
-                            },
-                            {
-                                "type": "mrkdwn",
-                                "text": f"*Hours:*\n{duration_hours}"
-                            },
-                            {
-                                "type": "mrkdwn",
-                                "text": f"*Mins:*\n{duration_mins}"
                             }
                         ]
                     },
@@ -98,7 +108,7 @@ def admin_access(request):
                                     "text": "Approve"
                                 },
                                 "style": "primary",
-                                "value": f"requestor_name={requestor_name}+requestor_id={requestor_id}+project_id={project_id}+duration_hours={duration_hours}+duration_mins={duration_mins}+decision=Approved",
+                                "value": f"requestor_name={requestor_name}+requestor_id={requestor_id}+project_id={project_id}+role_name={role_name}+duration_hours={duration_hours}+duration_mins={duration_mins}+decision=Approved",
                                 "confirm": {
                                     "title": {
                                         "type": "plain_text",
@@ -106,7 +116,7 @@ def admin_access(request):
                                     },
                                     "text": {
                                         "type": "mrkdwn",
-                                        "text": f"Do you want to approve admin access from {requestor_name}?"
+                                        "text": f"Do you want to approve access request from {requestor_name}?"
                                     },
                                     "confirm": {
                                         "type": "plain_text",
@@ -126,7 +136,7 @@ def admin_access(request):
                                     "text": "Reject"
                                 },
                                 "style": "danger",
-                                "value": f"requestor_name={requestor_name}+requestor_id={requestor_id}+project_id={project_id}+duration_hours={duration_hours}+duration_mins={duration_mins}+decision=Rejected",
+                                "value": f"requestor_name={requestor_name}+requestor_id={requestor_id}+project_id={project_id}+role_name={role_name}+duration_hours={duration_hours}+duration_mins={duration_mins}+decision=Rejected",
                                 "confirm": {
                                     "title": {
                                         "type": "plain_text",
@@ -134,7 +144,7 @@ def admin_access(request):
                                     },
                                     "text": {
                                         "type": "mrkdwn",
-                                        "text": f"Do you want to reject admin access from {requestor_name}?"
+                                        "text": f"Do you want to reject access request from {requestor_name}?"
                                     },
                                     "confirm": {
                                         "type": "plain_text",
@@ -171,18 +181,18 @@ def admin_access(request):
                                     "short": True
                                 },
                                 {
+                                    "title": "Role",
+                                    "value": role_name,
+                                    "short": True
+                                },
+                                {
+                                    "title": "Duration",
+                                    "value": f"{duration_hours} hrs {duration_mins} mins",
+                                    "short": True
+                                },
+                                {
                                     "title": "Reason",
                                     "value": reason,
-                                    "short": True
-                                },
-                                {
-                                    "title": "Hours",
-                                    "value": duration_hours,
-                                    "short": True
-                                },
-                                {
-                                    "title": "Mins",
-                                    "value": duration_mins,
                                     "short": True
                                 }
                             ],
@@ -199,6 +209,7 @@ def admin_access(request):
             requestor_name = value.split("requestor_name=")[1].split("+")[0]
             requestor_id = value.split("requestor_id=")[1].split("+")[0]
             project_id = value.split("project_id=")[1].split("+")[0]
+            role_name = value.split("role_name=")[1].split("+")[0]
             decision = value.split("decision=")[1].split("+")[0]
             
             # compose slack message used for response back to requestor
@@ -216,6 +227,10 @@ def admin_access(request):
                         {
                             "type": "mrkdwn",
                             "text": f"*Project:*\n{project_id}"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": f"*Role:*\n{role_name}"
                         },
                         {
                             "type": "mrkdwn",
@@ -276,6 +291,11 @@ def admin_access(request):
                             {
                                 "title": "Project",
                                 "value": project_id,
+                                "short": True
+                            },
+                            {
+                                "title": "Role",
+                                "value": role_name,
                                 "short": True
                             },
                             {
