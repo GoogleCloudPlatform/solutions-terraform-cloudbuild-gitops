@@ -29,7 +29,7 @@ resource "google_cloudfunctions_function" "function" {
   entry_point           = var.entry-point
   service_account_email = google_service_account.service_account.email
 
-  environment_variables = var.env-vars ? var.env-vars : null
+  environment_variables = var.env-vars == null ? null : var.env-vars
 
   dynamic "secret_environment_variables" {
     for_each = var.secrets == null ? [] : var.secrets
