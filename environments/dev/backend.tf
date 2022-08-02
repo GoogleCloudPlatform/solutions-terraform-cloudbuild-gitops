@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "firm-modem-358210-tfstate"
     prefix = "env/dev"
   }
 }
