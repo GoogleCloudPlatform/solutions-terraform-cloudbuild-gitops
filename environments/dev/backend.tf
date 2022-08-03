@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "sada-srini-tf-tfstate"
     prefix = "env/dev"
   }
 }
