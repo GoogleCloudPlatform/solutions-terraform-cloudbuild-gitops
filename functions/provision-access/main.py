@@ -1,3 +1,4 @@
+import os
 import time
 import json
 import requests
@@ -9,9 +10,10 @@ from datetime import datetime, timedelta
 def provision_access(request):
     # provisioning the requested access
     event = json.loads(request.get_data().decode('UTF-8'))
+    cloud_identity_domain = os.environ.get('CLOUD_IDENTITY_DOMAIN', 'Specified environment variable is not set.')
 
     requestor_name = event['value'].split("requestor_name=")[1].split("+")[0]
-    requestor_email = "slack@agarsand.altostrat.com"
+    requestor_email = requestor_name + cloud_identity_domain
     project_id = event['value'].split("project_id=")[1].split("+")[0]
     role_name = event['value'].split("role_name=")[1].split("+")[0]
     duration_hours = event['value'].split("duration_hours=")[1].split("+")[0]

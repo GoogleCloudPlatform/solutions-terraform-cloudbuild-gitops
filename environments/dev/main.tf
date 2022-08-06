@@ -66,6 +66,9 @@ module "provision-access-cloud-function" {
     function-name   = "provision-access"
     function-desc   = "processes approvals for just-in-time admin access to a project"
     entry-point     = "provision_access"
+    env-vars        = {
+        CLOUD_IDENTITY_DOMAIN = var.cloud_identity_domain
+    }
 }
 
 # IAM entry for service account of admin-access function to invoke the provision-access function

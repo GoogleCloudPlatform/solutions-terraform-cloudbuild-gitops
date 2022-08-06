@@ -29,3 +29,7 @@ variable "region" {
 variable "slack_approver_channel" {
   type        = string
 }
+
+variable "cloud_identity_domain" {
+  type        = string
+}
