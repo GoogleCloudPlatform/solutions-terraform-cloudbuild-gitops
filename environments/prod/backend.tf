@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "jellyfish-training-demo-9-tfstate"
     prefix = "env/prod"
   }
 }
