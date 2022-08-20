@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="kyong0612-lab"
