@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "strongsville-city-schools-tfstate"
     prefix = "env/dev"
   }
 }
