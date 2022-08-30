@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "graphite-hook-352914-tfstate"
     prefix = "env/prod"
   }
 }
