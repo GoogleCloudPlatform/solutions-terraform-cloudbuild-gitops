@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "jianmarf-kubernetes-test-tfstate"
     prefix = "env/prod"
   }
 }
