@@ -18,7 +18,6 @@ locals {
 }
 
 resource "google_compute_instance" "http_server" {
-  count = 0
   project      = "${var.project}"
   zone         = "us-west1-a"
   name         = "${local.network}-apache2-instance"

@@ -18,7 +18,6 @@ locals {
 }
 
 resource "google_compute_firewall" "allow-http" {
-  count = 0
   name    = "${local.network}-allow-http"
   network = "${local.network}"
   project = "${var.project}"
