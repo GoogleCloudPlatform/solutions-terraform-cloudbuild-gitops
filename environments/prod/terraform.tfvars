@@ -1,1 +1,1 @@
-project="m-terraform-test-dev"
+project="m-terraform-test-stg"
