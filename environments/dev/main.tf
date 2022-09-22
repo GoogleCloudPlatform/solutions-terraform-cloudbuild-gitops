@@ -14,7 +14,8 @@
 
 
 locals {
-  env = "dev"
+  env     = "dev"
+  desc    = "default"
 }
 
 provider "google" {
