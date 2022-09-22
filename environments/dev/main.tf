@@ -26,7 +26,6 @@ module "vpc" {
   source  = "../../modules/vpc"
   project = "${var.project}"
   env     = "${local.env}"
-  desc    = "vpc for env"
 }
 
 module "http_server" {
