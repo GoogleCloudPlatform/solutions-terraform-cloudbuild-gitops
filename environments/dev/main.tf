@@ -34,7 +34,7 @@ module "gke_cluster" {
     region          = var.region
     network         = module.vpc.network
     subnetwork      = module.vpc.subnet
-    master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.10.16/28"
+    master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.12.16/28"
 }
 
 /*
