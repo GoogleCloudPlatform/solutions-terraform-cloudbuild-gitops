@@ -37,6 +37,73 @@ module "gke_cluster" {
     master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.12.16/28"
 }
 
+resource "google_binary_authorization_policy" "binauthz_policy" {
+  project = var.project
+  
+  admission_whitelist_patterns {
+    name_pattern = "gcr.io/google_containers/*"
+  }
+
+  default_admission_rule {
+    evaluation_mode  = "ALWAYS_ALLOW"
+    enforcement_mode = "ENFORCED_BLOCK_AND_AUDIT_LOG"
+  }
+
+  cluster_admission_rules {
+    cluster                 = "${var.region}.${module.gke_cluster.name}"
+    evaluation_mode         = "REQUIRE_ATTESTATION"
+    enforcement_mode        = "ENFORCED_BLOCK_AND_AUDIT_LOG"
+    require_attestations_by = [google_binary_authorization_attestor.attestor.name]
+  }
+}
+
+resource "google_container_analysis_note" "note" {
+  name = "${local.env == "dev" ? "build" : "qa"}-attestor-note"
+  attestation_authority {
+    hint {
+      human_readable_name = "My Binary Authorization Demo!"
+    }
+  }
+}
+
+resource "google_binary_authorization_attestor" "attestor" {
+  name = "${local.env == "dev" ? "build" : "qa"}-attestor"
+  attestation_authority_note {
+    note_reference = google_container_analysis_note.note.name
+    public_keys {
+      id = data.google_kms_crypto_key_version.version.id
+      pkix_public_key {
+        public_key_pem      = data.google_kms_crypto_key_version.version.public_key[0].pem
+        signature_algorithm = data.google_kms_crypto_key_version.version.public_key[0].algorithm
+      }
+    }
+  }
+}
+
+resource "google_kms_key_ring" "keyring" {
+  name     = "binauthz-${local.env == "dev" ? "build" : "qa"}-keyring"
+  location = "global"
+}
+
+resource "google_kms_crypto_key" "crypto-key" {
+  name     = "${local.env == "dev" ? "build" : "qa"}-attestor-key"
+  key_ring = google_kms_key_ring.keyring.id
+  purpose  = "ASYMMETRIC_SIGN"
+
+  version_template {
+    algorithm           = "EC_SIGN_P256_SHA256"
+    protection_level    = "SOFTWARE"
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+data "google_kms_crypto_key_version" "version" {
+  crypto_key = google_kms_crypto_key.crypto-key.id
+}
+
 /*
 module "instance_template" {
   source  = "../../modules/instance_template"
