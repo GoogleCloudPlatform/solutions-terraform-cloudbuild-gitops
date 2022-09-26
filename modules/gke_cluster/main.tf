@@ -13,11 +13,13 @@ resource "google_container_cluster" "cluster" {
   
   }
   
-  shielded_instance_config {
-    enable_integrity_monitoring = true 
-    enable_secure_boot          = false
+  node_config {
+    shielded_instance_config {
+        enable_integrity_monitoring = true 
+        enable_secure_boot          = false
+    }
   }
-
+  
   timeouts {
     create = "30m"
     update = "40m"
