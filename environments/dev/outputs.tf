@@ -16,7 +16,3 @@ output "external_ip" {
   value = "${module.load_balancer.external_ip}"
 }
 */
-
-output "function_trigger_url" {
-  value       = module.admin-access-cloud-function.function_trigger_url
-}

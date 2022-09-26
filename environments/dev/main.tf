@@ -12,118 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 locals {
   env = "dev"
 }
 
 provider "google" {
-  project = var.project
-}
-
-# GCS bucket to store cloud function source codes
-resource "google_storage_bucket" "bucket" {
-  name                          = "${var.project}-source-code"
-  location                      = var.region
-  uniform_bucket_level_access   = true
-}
-
-module "admin-access-cloud-function" {
-    source          = "../../modules/cloud_function"
-    project         = var.project
-    function-name   = "admin-access"
-    function-desc   = "intakes requests from slack for just-in-time admin access to a project"
-    entry-point     = "admin_access"
-    env-vars        = {
-        SLACK_APPROVER_CHANNEL = var.slack_approver_channel,
-        DEPLOYMENT_PROJECT = var.project,
-        DEPLOYMENT_REGION = var.region
-    }
-    secrets         = [
-        {
-            key = "SLACK_ACCESS_TOKEN"
-            id  = google_secret_manager_secret.slack-access-admin-bot-token.secret_id
-        },
-        {
-            key = "SLACK_SIGNING_SECRET"
-            id  = google_secret_manager_secret.slack-access-admin-signing-secret.secret_id
-        }
-    ]
-}
-
-# IAM entry for all users to invoke the admin-access function
-resource "google_cloudfunctions_function_iam_member" "admin-access-invoker" {
-  project        = var.project
-  region         = var.region
-  cloud_function = module.admin-access-cloud-function.function_name
-
-  role   = "roles/cloudfunctions.invoker"
-  member = "allUsers"
-}
-
-module "provision-access-cloud-function" {
-    source          = "../../modules/cloud_function"
-    project         = var.project
-    function-name   = "provision-access"
-    function-desc   = "processes approvals for just-in-time admin access to a project"
-    entry-point     = "provision_access"
-    env-vars        = {
-        CLOUD_IDENTITY_DOMAIN = var.cloud_identity_domain
-    }
-}
-
-# IAM entry for service account of admin-access function to invoke the provision-access function
-resource "google_cloudfunctions_function_iam_member" "provision-access-invoker" {
-  project        = var.project
-  region         = var.region
-  cloud_function = module.provision-access-cloud-function.function_name
-
-  role   = "roles/cloudfunctions.invoker"
-  member = "serviceAccount:${module.admin-access-cloud-function.sa-email}"
-}
-
-# IAM entry for service account of provision-access function to manage IAM policies
-resource "google_organization_iam_member" "organization" {
-  org_id    = var.organization
-  role      = "roles/resourcemanager.projectIamAdmin"
-  member    = "serviceAccount:${module.provision-access-cloud-function.sa-email}"
-}
-
-resource "google_secret_manager_secret" "slack-access-admin-bot-token" {
-  project   = var.project
-  secret_id = "slack-access-admin-bot-token"
-
-  replication {
-    automatic = true
-  }
-}
-
-# IAM entry for service account of admin-access function to use the slack bot token
-resource "google_secret_manager_secret_iam_binding" "bot_token_binding" {
-  project   = google_secret_manager_secret.slack-access-admin-bot-token.project
-  secret_id = google_secret_manager_secret.slack-access-admin-bot-token.secret_id
-  role      = "roles/secretmanager.secretAccessor"
-  members    = [
-      "serviceAccount:${module.admin-access-cloud-function.sa-email}",
-  ]
-}
-
-resource "google_secret_manager_secret" "slack-access-admin-signing-secret" {
-  project   = var.project
-  secret_id = "slack-access-admin-signing-secret"
-
-  replication {
-    automatic = true
-  }
-}
-
-# IAM entry for service account of admin-access function to use the slack signing secret
-resource "google_secret_manager_secret_iam_binding" "signing_secret_binding" {
-  project   = google_secret_manager_secret.slack-access-admin-signing-secret.project
-  secret_id = google_secret_manager_secret.slack-access-admin-signing-secret.secret_id
-  role      = "roles/secretmanager.secretAccessor"
-  members    = [
-      "serviceAccount:${module.admin-access-cloud-function.sa-email}",
-  ]
+  project = "${var.project}"
 }
 
 /*
