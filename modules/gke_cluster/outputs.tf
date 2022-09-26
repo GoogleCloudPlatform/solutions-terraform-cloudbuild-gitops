@@ -1,11 +1,13 @@
-output "function_trigger_url" {
-  value = google_cloudfunctions_function.function.https_trigger_url
+output "name" {
+  # This may seem redundant with the `name` input, but it serves an important
+  # purpose. Terraform won't establish a dependency graph without this to interpolate on.
+  description = "The name of the cluster master. This output is used for interpolation with node pools, other modules."
+
+  value       = google_container_cluster.cluster.name
 }
 
-output "sa-email" {
-  value = google_service_account.service_account.email
-}
-
-output "function_name" {
-  value = google_cloudfunctions_function.function.name
+output "endpoint" {
+  description = "The IP address of the cluster master."
+  sensitive   = true
+  value       = google_container_cluster.cluster.endpoint
 }
