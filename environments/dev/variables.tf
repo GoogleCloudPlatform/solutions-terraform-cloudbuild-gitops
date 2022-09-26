@@ -12,7 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+variable "organization" {
+  type        = string
+  description = "Google Cloud Organization ID"
+}
+
 variable "project" {
   type        = string
   description = "Google Cloud Project ID"
+}
+
+variable "region" {
+  type        = string
 }
