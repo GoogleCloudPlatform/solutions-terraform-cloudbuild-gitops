@@ -28,6 +28,15 @@ module "vpc" {
   region  = "${var.region}"
 }
 
+module "gke_cluster" {
+    source          = "../../modules/gke_cluster"
+    cluster_name    = "${local.env}-binauthz-demo"
+    region          = var.region
+    network         = module.vpc.network
+    subnetwork      = module.vpc.subnet
+    master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.10.16/28"
+}
+
 /*
 module "instance_template" {
   source  = "../../modules/instance_template"
