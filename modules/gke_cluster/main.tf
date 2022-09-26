@@ -4,7 +4,7 @@ resource "google_container_cluster" "cluster" {
   location                      = var.region
   network                       = var.network
   subnetwork                    = var.subnetwork
-  initial_node_count            = 3
+  initial_node_count            = 1
   enable_shielded_nodes         = true
   enable_binary_authorization   = true
   
