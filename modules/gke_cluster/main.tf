@@ -11,7 +11,7 @@ resource "google_container_cluster" "cluster" {
   private_cluster_config {
     enable_private_nodes      = true
     enable_private_endpoint   = false
-  
+    master_ipv4_cidr_block    = var.master_ipv4_cidr
   }
   
   node_config {
@@ -24,9 +24,5 @@ resource "google_container_cluster" "cluster" {
   timeouts {
     create = "30m"
     update = "40m"
-  }
-
-  ip_allocation_policy {
-    cluster_ipv4_cidr_block   = var.master_ipv4_cidr
   }
 }
