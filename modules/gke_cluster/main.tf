@@ -1,11 +1,12 @@
 resource "google_container_cluster" "cluster" {
-  name                      = var.cluster_name
-  description               = "terraform-created gke cluster"
-  location                  = var.region
-  network                   = var.network
-  subnetwork                = var.subnetwork
-  initial_node_count        = 3
-  enable_shielded_nodes     = true
+  name                          = var.cluster_name
+  description                   = "terraform-created gke cluster"
+  location                      = var.region
+  network                       = var.network
+  subnetwork                    = var.subnetwork
+  initial_node_count            = 3
+  enable_shielded_nodes         = true
+  enable_binary_authorization   = true
   
   private_cluster_config {
     enable_private_nodes      = true
@@ -27,9 +28,5 @@ resource "google_container_cluster" "cluster" {
 
   ip_allocation_policy {
     cluster_ipv4_cidr_block   = var.master_ipv4_cidr
-  }
-
-  binary_authorization {
-    evaluation_mode           = "PROJECT_SINGLETON_POLICY_ENFORCE"
   }
 }
