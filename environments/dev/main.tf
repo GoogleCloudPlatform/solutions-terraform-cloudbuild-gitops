@@ -48,13 +48,14 @@ resource "google_binary_authorization_policy" "binauthz_policy" {
     evaluation_mode  = "ALWAYS_ALLOW"
     enforcement_mode = "ENFORCED_BLOCK_AND_AUDIT_LOG"
   }
-
+  /*
   cluster_admission_rules {
     cluster                 = "${var.region}.${module.gke_cluster.name}"
     evaluation_mode         = "REQUIRE_ATTESTATION"
     enforcement_mode        = "ENFORCED_BLOCK_AND_AUDIT_LOG"
     require_attestations_by = [google_binary_authorization_attestor.attestor.name]
   }
+  */
 }
 
 resource "google_container_analysis_note" "note" {
@@ -104,7 +105,8 @@ data "google_kms_crypto_key_version" "version" {
   crypto_key = google_kms_crypto_key.crypto-key.id
 }
 
-resource "google_artifact_registry_repository" "repo" {
+resource "google_artifact_registry_repository" "my-repo" {
+  provider      = google-beta
   location      = "us-central1"
   repository_id = "${local.env == "dev" ? "dev" : "prod"}-repo"
   description   = "Docker repository for binauthz demo"
