@@ -27,7 +27,7 @@ module "vpc" {
   env     = "${local.env}"
   region  = "${var.region}"
 }
-
+/*
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
@@ -36,7 +36,7 @@ module "gke_cluster" {
     subnetwork      = module.vpc.subnet
     master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.12.16/28"
 }
-
+*/
 resource "google_binary_authorization_policy" "binauthz_policy" {
   project = var.project
   
@@ -102,6 +102,13 @@ resource "google_kms_crypto_key" "crypto-key" {
 
 data "google_kms_crypto_key_version" "version" {
   crypto_key = google_kms_crypto_key.crypto-key.id
+}
+
+resource "google_artifact_registry_repository" "repo" {
+  location      = "us-central1"
+  repository_id = "${local.env == "dev" ? "dev" : "prod"}-repo"
+  description   = "Docker repository for binauthz demo"
+  format        = "DOCKER"
 }
 
 /*
