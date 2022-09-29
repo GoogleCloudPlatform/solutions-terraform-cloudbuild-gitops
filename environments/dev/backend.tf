@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "rails-auto-report-tfstate"
     prefix = "env/dev"
   }
 }
