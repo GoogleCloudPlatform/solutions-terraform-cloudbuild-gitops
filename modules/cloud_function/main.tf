@@ -25,11 +25,11 @@ resource "google_cloudfunctions_function" "function" {
   source_archive_bucket = "${var.project}-source-code"
   source_archive_object = google_storage_bucket_object.cf_source_zip.name
 
-  trigger_http          = var.pubsub_trigger ? null : true
-  ingress_settings      = var.pubsub_trigger ? "ALLOW_INTERNAL_ONLY" : "ALLOW_ALL"
+  trigger_http          = var.pubsub_trigger == null ? true : null
+  ingress_settings      = var.pubsub_trigger == null ? "ALLOW_ALL" : "ALLOW_INTERNAL_ONLY" 
 
   dynamic "event_trigger" {
-    for_each = var.pubsub_trigger ? [1] : []
+    for_each = var.pubsub_trigger == null ? [] : [1]
     content {
         event_type  = "google.pubsub.topic.publish"
         resource    = var.pubsub_trigger
