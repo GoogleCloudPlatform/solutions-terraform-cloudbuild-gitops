@@ -33,3 +33,7 @@ variable "slack_approver_channel" {
 variable "cloud_identity_domain" {
   type        = string
 }
+
+variable "slack_secops_channel" {
+    type      = string
+}

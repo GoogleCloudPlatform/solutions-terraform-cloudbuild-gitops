@@ -131,6 +131,47 @@ resource "google_secret_manager_secret_iam_binding" "signing_secret_binding" {
   ]
 }
 
+resource "google_pubsub_topic" "operations-pubsub" {
+  name = "clouddeploy-operations-topic"
+  message_retention_duration = "86400s"
+}
+
+module "deploy-notification-cloud-function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "deploy-notification"
+    function-desc   = "triggered by operations-pubsub, communicates result of a deployment"
+    entry-point     = "admin_access"
+    env-vars        = {
+        SLACK_SECOPS_CHANNEL = var.slack_secops_channel
+    }
+    secrets         = [
+        {
+            key = "SLACK_ACCESS_TOKEN"
+            id  = google_secret_manager_secret.slack-secure-cicd-bot-token.secret_id
+        }
+    ]
+}
+
+resource "google_secret_manager_secret" "slack-secure-cicd-bot-token" {
+  project   = var.project
+  secret_id = "slack-secure-cicd-bot-token"
+
+  replication {
+    automatic = true
+  }
+}
+
+# IAM entry for service account of deploy-notification function to use the slack bot token
+resource "google_secret_manager_secret_iam_binding" "bot_token_binding" {
+  project   = google_secret_manager_secret.slack-secure-cicd-bot-token.project
+  secret_id = google_secret_manager_secret.slack-secure-cicd-bot-token.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  members    = [
+      "serviceAccount:${module.deploy-notification-cloud-function.sa-email}",
+  ]
+}
+
 /*
 module "vpc" {
   source  = "../../modules/vpc"
