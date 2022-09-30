@@ -142,7 +142,7 @@ module "deploy-notification-cloud-function" {
     function-name   = "deploy-notification"
     function-desc   = "triggered by operations-pubsub, communicates result of a deployment"
     entry-point     = "deploy_notification"
-    pubsub_trigger  = google_pubsub_topic.operations-pubsub.topic.name
+    pubsub_trigger  = google_pubsub_topic.operations-pubsub.id
     env-vars        = {
         SLACK_SECOPS_CHANNEL = var.slack_secops_channel
     }
