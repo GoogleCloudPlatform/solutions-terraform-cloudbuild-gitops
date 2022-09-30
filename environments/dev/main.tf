@@ -27,7 +27,7 @@ module "vpc" {
   env     = "${local.env}"
   region  = "${var.region}"
 }
-
+/*
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
@@ -36,7 +36,7 @@ module "gke_cluster" {
     subnetwork      = module.vpc.subnet
     master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.1.16/28"
 }
-
+*/
 resource "google_binary_authorization_policy" "binauthz_policy" {
   project = var.project
   
@@ -48,14 +48,14 @@ resource "google_binary_authorization_policy" "binauthz_policy" {
     evaluation_mode  = "ALWAYS_ALLOW"
     enforcement_mode = "ENFORCED_BLOCK_AND_AUDIT_LOG"
   }
-  
+  /*
   cluster_admission_rules {
     cluster                 = "${var.region}.${module.gke_cluster.name}"
     evaluation_mode         = "REQUIRE_ATTESTATION"
     enforcement_mode        = "ENFORCED_BLOCK_AND_AUDIT_LOG"
     require_attestations_by = [google_binary_authorization_attestor.attestor.name]
   }
-  
+  */
 }
 
 resource "google_container_analysis_note" "note" {
