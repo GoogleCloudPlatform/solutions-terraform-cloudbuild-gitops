@@ -141,7 +141,7 @@ module "deploy-notification-cloud-function" {
     project         = var.project
     function-name   = "deploy-notification"
     function-desc   = "triggered by operations-pubsub, communicates result of a deployment"
-    entry-point     = "admin_access"
+    entry-point     = "deploy_notification"
     env-vars        = {
         SLACK_SECOPS_CHANNEL = var.slack_secops_channel
     }
@@ -163,7 +163,7 @@ resource "google_secret_manager_secret" "slack-secure-cicd-bot-token" {
 }
 
 # IAM entry for service account of deploy-notification function to use the slack bot token
-resource "google_secret_manager_secret_iam_binding" "bot_token_binding" {
+resource "google_secret_manager_secret_iam_binding" "cicd_bot_token_binding" {
   project   = google_secret_manager_secret.slack-secure-cicd-bot-token.project
   secret_id = google_secret_manager_secret.slack-secure-cicd-bot-token.secret_id
   role      = "roles/secretmanager.secretAccessor"
