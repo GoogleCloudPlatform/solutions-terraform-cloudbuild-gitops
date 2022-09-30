@@ -15,3 +15,7 @@ variable "secrets" {
         }
     ))
 }
+variable "pubsub_trigger" {
+    default = null
+    type = string
+}
