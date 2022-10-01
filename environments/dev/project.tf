@@ -4,14 +4,19 @@ resource "google_project_service" "compute" {
   service = "compute.googleapis.com"
 }
 
-resource "google_project_service" "managed_kubernetes" {
+resource "google_project_service" "functions" {
   project = var.project
-  service = "container.googleapis.com"
+  service = "cloudfunctions.googleapis.com"
 }
 
 resource "google_project_service" "kms" {
   project = var.project
   service = "cloudkms.googleapis.com"
+}
+
+resource "google_project_service" "managed_kubernetes" {
+  project = var.project
+  service = "container.googleapis.com"
 }
 
 resource "google_project_service" "binauthz" {
@@ -24,7 +29,22 @@ resource "google_project_service" "artifact_registry" {
   service = "artifactregistry.googleapis.com"
 }
 
+resource "google_project_service" "cloud_build" {
+  project = var.project
+  service = "cloudbuild.googleapis.com"
+}
+
 resource "google_project_service" "cloud_deploy" {
   project = var.project
   service = "clouddeploy.googleapis.com"
+}
+
+resource "google_project_service" "ondemand_scanning" {
+  project = var.project
+  service = "ondemandscanning.googleapis.com"
+}
+
+resource "google_project_service" "container_scanning" {
+  project = var.project
+  service = "containerscanning.googleapis.com"
 }
