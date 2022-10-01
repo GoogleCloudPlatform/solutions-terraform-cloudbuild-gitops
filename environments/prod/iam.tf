@@ -64,6 +64,6 @@ resource "google_project_iam_custom_role" "cb-custom-role" {
 
 resource "google_project_iam_member" "custom_policy" {
   project  = var.project
-  role     = "projects/${var.project}/roles/secure-cicd-role"
+  role     = "projects/${var.project}/roles/secure_cicd_role"
   member   = "serviceAccount:${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
 }
