@@ -42,6 +42,6 @@ variable "dev_cluster_name" {
   type      = string
 }
 
-variable "dev_attestor_name" {
+variable "dev_attestor_id" {
   type      = string
 }
