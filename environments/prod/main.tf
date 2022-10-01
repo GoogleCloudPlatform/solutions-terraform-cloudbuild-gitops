@@ -220,7 +220,7 @@ resource "google_binary_authorization_policy" "binauthz_policy" {
     cluster                 = "${var.region}.${var.dev_cluster_name}"
     evaluation_mode         = "REQUIRE_ATTESTATION"
     enforcement_mode        = "ENFORCED_BLOCK_AND_AUDIT_LOG"
-    require_attestations_by = var.dev_attestor_name
+    require_attestations_by = [var.dev_attestor_name]
   }
 }
 
