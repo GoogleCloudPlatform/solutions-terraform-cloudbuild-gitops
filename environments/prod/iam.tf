@@ -59,7 +59,7 @@ resource "google_project_iam_custom_role" "cb-custom-role" {
   role_id     = "secure_cicd_role"
   title       = "Custom Role for the Secure CICD Cloud Build SA"
   description = "This role is used by the Cloud Build SA in ${var.project}"
-  permissions = ["artifactregistry.repositories.create","container.clusters.get","binaryauthorization.attestors.get","binaryauthorization.attestors.list","clouddeploy.deliveryPipelines.get","clouddeploy.releases.get","containeranalysis.notes.attachOccurrence","iam.serviceAccounts.actAs","ondemandscanning.operations.get","ondemandscanning.scans.analyzePackages","ondemandscanning.scans.listVulnerabilities"]
+  permissions = ["artifactregistry.repositories.create","container.clusters.get","binaryauthorization.attestors.get","binaryauthorization.attestors.list","clouddeploy.deliveryPipelines.get","clouddeploy.releases.get","clouddeploy.releases.create","containeranalysis.notes.attachOccurrence","iam.serviceAccounts.actAs","ondemandscanning.operations.get","ondemandscanning.scans.analyzePackages","ondemandscanning.scans.listVulnerabilities"]
 }
 
 resource "google_project_iam_member" "custom_policy" {
