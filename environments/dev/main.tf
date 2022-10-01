@@ -27,7 +27,7 @@ module "vpc" {
   env     = "${local.env}"
   region  = "${var.region}"
 }
-
+/*
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
@@ -36,7 +36,7 @@ module "gke_cluster" {
     subnetwork      = module.vpc.subnet
     master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.1.16/28"
 }
-
+*/
 resource "google_container_analysis_note" "note" {
   name = "${local.env == "dev" ? "build" : "qa"}-attestor-note"
   attestation_authority {
