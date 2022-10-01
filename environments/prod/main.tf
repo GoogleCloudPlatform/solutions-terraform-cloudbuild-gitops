@@ -13,7 +13,8 @@
 # limitations under the License.
 
 locals {
-  env = "prod"
+  env                           = "prod"
+  clouddeploy_pubsub_topic_name = "clouddeploy-operations"
 }
 
 provider "google" {
@@ -171,6 +172,56 @@ resource "google_secret_manager_secret_iam_binding" "cicd_bot_token_binding" {
   members    = [
       "serviceAccount:${module.deploy-notification-cloud-function.sa-email}",
   ]
+}
+
+resource "google_clouddeploy_target" "dev-cluster-target" {
+  name        = "dev-cluster-target"
+  description = "Target for dev environment"
+  project     = var.project
+  location    = var.region
+
+  gke {
+    cluster = var.dev_cluster_name
+  }
+
+  depends_on = [
+    google_project_iam_member.clouddeploy_service_agent_role
+  ]
+}
+
+resource "google_clouddeploy_delivery_pipeline" "pipeline" {
+  name        = "binauthz-demo-pipeline"
+  description = "Pipeline for application" #TODO parameterize
+  project     = var.project
+  location    = var.region
+
+  serial_pipeline {
+    stages {
+        target_id = google_clouddeploy_target.dev-cluster-target.name
+    }
+  }
+}
+
+
+# Binary Authorization Policy
+resource "google_binary_authorization_policy" "binauthz_policy" {
+  project = var.project
+  
+  admission_whitelist_patterns {
+    name_pattern = "gcr.io/google_containers/*"
+  }
+
+  default_admission_rule {
+    evaluation_mode  = "ALWAYS_ALLOW"
+    enforcement_mode = "ENFORCED_BLOCK_AND_AUDIT_LOG"
+  }
+  
+  cluster_admission_rules {
+    cluster                 = "${var.region}.${var.dev_cluster}"
+    evaluation_mode         = "REQUIRE_ATTESTATION"
+    enforcement_mode        = "ENFORCED_BLOCK_AND_AUDIT_LOG"
+    require_attestations_by = var.dev_attestor_name
+  }
 }
 
 /*

@@ -35,5 +35,13 @@ variable "cloud_identity_domain" {
 }
 
 variable "slack_secops_channel" {
-    type      = string
+  type      = string
+}
+
+variable "dev_cluster_name" {
+  type      = string
+}
+
+variable "dev_attestor_name" {
+  type      = string
 }
