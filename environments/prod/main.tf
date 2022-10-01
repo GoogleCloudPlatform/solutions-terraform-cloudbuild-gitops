@@ -181,7 +181,7 @@ resource "google_clouddeploy_target" "dev-cluster-target" {
   location    = var.region
 
   gke {
-    cluster = var.dev_cluster_name
+    cluster = "projects/${var.project}/locations/${var.region}/clusters/${var.dev_cluster_name}"
   }
 
   depends_on = [
@@ -217,7 +217,7 @@ resource "google_binary_authorization_policy" "binauthz_policy" {
   }
   
   cluster_admission_rules {
-    cluster                 = "${var.region}.dev-binauthz"
+    cluster                 = "${var.region}.${var.dev_cluster_name}"
     evaluation_mode         = "REQUIRE_ATTESTATION"
     enforcement_mode        = "ENFORCED_BLOCK_AND_AUDIT_LOG"
     require_attestations_by = [var.dev_attestor_id]
