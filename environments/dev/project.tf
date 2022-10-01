@@ -23,3 +23,8 @@ resource "google_project_service" "artifact_registry" {
   project = var.project
   service = "artifactregistry.googleapis.com"
 }
+
+resource "google_project_service" "cloud_deploy" {
+  project = var.project
+  service = "clouddeploy.googleapis.com"
+}
