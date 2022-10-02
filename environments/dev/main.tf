@@ -70,20 +70,6 @@ resource "google_binary_authorization_attestor" "attestor" {
   }
 }
 
-# IAM membership for Binary Authorization service agent to view the Container Analysis Note
-resource "google_project_service_identity" "binauth_service_agent" {
-  provider  = google-beta
-  project   = var.project
-  service   = "binaryauthorization.googleapis.com"
-}
-
-resource "google_binary_authorization_attestor_iam_member" "binauthz_note_occurence_viewer" {
-  project  = var.project
-  attestor = google_binary_authorization_attestor.attestor.id
-  role     = "roles/containeranalysis.notes.occurrences.viewer"
-  member   = "serviceAccount:${google_project_service_identity.binauth_service_agent.email}"
-}
-
 # KMS resources
 resource "google_kms_key_ring" "keyring" {
   name     = "binauthz-${local.env == "dev" ? "build" : "qa"}-keyring"
