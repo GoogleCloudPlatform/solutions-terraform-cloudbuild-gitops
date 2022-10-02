@@ -15,7 +15,7 @@ def deploy_notification(event, context):
     if 'attributes' in event:
         try:
             print(f"Raw event data: {event}")
-            pubsub_message = event['attributes'])
+            pubsub_message = event['attributes']
             print(f"Pubsub message: {pubsub_message}")
             message_json = json.loads(pubsub_message)
     
