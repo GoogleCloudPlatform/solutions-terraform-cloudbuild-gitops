@@ -14,12 +14,8 @@ def deploy_notification(event, context):
 
     if 'attributes' in event:
         try:
-            print(f"Raw event data: {event}")
-            pubsub_message = event['attributes']
-            print(f"Pubsub message: {pubsub_message}")
-            message_json = json.loads(pubsub_message)
-    
-            send_slack_chat_notification(message_json)
+            pubsub_message = json.dumps(event['attributes'])
+            send_slack_chat_notification(pubsub_message)
         except Exception as e:
             print(e)
     else:
@@ -47,6 +43,10 @@ def send_slack_chat_notification(operations_json):
                     {
                         "type": "mrkdwn",
                         "text": f"*PipelineID:*\n{operations_json['DeliveryPipelineId']}"
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": f"*TargetId:*\n{operations_json['TargetId']}"
                     }
                 ]
             }
