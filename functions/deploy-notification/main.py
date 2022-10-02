@@ -12,14 +12,14 @@ def deploy_notification(event, context):
     print("""This Function was triggered by messageId {} published at {} to {}
     """.format(context.event_id, context.timestamp, context.resource["name"]))
 
-    if 'data' in event:
+    if 'attributes' in event:
         try:
-            print(event)
-            pubsub_message = base64.b64decode(event['data']).decode('utf-8')
-            print(pubsub_message)
+            print(f"Raw event data: {event}")
+            pubsub_message = event['attributes'])
+            print(f"Pubsub message: {pubsub_message}")
             message_json = json.loads(pubsub_message)
     
-            send_slack_chat_notification(message_json['message']['attributes'])
+            send_slack_chat_notification(message_json)
         except Exception as e:
             print(e)
     else:
