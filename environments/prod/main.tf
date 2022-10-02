@@ -175,7 +175,7 @@ resource "google_secret_manager_secret_iam_binding" "cicd_bot_token_binding" {
 }
 
 resource "google_clouddeploy_target" "dev-cluster-target" {
-  name        = "dev-cluster-target"
+  name        = "dev-cluster"
   description = "Target for dev environment"
   project     = var.project
   location    = var.region
