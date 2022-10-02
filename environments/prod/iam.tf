@@ -1,3 +1,4 @@
+/*
 # Cloud Deploy Execution Service Account
 resource "google_service_account" "clouddeploy_execution_sa" {
   project      = var.project
@@ -10,6 +11,7 @@ resource "google_project_iam_member" "cd_sa_iam" {
   role          = "roles/clouddeploy.jobRunner"
   member        = "serviceAccount:${google_service_account.clouddeploy_execution_sa.email}"
 }
+*/
 
 # Cloud Deploy Service Agent
 resource "google_project_service_identity" "clouddeploy_service_agent" {
@@ -29,6 +31,7 @@ data "google_project" "project" {
   project_id = var.project
 }
 
+/*
 # IAM membership for Cloud Build SA to act as Cloud Deploy Execution SA
 resource "google_service_account_iam_member" "cloudbuild_clouddeploy_impersonation" {
   service_account_id = google_service_account.clouddeploy_execution_sa.name
@@ -42,6 +45,7 @@ resource "google_project_iam_member" "clouddeploy_gke_dev" {
   role     = "roles/container.developer"
   member   = "serviceAccount:${google_service_account.clouddeploy_execution_sa.email}"
 }
+*/
 
 # Create a custom IAM role
 resource "google_project_iam_custom_role" "cb-custom-role" {

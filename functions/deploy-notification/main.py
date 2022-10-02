@@ -15,7 +15,9 @@ def deploy_notification(event, context):
     if 'attributes' in event:
         try:
             pubsub_message = json.dumps(event['attributes'])
-            send_slack_chat_notification(pubsub_message)
+            print("Pubsub Message: {pubsub_message}")
+            message_json = json.loads(pubsub_message)
+            send_slack_chat_notification(message_json)
         except Exception as e:
             print(e)
     else:
