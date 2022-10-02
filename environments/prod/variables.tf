@@ -22,11 +22,6 @@ variable "project" {
   description = "Google Cloud Project ID"
 }
 
-variable "build_project" {
-  type        = string
-  description = "Google Cloud Project ID"
-}
-
 variable "region" {
   type        = string
 }
