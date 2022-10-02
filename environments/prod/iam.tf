@@ -86,3 +86,17 @@ resource "google_project_iam_member" "custom_policy" {
   role     = "roles/container.developer"
   member   = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
 }
+
+# IAM membership for Binary Authorization service agents in GKE projects on attestors
+resource "google_project_service_identity" "binauth_service_agent" {
+  provider  = google-beta
+  project   = var.project
+  service   = "binaryauthorization.googleapis.com"
+}
+
+resource "google_binary_authorization_attestor_iam_member" "binauthz_verifier" {
+  project  = var.project
+  attestor = var.dev_attestor_id
+  role     = "roles/binaryauthorization.attestorsVerifier"
+  member   = "serviceAccount:${google_project_service_identity.binauth_service_agent.email}"
+}
