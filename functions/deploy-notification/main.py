@@ -14,6 +14,7 @@ def deploy_notification(event, context):
 
     if 'data' in event:
         try:
+            print(event)
             pubsub_message = base64.b64decode(event['data']).decode('utf-8')
             print(pubsub_message)
             message_json = json.loads(pubsub_message)
