@@ -9,10 +9,20 @@ def deploy_notification(event, context):
          event (dict): Event payload.
          context (google.cloud.functions.Context): Metadata for the event.
     """
-    pubsub_message = base64.b64decode(event['data']).decode('utf-8')
-    message_json = json.loads(pubsub_message)
+    print("""This Function was triggered by messageId {} published at {} to {}
+    """.format(context.event_id, context.timestamp, context.resource["name"]))
+
+    if 'data' in event:
+        try:
+            pubsub_message = base64.b64decode(event['data']).decode('utf-8')
+            print(pubsub_message)
+            message_json = json.loads(pubsub_message)
     
-    send_slack_chat_notification(message_json['message']['attributes'])
+            send_slack_chat_notification(message_json['message']['attributes'])
+        except Exception as e:
+            print(e)
+    else:
+        print("Missing data payload in function trigger event")
 
 def send_slack_chat_notification(operations_json):
     slack_message = [

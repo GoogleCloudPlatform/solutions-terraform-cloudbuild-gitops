@@ -67,3 +67,22 @@ resource "google_project_iam_member" "custom_policy" {
   role     = "projects/${var.project}/roles/secure_cicd_role"
   member   = "serviceAccount:${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
 }
+
+# IAM Roles for the Compute Engine Service Account
+resource "google_project_iam_member" "custom_policy" {
+  project  = var.project
+  role     = "roles/artifactregistry.reader"
+  member   = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+}
+
+resource "google_project_iam_member" "custom_policy" {
+  project  = var.project
+  role     = "roles/clouddeploy.jobRunner"
+  member   = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+}
+
+resource "google_project_iam_member" "custom_policy" {
+  project  = var.project
+  role     = "roles/container.developer"
+  member   = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+}
