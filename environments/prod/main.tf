@@ -145,7 +145,7 @@ module "deploy-notification-cloud-function" {
     entry-point     = "deploy_notification"
     pubsub_trigger  = google_pubsub_topic.operations-pubsub.id
     env-vars        = {
-        SLACK_SECOPS_CHANNEL = var.slack_secops_channel
+        SLACK_DEVOPS_CHANNEL = var.slack_devops_channel
     }
     secrets         = [
         {
