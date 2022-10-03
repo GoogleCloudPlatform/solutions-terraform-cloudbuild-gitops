@@ -9,8 +9,8 @@ def deploy_notification(event, context):
          event (dict): Event payload.
          context (google.cloud.functions.Context): Metadata for the event.
     """
-    print("""This Function was triggered by messageId {} published at {} to {}
-    """.format(context.event_id, context.timestamp, context.resource["name"]))
+    # print("""This Function was triggered by messageId {} published at {} to {}
+    # """.format(context.event_id, context.timestamp, context.resource["name"]))
 
     if 'attributes' in event:
         try:
