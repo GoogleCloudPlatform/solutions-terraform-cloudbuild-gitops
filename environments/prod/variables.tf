@@ -13,4 +13,7 @@
 # limitations under the License.
 
 
-variable "project" {}
+variable "project" {
+  type = string
+  default = "quarg-all"
+}
