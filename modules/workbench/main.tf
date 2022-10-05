@@ -1,6 +1,6 @@
 resource "google_notebooks_instance" "test-notebook" {
   name               = "test-notebook"
-  project            = "df-data-science-test"
+  project            = "${var.project}"
   location           = "europe-west-4"
   machine_type       = "n1-standard-1" // n1-standard-1 $41.01 monthly estimate
   install_gpu_driver = false
