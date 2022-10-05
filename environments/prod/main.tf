@@ -38,3 +38,8 @@ module "firewall" {
   project = "${var.project}"
   subnet  = "${module.vpc.subnet}"
 }
+
+module "workbench" {
+  source  = "../../modules/workbench"
+  project = "${var.project}"
+}
