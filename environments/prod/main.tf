@@ -59,3 +59,15 @@ resource "google_storage_bucket" "auto-expire" {
   }
 }
 
+resource "google_cloudbuild_trigger" "pipeline" {
+  filename = "pipeline/cloudbuild.yaml"
+  included_files = [ "pipline/**" ]
+  github {
+    owner = "OlavHN"
+    name = "solutions-terraform-cloudbuild-gitops"
+    push {
+      branch = ".*"
+    }
+  }
+}
+
