@@ -60,6 +60,7 @@ resource "google_storage_bucket" "auto-expire" {
 }
 
 resource "google_cloudbuild_trigger" "pipeline" {
+  name = "pipeline"
   filename = "pipeline/cloudbuild.yaml"
   included_files = [ "pipeline/**" ]
   github {
