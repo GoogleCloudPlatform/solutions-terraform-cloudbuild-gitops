@@ -1,0 +1,18 @@
+steps:
+- name: python
+  entrypoint: pip
+  args: ["install", "-r", "requirements.txt", "--user"]
+
+  # Compile pipeline
+- name: 'python'
+  entrypoint: 'python'
+  args: ['pipeline.py']
+  id: 'compile'
+
+  # Upload compiled pipeline to GCS.
+- name: 'gcr.io/cloud-builders/gsutil'
+  args: ['cp', 'basic_pipeline.json', 'gs://df-data-science-test-pipelines']
+  id:  'upload'
+  waitFor: ['compile']
+
+

@@ -14,21 +14,12 @@
 
 
 steps:
-- name: python
-  entrypoint: pip
-  args: ["install", "-r", "requirements.txt", "--user"]
-
-  # Compile pipeline
-- name: 'python'
-  entrypoint: 'python'
-  args: ['pipeline.py']
-  id: 'compile'
-
-  # Upload compiled pipeline to GCS.
-- name: 'gcr.io/cloud-builders/gsutil'
-  args: ['cp', 'basic_pipeline.json', 'gs://df-data-science-test-pipelines']
-  id:  'upload'
-  waitFor: ['compile']
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      gcloud beta builds triggers create github --name="pipeline" --included-files "pipline/*" --repo-name="solutions-terraform-cloudbuild-gitops" --repo-owner="OlavHN" --branch-pattern=".*" --build-config="pipeline/cloudbuild.yaml"
 
 - id: 'branch name'
   name: 'alpine'
@@ -105,4 +96,4 @@ steps:
         echo "Branch '$BRANCH_NAME' does not represent an official environment."
         echo "*******************************************************************************"
       fi
-# [END tf-apply]      
+# [END tf-apply]
