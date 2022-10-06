@@ -19,7 +19,7 @@ steps:
   args:
     - '-c'
     - |
-      gcloud beta builds triggers create github --name="pipeline" --included-files "pipline/*" --repo-name="solutions-terraform-cloudbuild-gitops" --repo-owner="OlavHN" --branch-pattern=$BRANCH_NAME --build-config="cloudbuild.yaml"
+      gcloud beta builds triggers create github --name="pipeline" --included-files "pipline/*" --repo-name="solutions-terraform-cloudbuild-gitops" --repo-owner="OlavHN" --branch-pattern=".*" --build-config="pipeline/cloudbuild.yaml"
 
 - id: 'branch name'
   name: 'alpine'
@@ -96,4 +96,4 @@ steps:
         echo "Branch '$BRANCH_NAME' does not represent an official environment."
         echo "*******************************************************************************"
       fi
-# [END tf-apply]      
+# [END tf-apply]
