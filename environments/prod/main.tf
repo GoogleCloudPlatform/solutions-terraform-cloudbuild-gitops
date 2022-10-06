@@ -21,6 +21,22 @@ provider "google" {
   project = "${var.project}"
 }
 
+variable "gcp_service_list" {
+  description = "The list of apis necessary for the project"
+  type = list(string)
+  default = [
+    "cloudresourcemanager.googleapis.com",
+    "serviceusage.googleapis.com",
+    "aiplatform.googleapis.com"
+  ]
+}
+
+resource "google_project_service" "gcp_services" {
+  for_each = toset(var.gcp_service_list)
+  project = "${var.project}"
+  service = each.key
+}
+
 module "vpc" {
   source  = "../../modules/vpc"
   project = "${var.project}"
@@ -72,3 +88,22 @@ resource "google_cloudbuild_trigger" "pipeline" {
   }
 }
 
+module "scheduled-vertex-pipelines" {
+  source  = "teamdatatonic/scheduled-vertex-pipelines/google"
+  version = "1.0.0"
+  # insert the 7 required variables here
+}
+
+module "hello_world_pipeline" {
+  source = "teamdatatonic/scheduled-vertex-pipelines/google"
+  project = "${var.project}"
+  vertex_region = "europe-west4"
+  cloud_scheduler_region = "europe-west4"
+  pipeline_spec_path = "gs://df-data-science-test/prod/basic_pipeline.json"
+  gcs_output_directory = "gs://df-data-science-test/prod/out/"
+  # vertex_service_account_email = "my-vertex-service-account@my-gcp-project-id.iam.gserviceaccount.com"
+  time_zone                    = "UTC"
+  schedule                     = "0 0 * * *"
+  cloud_scheduler_job_name     = "pipeline-from-local-spec"
+
+}
