@@ -19,7 +19,7 @@ steps:
   args:
     - '-c'
     - |
-      gcloud beta builds triggers create github pipeline --included-files "pipline/*" --repo-name=solutions-terraform-cloudbuild-gitops --repo-owner=OlavHN --branch-pattern=$BRANCH_NAME
+      gcloud beta builds triggers create github --name="pipeline" --included-files "pipline/*" --repo-name="solutions-terraform-cloudbuild-gitops" --repo-owner="OlavHN" --branch-pattern=$BRANCH_NAME
 
 - id: 'branch name'
   name: 'alpine'
