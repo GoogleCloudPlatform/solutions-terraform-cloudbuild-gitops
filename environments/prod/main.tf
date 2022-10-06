@@ -21,24 +21,6 @@ provider "google" {
   project = "${var.project}"
 }
 
-module "vpc" {
-  source  = "../../modules/vpc"
-  project = "${var.project}"
-  env     = "${local.env}"
-}
-
-module "http_server" {
-  source  = "../../modules/http_server"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
-
-module "firewall" {
-  source  = "../../modules/firewall"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
-
 module "workbench" {
   source  = "../../modules/workbench"
   project = "${var.project}"
@@ -72,3 +54,15 @@ resource "google_cloudbuild_trigger" "pipeline" {
   }
 }
 
+module "hello_world_pipeline" {
+  source = "teamdatatonic/scheduled-vertex-pipelines/google"
+  project = "${var.project}"
+  vertex_region = "europe-west4"
+  cloud_scheduler_region = "europe-west4"
+  pipeline_spec_path = "gs://df-data-science-test-pipelines/prod/basic_pipeline.json"
+  gcs_output_directory = "gs://df-data-science-test/prod/out/"
+  # vertex_service_account_email = "my-vertex-service-account@my-gcp-project-id.iam.gserviceaccount.com"
+  time_zone                    = "UTC"
+  schedule                     = "0 0 * * *"
+  cloud_scheduler_job_name     = "pipeline-from-local-spec"
+}
