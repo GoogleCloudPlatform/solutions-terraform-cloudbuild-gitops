@@ -43,3 +43,19 @@ module "workbench" {
   source  = "../../modules/workbench"
   project = "${var.project}"
 }
+
+resource "google_storage_bucket" "auto-expire" {
+  name          = "df-data-science-test-pipelines"
+  location      = "europe-west4"
+  force_destroy = true
+
+  lifecycle_rule {
+    condition {
+      age = 3
+    }
+    action {
+      type = "Delete"
+    }
+  }
+}
+
