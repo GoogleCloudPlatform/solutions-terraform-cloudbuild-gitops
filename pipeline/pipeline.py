@@ -15,7 +15,7 @@ def reverse(a: str)->NamedTuple("outputs", [("before", str), ("after", str)]):
   return a, a[::-1]
 
 @pipeline(name="basic-pipeline",
-description="A simple intro pipeline",
+description="A simple intro pipeline test",
               pipeline_root='gs://df-data-science-test-pipeline/basic-pipeline')
 def basic_pipeline(a: str='stres', b: str='sed'):
     concat_task = concat(a, b)

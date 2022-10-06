@@ -67,7 +67,7 @@ resource "google_cloudbuild_trigger" "pipeline" {
     owner = "OlavHN"
     name = "solutions-terraform-cloudbuild-gitops"
     push {
-      branch = ".*"
+      branch = "prod|dev"
     }
   }
 }

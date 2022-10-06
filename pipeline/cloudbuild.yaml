@@ -6,12 +6,12 @@ steps:
   # Compile pipeline
 - name: 'python'
   entrypoint: 'python'
-  args: ['pipeline.py']
+  args: ['pipeline/pipeline.py']
   id: 'compile'
 
   # Upload compiled pipeline to GCS.
 - name: 'gcr.io/cloud-builders/gsutil'
-  args: ['cp', 'basic_pipeline.json', 'gs://df-data-science-test-pipelines']
+  args: ['cp', 'basic_pipeline.json', 'gs://df-data-science-test-pipelines/$BRANCH_NAME/basic_pipeline.json']
   id:  'upload'
   waitFor: ['compile']
 
