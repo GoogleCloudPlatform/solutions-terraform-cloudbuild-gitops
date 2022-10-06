@@ -1,7 +1,7 @@
 steps:
 - name: python
   entrypoint: pip
-  args: ["install", "-r", "pipeline/requirements.txt", "--user"]
+  args: ["install", "-r", "requirements.txt", "--user"]
 
   # Compile pipeline
 - name: 'python'
