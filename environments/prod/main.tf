@@ -59,7 +59,7 @@ module "hello_world_pipeline" {
   project = "${var.project}"
   vertex_region = "europe-west4"
   cloud_scheduler_region = "europe-west4"
-  pipeline_spec_path = "gs://df-data-science-test/prod/basic_pipeline.json"
+  pipeline_spec_path = "gs://df-data-science-test-pipelines/prod/basic_pipeline.json"
   gcs_output_directory = "gs://df-data-science-test/prod/out/"
   # vertex_service_account_email = "my-vertex-service-account@my-gcp-project-id.iam.gserviceaccount.com"
   time_zone                    = "UTC"
