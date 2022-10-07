@@ -100,5 +100,5 @@ module "real_pipeline" {
   vertex_service_account_email = "364866568815-compute@developer.gserviceaccount.com"
   time_zone                    = "UTC"
   schedule                     = "0 0 * * *"
-  cloud_scheduler_job_name     = "not-working-pipeline-schedule"
+  cloud_scheduler_job_name     = "real-pipeline-schedule"
 }
