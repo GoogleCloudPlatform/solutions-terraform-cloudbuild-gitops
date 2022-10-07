@@ -61,7 +61,8 @@ module "hello_world_pipeline" {
   cloud_scheduler_region = "europe-west1"
   pipeline_spec_path = "gs://df-data-science-test-pipelines/prod/pipeline3.json"
   parameter_values = {
-    "text" = "Hello, world!"
+    "a" = "Hello, world!"
+    "b" = "Hello, world!"
   }
   gcs_output_directory = "gs://df-data-science-test-pipelines/prod/out/"
   vertex_service_account_email = "364866568815-compute@developer.gserviceaccount.com"
