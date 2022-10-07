@@ -59,7 +59,7 @@ module "hello_world_pipeline" {
   project = "${var.project}"
   vertex_region = "europe-west4"
   cloud_scheduler_region = "europe-west1"
-  pipeline_spec_path = "gs://df-data-science-test-pipelines/prod/pipeline2.json"
+  pipeline_spec_path = "gs://df-data-science-test-pipelines/prod/pipeline3.json"
   parameter_values = {
     "text" = "Hello, world!"
   }
