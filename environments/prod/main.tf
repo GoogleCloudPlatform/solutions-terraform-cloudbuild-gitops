@@ -61,7 +61,7 @@ module "hello_world_pipeline" {
   cloud_scheduler_region = "europe-west4"
   pipeline_spec_path = "gs://df-data-science-test-pipelines/prod/basic_pipeline.json"
   gcs_output_directory = "gs://df-data-science-test/prod/out/"
-  vertex_service_account_email = "364866568815@cloudservices.gserviceaccount.com"
+  vertex_service_account_email = "364866568815-compute@developer.gserviceaccount.com"
   time_zone                    = "UTC"
   schedule                     = "0 0 * * *"
   cloud_scheduler_job_name     = "pipeline-from-local-spec"
