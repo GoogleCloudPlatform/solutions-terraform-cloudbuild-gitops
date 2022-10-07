@@ -54,7 +54,23 @@ resource "google_cloudbuild_trigger" "pipeline" {
   }
 }
 
-module "hello_world_pipeline" {
+module "working_pipeline" {
+  source = "teamdatatonic/scheduled-vertex-pipelines/google"
+  project = "${var.project}"
+  vertex_region = "europe-west4"
+  cloud_scheduler_region = "europe-west1"
+  pipeline_spec_path = "gs://df-data-science-test-pipelines/prod/pipeline2.json"
+  parameter_values = {
+    "text" = "Hello, world!"
+  }
+  gcs_output_directory = "gs://df-data-science-test-pipelines/prod/out/"
+  vertex_service_account_email = "364866568815-compute@developer.gserviceaccount.com"
+  time_zone                    = "UTC"
+  schedule                     = "0 0 * * *"
+  cloud_scheduler_job_name     = "working-pipeline-schedule"
+}
+
+module "not_working_pipeline" {
   source = "teamdatatonic/scheduled-vertex-pipelines/google"
   project = "${var.project}"
   vertex_region = "europe-west4"
@@ -68,5 +84,5 @@ module "hello_world_pipeline" {
   vertex_service_account_email = "364866568815-compute@developer.gserviceaccount.com"
   time_zone                    = "UTC"
   schedule                     = "0 0 * * *"
-  cloud_scheduler_job_name     = "pipeline-from-local-spec"
+  cloud_scheduler_job_name     = "not-working-pipeline-schedule"
 }
