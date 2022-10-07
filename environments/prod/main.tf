@@ -58,7 +58,7 @@ module "hello_world_pipeline" {
   source = "teamdatatonic/scheduled-vertex-pipelines/google"
   project = "${var.project}"
   vertex_region = "europe-west4"
-  cloud_scheduler_region = "europe-west4"
+  cloud_scheduler_region = "europe-west1"
   pipeline_spec_path = "gs://df-data-science-test-pipelines/prod/basic_pipeline.json"
   gcs_output_directory = "gs://df-data-science-test/prod/out/"
   vertex_service_account_email = "364866568815-compute@developer.gserviceaccount.com"
