@@ -33,7 +33,6 @@ def pipeline(project_id: str):
         display_name="train-iris-automl-mbsdk-1",
         prediction_type="classification",
         model_type="CLOUD",
-        base_model=None,
         dataset=ds_op.outputs["dataset"],
         model_display_name="iris-classification-model-mbsdk",
         training_fraction_split=0.6,
