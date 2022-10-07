@@ -86,3 +86,19 @@ module "not_working_pipeline" {
   schedule                     = "0 0 * * *"
   cloud_scheduler_job_name     = "not-working-pipeline-schedule"
 }
+
+module "real_pipeline" {
+  source = "teamdatatonic/scheduled-vertex-pipelines/google"
+  project = "${var.project}"
+  vertex_region = "europe-west4"
+  cloud_scheduler_region = "europe-west1"
+  pipeline_spec_path = "gs://df-data-science-test-pipelines/prod/pipeline.json"
+  parameter_values = {
+    "project" = "df-data-science-test"
+  }
+  gcs_output_directory = "gs://df-data-science-test-pipelines/prod/out/"
+  vertex_service_account_email = "364866568815-compute@developer.gserviceaccount.com"
+  time_zone                    = "UTC"
+  schedule                     = "0 0 * * *"
+  cloud_scheduler_job_name     = "not-working-pipeline-schedule"
+}
