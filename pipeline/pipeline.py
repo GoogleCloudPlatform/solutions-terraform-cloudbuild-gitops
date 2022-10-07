@@ -3,7 +3,7 @@ from google.cloud import aiplatform
 from google_cloud_pipeline_components import aiplatform as gcc_aip
 
 project_id = "df-data-science-test"
-pipeline_root_path = "gs://df-data-science-test-pipelines/prod/root-path/
+pipeline_root_path = "gs://df-data-science-test-pipelines/prod/root-path/"
 
 # Define the workflow of the pipeline.
 @kfp.dsl.pipeline(
