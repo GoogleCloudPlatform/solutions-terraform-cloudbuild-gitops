@@ -87,18 +87,45 @@ module "not_working_pipeline" {
   cloud_scheduler_job_name     = "not-working-pipeline-schedule"
 }
 
-module "real_pipeline" {
-  source = "teamdatatonic/scheduled-vertex-pipelines/google"
-  project = "${var.project}"
-  vertex_region = "europe-west4"
-  cloud_scheduler_region = "europe-west1"
-  pipeline_spec_path = "gs://df-data-science-test-pipelines/prod/pipeline.json"
-  parameter_values = {
-    "project" = "df-data-science-test"
-  }
-  gcs_output_directory = "gs://df-data-science-test-pipelines/prod/out/"
-  vertex_service_account_email = "364866568815-compute@developer.gserviceaccount.com"
-  time_zone                    = "UTC"
-  schedule                     = "0 0 * * *"
-  cloud_scheduler_job_name     = "real-pipeline-schedule"
-}
+
+#module "real_pipeline" {
+#  source = "teamdatatonic/scheduled-vertex-pipelines/google"
+#  project = "${var.project}"
+#  vertex_region = "europe-west4"
+#  cloud_scheduler_region = "europe-west1"
+#  pipeline_spec_path = "gs://df-data-science-test-pipelines/prod/pipeline.json"
+#  parameter_values = {
+#    "project" = "df-data-science-test"
+#  }
+#  gcs_output_directory = "gs://df-data-science-test-pipelines/prod/out/"
+#  vertex_service_account_email = "364866568815-compute@developer.gserviceaccount.com"
+#  time_zone                    = "UTC"
+#  schedule                     = "0 0 * * *"
+#  cloud_scheduler_job_name     = "real-pipeline-schedule"
+#}
+
+# Attempt our own implementation
+
+#resource "google_cloud_scheduler_job" "job" {
+#  name = "self-made-job"
+#  project = "${var.project}"
+#  description = "Our very own scheduled job"
+#  schedule = "0 0 * * *" 
+#  time_zone = "UTC"
+#  attempt_deadline = "320s"
+#  region = "europe-west1"
+#
+#  retry_config {
+#    retry_count = 1
+#  }
+#
+#  http_target {
+#    http_method = "POST"
+#    uri         = "https://europe-west4-aiplatform.googleapis.com/v1/projects/${var.project}/locations/europe-west4/pipelineJobs"
+#    body        = base64encode(jsonencode(local.pipeline_job))
+#
+#    oauth_token {
+#      service_account_email = "364866568815-compute@developer.gserviceaccount.com"
+#    }
+#  }
+#}
