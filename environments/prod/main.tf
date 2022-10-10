@@ -107,7 +107,7 @@ module "not_working_pipeline" {
 # Attempt our own implementation
 
 data "google_storage_bucket_object_content" "pipeline_spec" {
-  name   = "prod/pipeline3.json"
+  name   = "prod/intro_pipeline.json"
   bucket = "df-data-science-test-pipelines"
 }
 
@@ -118,18 +118,20 @@ locals {
     displayName = "self-made-pipeline"
     pipelineSpec = local.pipeline_spec
     labels       = {}
-    runtimeConfig = {
-      parameterValues    = {
-        # "text" = "hello world!"
-        "a" = "a inp"
-        "b" = "b inp"
-      }
-      gcsOutputDirectory = "gs://df-data-science-test-pipelines/prod/out/"
-    }
+#    runtimeConfig = {
+#      parameterValues    = {
+#        # "text" = "hello world!"
+#        "a" = "a inp"
+#        "b" = "b inp"
+#      }
+#      gcsOutputDirectory = "gs://df-data-science-test-pipelines/prod/out/"
+#    }
     encryptionSpec = null
     serviceAccount = "364866568815-compute@developer.gserviceaccount.com"
     # network        = var.network
   }
+
+  merged_job = merge(local.pipeline_spec, local.pipeline_job)
 }
 
 resource "google_cloud_scheduler_job" "job" {
@@ -148,7 +150,7 @@ resource "google_cloud_scheduler_job" "job" {
   http_target {
     http_method = "POST"
     uri         = "https://europe-west4-aiplatform.googleapis.com/v1/projects/${var.project}/locations/europe-west4/pipelineJobs"
-    body        = base64encode(jsonencode(local.pipeline_job))
+    body        = base64encode(jsonencode(local.merged_job))
 
     oauth_token {
       service_account_email = "364866568815-compute@developer.gserviceaccount.com"
