@@ -106,26 +106,50 @@ module "not_working_pipeline" {
 
 # Attempt our own implementation
 
-#resource "google_cloud_scheduler_job" "job" {
-#  name = "self-made-job"
-#  project = "${var.project}"
-#  description = "Our very own scheduled job"
-#  schedule = "0 0 * * *" 
-#  time_zone = "UTC"
-#  attempt_deadline = "320s"
-#  region = "europe-west1"
-#
-#  retry_config {
-#    retry_count = 1
-#  }
-#
-#  http_target {
-#    http_method = "POST"
-#    uri         = "https://europe-west4-aiplatform.googleapis.com/v1/projects/${var.project}/locations/europe-west4/pipelineJobs"
-#    body        = base64encode(jsonencode(local.pipeline_job))
-#
-#    oauth_token {
-#      service_account_email = "364866568815-compute@developer.gserviceaccount.com"
-#    }
-#  }
-#}
+data "google_storage_bucket_object_content" "pipeline_spec" {
+  name   = "prod/pipeline2.json"
+  bucket = "df-data-science-test-pipelines"
+}
+
+locals {
+  pipeline_spec = jsondecode(data.google_storage_bucket_object_content.pipeline_spec.content)
+
+  pipeline_job = {
+    displayName = "self-made-pipeline"
+    pipelineSpec = local.pipeline_spec
+    labels       = {}
+    runtimeConfig = {
+      parameterValues    = {
+        "text" = "hello world!"
+      }
+      gcsOutputDirectory = "gs://df-data-science-test-pipelines/prod/out/"
+    }
+    encryptionSpec = null
+    serviceAccount = "364866568815-compute@developer.gserviceaccount.com"
+    # network        = var.network
+  }
+}
+
+resource "google_cloud_scheduler_job" "job" {
+  name = "self-made-job"
+  project = "${var.project}"
+  description = "Our very own scheduled job"
+  schedule = "0 0 * * *" 
+  time_zone = "UTC"
+  attempt_deadline = "320s"
+  region = "europe-west1"
+
+  retry_config {
+    retry_count = 1
+  }
+
+  http_target {
+    http_method = "POST"
+    uri         = "https://europe-west4-aiplatform.googleapis.com/v1/projects/${var.project}/locations/europe-west4/pipelineJobs"
+    body        = base64encode(jsonencode(local.pipeline_job))
+
+    oauth_token {
+      service_account_email = "364866568815-compute@developer.gserviceaccount.com"
+    }
+  }
+}
