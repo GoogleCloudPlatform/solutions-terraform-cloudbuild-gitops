@@ -36,7 +36,7 @@ def consumer(text1: str, text2: str, text3: str):
 @dsl.pipeline(
     name="hello-world-v2",
     description="A simple intro pipeline",
-    pipeline_root=PIPELINE_ROOT,
+    pipeline_root="gs://df-data-science-test-pipelines/out",
 )
 
 def pipeline(text: str = "hi there"):
