@@ -107,7 +107,7 @@ module "not_working_pipeline" {
 # Attempt our own implementation
 
 data "google_storage_bucket_object_content" "pipeline_spec" {
-  name   = "prod/pipeline2.json"
+  name   = "prod/pipeline3.json"
   bucket = "df-data-science-test-pipelines"
 }
 
@@ -120,7 +120,9 @@ locals {
     labels       = {}
     runtimeConfig = {
       parameterValues    = {
-        "text" = "hello world!"
+        # "text" = "hello world!"
+        "a" = "a inp"
+        "b" = "b inp"
       }
       gcsOutputDirectory = "gs://df-data-science-test-pipelines/prod/out/"
     }
