@@ -59,11 +59,8 @@ module "working_pipeline" {
   project = "${var.project}"
   vertex_region = "europe-west4"
   cloud_scheduler_region = "europe-west1"
-  pipeline_spec_path = "gs://df-data-science-test-pipelines/prod/add_pipeline.json"
-  parameter_values = {
-    "a" = 3.0
-    "b" = 4.0 
-  }
+  pipeline_spec_path = "gs://df-data-science-test-pipelines/prod/pipeline.yaml"
+  parameter_values = {}
   gcs_output_directory = "gs://df-data-science-test-pipelines/prod/out/"
   vertex_service_account_email = "364866568815-compute@developer.gserviceaccount.com"
   time_zone                    = "UTC"
