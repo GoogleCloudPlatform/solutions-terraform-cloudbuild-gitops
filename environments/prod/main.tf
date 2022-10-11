@@ -54,36 +54,36 @@ resource "google_cloudbuild_trigger" "pipeline" {
   }
 }
 
-module "working_pipeline" {
-  source = "teamdatatonic/scheduled-vertex-pipelines/google"
-  project = "${var.project}"
-  vertex_region = "europe-west4"
-  cloud_scheduler_region = "europe-west1"
-  pipeline_spec_path = "gs://df-data-science-test-pipelines/prod/pipeline.json"
-  parameter_values = {}
-  gcs_output_directory = "gs://df-data-science-test-pipelines/prod/out/"
-  vertex_service_account_email = "364866568815-compute@developer.gserviceaccount.com"
-  time_zone                    = "UTC"
-  schedule                     = "0 0 * * *"
-  cloud_scheduler_job_name     = "working-pipeline-schedule"
-}
-
-module "not_working_pipeline" {
-  source = "teamdatatonic/scheduled-vertex-pipelines/google"
-  project = "${var.project}"
-  vertex_region = "europe-west4"
-  cloud_scheduler_region = "europe-west1"
-  pipeline_spec_path = "gs://df-data-science-test-pipelines/prod/pipeline3.json"
-  parameter_values = {
-    "a" = "Hello, world!"
-    "b" = "Hello, world!"
-  }
-  gcs_output_directory = "gs://df-data-science-test-pipelines/prod/out/"
-  vertex_service_account_email = "364866568815-compute@developer.gserviceaccount.com"
-  time_zone                    = "UTC"
-  schedule                     = "0 0 * * *"
-  cloud_scheduler_job_name     = "not-working-pipeline-schedule"
-}
+#module "working_pipeline" {
+#  source = "teamdatatonic/scheduled-vertex-pipelines/google"
+#  project = "${var.project}"
+#  vertex_region = "europe-west4"
+#  cloud_scheduler_region = "europe-west1"
+#  pipeline_spec_path = "gs://df-data-science-test-pipelines/prod/pipeline.json"
+#  parameter_values = {}
+#  gcs_output_directory = "gs://df-data-science-test-pipelines/prod/out/"
+#  vertex_service_account_email = "364866568815-compute@developer.gserviceaccount.com"
+#  time_zone                    = "UTC"
+#  schedule                     = "0 0 * * *"
+#  cloud_scheduler_job_name     = "working-pipeline-schedule"
+#}
+#
+#module "not_working_pipeline" {
+#  source = "teamdatatonic/scheduled-vertex-pipelines/google"
+#  project = "${var.project}"
+#  vertex_region = "europe-west4"
+#  cloud_scheduler_region = "europe-west1"
+#  pipeline_spec_path = "gs://df-data-science-test-pipelines/prod/pipeline3.json"
+#  parameter_values = {
+#    "a" = "Hello, world!"
+#    "b" = "Hello, world!"
+#  }
+#  gcs_output_directory = "gs://df-data-science-test-pipelines/prod/out/"
+#  vertex_service_account_email = "364866568815-compute@developer.gserviceaccount.com"
+#  time_zone                    = "UTC"
+#  schedule                     = "0 0 * * *"
+#  cloud_scheduler_job_name     = "not-working-pipeline-schedule"
+#}
 
 
 #module "real_pipeline" {
@@ -105,7 +105,7 @@ module "not_working_pipeline" {
 # Attempt our own implementation
 
 data "google_storage_bucket_object_content" "pipeline_spec" {
-  name   = "prod/intro_pipeline.json"
+  name   = "prod/pipeline.json"
   bucket = "df-data-science-test-pipelines"
 }
 
@@ -148,7 +148,7 @@ resource "google_cloud_scheduler_job" "job" {
   http_target {
     http_method = "POST"
     uri         = "https://europe-west4-aiplatform.googleapis.com/v1/projects/${var.project}/locations/europe-west4/pipelineJobs"
-    body        = base64encode(jsonencode(local.merged_job))
+    body        = base64encode(jsonencode(local.pipeline_spec))
 
     oauth_token {
       service_account_email = "364866568815-compute@developer.gserviceaccount.com"
