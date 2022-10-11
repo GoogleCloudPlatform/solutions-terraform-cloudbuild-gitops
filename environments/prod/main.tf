@@ -133,7 +133,7 @@ locals {
 }
 
 resource "google_cloud_scheduler_job" "job" {
-  name = "self-made-job"
+  name = "self-made-job-reread"
   project = "${var.project}"
   description = "Our very own scheduled job"
   schedule = "0 0 * * *" 
