@@ -53,7 +53,7 @@ resource "google_storage_bucket_object" "zip" {
 resource "google_cloudfunctions_function" "function" {
   name                  = "function-trigger-on-gcs"
   runtime               = "python37"
-  region                = "europe-west4"
+  region                = "europe-west1"
 
   # Get the source code of the cloud function as a Zip compression
   source_archive_bucket = google_storage_bucket.function_bucket.name
