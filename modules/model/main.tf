@@ -8,7 +8,7 @@ resource "google_notebooks_instance" "main" {
   install_gpu_driver    = var.gpu_count > 0 ? true : false
   accelerator_config {
     type                = var.gpu_type
-    count               = var.gpu_count
+    core_count          = var.gpu_count
   }
   instance_owners       = var.instance_owners
   container_image {
