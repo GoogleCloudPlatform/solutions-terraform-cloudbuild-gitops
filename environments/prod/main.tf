@@ -21,6 +21,11 @@ provider "google" {
   project = "${var.project}"
 }
 
+module "model" {
+  name      = "module-model-test"
+  project   = var.project
+}
+
 module "workbench" {
   source  = "../../modules/workbench"
   project = "${var.project}"
