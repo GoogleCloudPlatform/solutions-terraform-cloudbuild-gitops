@@ -22,6 +22,7 @@ provider "google" {
 }
 
 module "model" {
+  source    = "../../modules/model"
   name      = "module-model-test"
   project   = var.project
 }
