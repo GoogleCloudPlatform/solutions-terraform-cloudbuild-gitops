@@ -15,7 +15,13 @@ variable "instance_owners" {
   default   = ["olav@olavnymoen.com"]
 }
 
-variable "install_gpu_driver" {
-  type      = bool
-  default   = false
+variable "gpu_count" {
+  type      = number
+  default   = 0
 }
+
+variable "gpu_type" {
+  type = string
+  default = "NVIDIA_TESLA_T4"
+}
+
