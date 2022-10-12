@@ -25,7 +25,6 @@ module "model" {
   source        = "../../modules/model"
   model_name    = "module-model-test"
   project       = var.project
-  gpu_count     = 1
 }
 
 module "workbench" {
