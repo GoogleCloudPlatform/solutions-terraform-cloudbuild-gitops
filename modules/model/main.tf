@@ -61,4 +61,5 @@ resource "google_cloudfunctions_function" "function" {
 
   # Must match the function name in the cloud function `main.py` source code
   trigger_http          = true
+  entry_point           = "_process_request"
 }
