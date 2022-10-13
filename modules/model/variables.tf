@@ -25,3 +25,10 @@ variable "gpu_type" {
   default = "NVIDIA_TESLA_T4"
 }
 
+variable "pipeline_endpoint" {
+  type = string
+}
+
+variable "pipeline_bucket" {
+  type = string
+}

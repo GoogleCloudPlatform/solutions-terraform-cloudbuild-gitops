@@ -23,10 +23,12 @@ provider "google" {
 
 // Models TODO: iterate over yaml config files in folders
 module "model" {
-  source        = "../../modules/model"
-  model_name    = "module-model-test"
-  project       = var.project
-  gpu_count     = 1
+  source            = "../../modules/model"
+  model_name        = "module-model-test"
+  project           = var.project
+  gpu_count         = 1
+  pipeline_endpoint = google_cloud_run_service.scheduler.status[0].url
+  pipeline_bucket   = google_storage_bucket.pipeline_bucket.name
 }
 
 // BEGIN STATIC CONFIG
@@ -54,7 +56,7 @@ resource "google_cloudbuild_trigger" "scheduler" {
 }
 
 // Cloud run scheduler service
-resource "google_cloud_run_service" "default" {
+resource "google_cloud_run_service" "scheduler" {
   name     = "cloudrun-scheduler"
   location = "europe-west4"
 
@@ -70,6 +72,11 @@ resource "google_cloud_run_service" "default" {
     percent         = 100
     latest_revision = true
   }
+}
+
+resource "google_storage_bucket" "pipeline_bucket" {
+    name     = "${var.project}-pipelines"
+    location = "europe-west4"
 }
 
 
