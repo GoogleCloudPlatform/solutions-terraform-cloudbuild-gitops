@@ -1,5 +1,3 @@
-from typing import Union
-
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
@@ -7,17 +5,12 @@ from google import auth
 from google.auth.transport import urllib3
 from google.cloud import storage
 
-
 class Job(BaseModel):
     url: str
     gcs_bucket: str
     gcs_pipeline: str
 
 app = FastAPI()
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
 
 @app.post('/')
 async def run_job(job: Job):
@@ -40,9 +33,6 @@ async def run_job(job: Job):
             status_code=response.status,
             detail=response.data)
 
-    return response.data
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+    data_response = json.loads(response.data)
+    return data_response
 

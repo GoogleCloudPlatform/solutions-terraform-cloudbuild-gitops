@@ -1,6 +1,11 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: [ 'build', '-t', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler', '.' ]
+  args: [ 'build', '-t', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:$COMMIT_SHA', '.' ]
   dir: 'run/pipeline_scheduler'
-images: ['europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:$COMMIT_SHA']
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args: ['run', 'deploy', 'cloudrun-scheduler', '--image', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:$COMMIT_SHA', '--region', 'europe-west4']
+
 
