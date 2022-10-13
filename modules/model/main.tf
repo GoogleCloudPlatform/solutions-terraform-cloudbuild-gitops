@@ -37,7 +37,7 @@ resource "google_cloud_scheduler_job" "job" {
   name = "${var.model_name}_pipeline_schedule"
   project = var.project
   schedule = "0 0 * * *" 
-  time_zone = "UTC"
+  time_zone = "Europe/Oslo"
   attempt_deadline = "320s"
   region = "europe-west1"
 
