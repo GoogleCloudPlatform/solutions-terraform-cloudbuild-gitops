@@ -1,0 +1,6 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler', '.' ]
+  dir: 'run/pipeline_scheduler'
+images: ['europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler']
+
