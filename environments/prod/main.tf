@@ -40,8 +40,8 @@ resource "google_artifact_registry_repository" "main" {
 }
 
 // Build trigger for pipeline_scheduler Docker image changes
-resource "google_cloudbuild_trigger" "pipeline_scheduler" {
-  name = "pipeline_scheduler"
+resource "google_cloudbuild_trigger" "scheduler" {
+  name = "scheduler"
   filename = "run/pipeline_scheduler/cloudbuild.yaml"
   included_files = [ "run/pipeline_scheduler/**" ]
   github {
