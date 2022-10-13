@@ -43,7 +43,6 @@ resource "google_artifact_registry_repository" "main" {
 resource "google_cloudbuild_trigger" "scheduler" {
   name              = "scheduler"
   filename          = "run/pipeline_scheduler/cloudbuild.yaml"
-  dir               = "run/pipeline_scheduler"
   included_files    = [ "run/pipeline_scheduler/**" ]
   github {
     owner   = "OlavHN"
