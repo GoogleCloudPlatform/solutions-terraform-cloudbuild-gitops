@@ -1,15 +1,8 @@
 # Note that the :latest tag must match the :latest tag used in terraform cloud run resource
-# TODO: remove cache. it doesnt seem to help
 
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  entrypoint: 'bash'
-  args: ['-c', 'docker pull europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:latest || exit 0']
-- name: 'gcr.io/cloud-builders/docker'
-  args: [   'build',
-            '-t', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:latest',
-            '--cache-from', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:latest',
-            '.' ]
+  args: ['build', '-t', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:latest', '.' ]
   dir: 'run/pipeline_scheduler'
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:latest']
