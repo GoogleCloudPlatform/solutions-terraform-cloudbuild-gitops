@@ -1,2 +1,2 @@
 model_name: "module-model-test"
-
+gpu_count: 1
