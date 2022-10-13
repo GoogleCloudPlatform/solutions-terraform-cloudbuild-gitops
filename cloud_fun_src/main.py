@@ -23,6 +23,7 @@ from typing import Optional, Tuple
 from google import auth
 from google.auth.transport import urllib3
 
+from google.cloud import storage
 
 def _process_request(request):
     """Wrapper of _process_request_impl with error handling."""
@@ -60,6 +61,13 @@ def _preprocess_request_body(
 
     method = str(request_json['_method'])
     del request_json['_method']
+
+    storage_client = storage.Client()
+    bucket = storage_client.bucket('df-data-science-test-pipelines')
+    blob = bucket.blob('prod/pipeline.json')
+    contents = blob.download_as_string()
+
+    logging.info('contents!', contents)
 
     resolved_request_body = None
     if request_json:
