@@ -47,9 +47,8 @@ resource "google_cloud_scheduler_job" "job" {
 
   http_target {
     http_method = "POST"
-    uri         = "https://europe-west4-aiplatform.googleapis.com/v1/projects/${var.project}/locations/europe-west4/pipelineJobs"
     uri         = var.pipeline_endpoint
-    body        = base64encode(jsonencode(local.pipeline_spec))
+    body        = base64encode(jsonencode(local.request_body))
 
     oauth_token {
       service_account_email = "364866568815-compute@developer.gserviceaccount.com"
