@@ -30,6 +30,7 @@ steps:
   args: 
   - '-c'
   - |
+      terraform force-unlock -force 1665682570693886
       if [ -d "environments/$BRANCH_NAME/" ]; then
         cd environments/$BRANCH_NAME
         terraform init
