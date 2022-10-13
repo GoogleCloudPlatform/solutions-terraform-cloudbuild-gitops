@@ -53,13 +53,6 @@ resource "google_cloudbuild_trigger" "pipeline_scheduler" {
   }
 }
 
-
-// Bucket for cloud function code zips
-resource "google_storage_bucket" "function_bucket" {
-    name     = "${var.project}-function"
-    location = "europe-west4"
-}
-
 // Build trigger for folder. TODO: Add to model module
 resource "google_cloudbuild_trigger" "pipeline" {
   name = "pipeline"
