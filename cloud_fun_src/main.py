@@ -65,7 +65,7 @@ def _preprocess_request_body(
     storage_client = storage.Client()
     bucket = storage_client.bucket('df-data-science-test-pipelines')
     blob = bucket.blob('prod/pipeline.json')
-    contents = blob.download_as_string()
+    contents = blob.download_as_string().encode('utf-8')
 
     logging.info('contents!', contents)
 
@@ -73,7 +73,7 @@ def _preprocess_request_body(
     if request_json:
         resolved_request_str = json.dumps(request_json)
         resolved_request_body = resolved_request_str.encode('utf-8')
-    return (url, method, resolved_request_body)
+    return (url, method, contents)
 
 
 def _process_request_impl(request):
