@@ -43,8 +43,6 @@ steps:
           echo "*************** TERRAFORM INIT ******************"
           echo "******* At environment: ${env} ********"
           echo "*************************************************"
-
-          terraform force-unlock 1665682570693886
           terraform init || exit 1
           cd ../../
         done
@@ -70,6 +68,7 @@ steps:
           echo "*************** TERRAFOM PLAN ******************"
           echo "******* At environment: ${env} ********"
           echo "*************************************************"
+          terraform force-unlock 1665682570693886
           terraform plan || exit 1
           cd ../../
         done
