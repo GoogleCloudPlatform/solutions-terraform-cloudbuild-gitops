@@ -21,6 +21,7 @@ provider "google" {
   project = "${var.project}"
 }
 
+// Models TODO: iterate over yaml config files in folders
 module "model" {
   source        = "../../modules/model"
   model_name    = "module-model-test"
@@ -28,6 +29,53 @@ module "model" {
   gpu_count     = 1
 }
 
+// BEGIN STATIC CONFIG
+
+// Artifact repository
+resource "google_artifact_registry_repository" "main" {
+  location      = "europe-west4"
+  repository_id = "df-ds-repo"
+  description   = "Docker repository"
+  format        = "DOCKER"
+}
+
+// Build trigger for pipeline_scheduler Docker image changes
+resource "google_cloudbuild_trigger" "pipeline_scheduler" {
+  name = "pipeline_scheduler"
+  filename = "run/pipeline_scheduler/cloudbuild.yaml"
+  included_files = [ "run/pipeline_scheduler/**" ]
+  github {
+    owner = "OlavHN"
+    name = "solutions-terraform-cloudbuild-gitops"
+    push {
+      branch = "prod|dev"
+    }
+  }
+}
+
+
+// Bucket for cloud function code zips
+resource "google_storage_bucket" "function_bucket" {
+    name     = "${var.project}-function"
+    location = "europe-west4"
+}
+
+// Build trigger for folder. TODO: Add to model module
+resource "google_cloudbuild_trigger" "pipeline" {
+  name = "pipeline"
+  filename = "pipeline/cloudbuild.yaml"
+  included_files = [ "pipeline/**" ]
+  github {
+    owner = "OlavHN"
+    name = "solutions-terraform-cloudbuild-gitops"
+    push {
+      branch = "prod|dev"
+    }
+  }
+}
+
+
+/*
 module "workbench" {
   source  = "../../modules/workbench"
   project = "${var.project}"
@@ -44,19 +92,6 @@ resource "google_storage_bucket" "auto-expire" {
     }
     action {
       type = "Delete"
-    }
-  }
-}
-
-resource "google_cloudbuild_trigger" "pipeline" {
-  name = "pipeline"
-  filename = "pipeline/cloudbuild.yaml"
-  included_files = [ "pipeline/**" ]
-  github {
-    owner = "OlavHN"
-    name = "solutions-terraform-cloudbuild-gitops"
-    push {
-      branch = "prod|dev"
     }
   }
 }
@@ -162,3 +197,5 @@ resource "google_cloud_scheduler_job" "job" {
     }
   }
 }
+
+*/

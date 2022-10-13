@@ -26,10 +26,12 @@ resource "google_notebooks_instance" "main" {
 }
 
 
+/*
 resource "google_storage_bucket" "function_bucket" {
     name     = "${var.project}-function"
     location = "europe-west4"
 }
+*/
 
 # Generates an archive of the source code compressed as a .zip file.
 data "archive_file" "source" {
