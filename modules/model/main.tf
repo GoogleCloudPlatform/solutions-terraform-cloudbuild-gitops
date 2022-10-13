@@ -25,45 +25,35 @@ resource "google_notebooks_instance" "main" {
   }
 }
 
-
-/* Remove cloud fun service
-resource "google_storage_bucket" "function_bucket" {
-    name     = "${var.project}-function"
-    location = "europe-west4"
+locals {
+  request_body = {
+    url = "https://europe-west4-aiplatform.googleapis.com/v1/projects/${var.project}/locations/europe-west4/pipelineJobs"
+    gcs_bucket = var.pipeline_bucket
+    gcs_pipeline = "pipeline.json"
+  }
 }
 
-# Generates an archive of the source code compressed as a .zip file.
-data "archive_file" "source" {
-  type        = "zip"
-  source_dir  = "../../cloud_fun_src"
-  output_path = "/tmp/function.zip"
+resource "google_cloud_scheduler_job" "job" {
+  name = "${var.model_name}_pipeline_schedule"
+  project = var.project
+  schedule = "0 0 * * *" 
+  time_zone = "UTC"
+  attempt_deadline = "320s"
+  region = "europe-west1"
+
+  retry_config {
+    retry_count = 1
+  }
+
+  http_target {
+    http_method = "POST"
+    uri         = "https://europe-west4-aiplatform.googleapis.com/v1/projects/${var.project}/locations/europe-west4/pipelineJobs"
+    uri         = var.pipeline_endpoint
+    body        = base64encode(jsonencode(local.pipeline_spec))
+
+    oauth_token {
+      service_account_email = "364866568815-compute@developer.gserviceaccount.com"
+    }
+  }
 }
 
-# Add source code zip to the Cloud Function's bucket
-resource "google_storage_bucket_object" "zip" {
-  source        = data.archive_file.source.output_path
-  content_type  = "application/zip"
-
-  # Append to the MD5 checksum of the files's content
-  # to force the zip to be updated as soon as a change occurs
-  name          = "src-${data.archive_file.source.output_md5}.zip"
-  bucket        = google_storage_bucket.function_bucket.name
-  bucket        = google_storage_bucket.function_bucket.name
-}
-
-# Create the Cloud function triggered by a `Finalize` event on the bucket
-resource "google_cloudfunctions_function" "function" {
-  name                  = "function-trigger-on-gcs"
-  runtime               = "python37"
-  region                = "europe-west1"
-
-  # Get the source code of the cloud function as a Zip compression
-  source_archive_bucket = google_storage_bucket.function_bucket.name
-  source_archive_object = google_storage_bucket_object.zip.name
-
-  # Must match the function name in the cloud function `main.py` source code
-  trigger_http          = true
-  entry_point           = "_process_request"
-}
-
-*/

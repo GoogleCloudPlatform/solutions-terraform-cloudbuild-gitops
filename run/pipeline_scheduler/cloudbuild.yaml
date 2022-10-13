@@ -1,3 +1,6 @@
+# Note that the :latest tag must match the :latest tag used in terraform cloud run resource
+# TODO: remove cache. it doesnt seem to help
+
 steps:
 - name: 'gcr.io/cloud-builders/docker'
   entrypoint: 'bash'
