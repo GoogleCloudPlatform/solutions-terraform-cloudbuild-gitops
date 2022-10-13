@@ -53,6 +53,26 @@ resource "google_cloudbuild_trigger" "scheduler" {
   }
 }
 
+// Cloud run scheduler service
+resource "google_cloud_run_service" "default" {
+  name     = "cloudrun-scheduler"
+  location = "europe-west4"
+
+  template {
+    spec {
+      containers {
+        image = "europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler"
+      }
+    }
+  }
+
+  traffic {
+    percent         = 100
+    latest_revision = true
+  }
+}
+
+
 // Build trigger for folder. TODO: Add to model module
 resource "google_cloudbuild_trigger" "pipeline" {
   name = "pipeline"
