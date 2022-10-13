@@ -16,7 +16,7 @@
 locals {
   env = "prod"
 
-  model_config_files = fileset('../../', "models/*/config.yaml")
+  model_config_files = fileset("../../", "models/*/config.yaml")
 
   model_configs = { for config_file in local.model_config_files:
                     config_file => yamldecode(file(config_file))}
