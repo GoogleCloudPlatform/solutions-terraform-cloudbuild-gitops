@@ -61,7 +61,7 @@ resource "google_cloud_run_service" "default" {
   template {
     spec {
       containers {
-        image = "europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:latest"
+        image = "europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler"
       }
     }
   }
