@@ -33,7 +33,7 @@ module "model" {
 
   model_name        = each.value.model_name
   project           = var.project
-  gpu_count         = each.value.gpu_count == null ? 0 : each.value.gpu_count
+  gpu_count         = contains(each.value, "gpu_count") ? each.value.gpu_count : 0
   pipeline_endpoint = google_cloud_run_service.scheduler.status[0].url
   pipeline_bucket   = google_storage_bucket.pipeline_bucket.name
 }
