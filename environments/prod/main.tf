@@ -26,7 +26,6 @@ provider "google" {
   project = "${var.project}"
 }
 
-// Models TODO: iterate over yaml config files in folders
 module "model" {
   source            = "../../modules/model"
 
@@ -34,7 +33,7 @@ module "model" {
 
   model_name        = each.value.model_name
   project           = var.project
-  gpu_count         = 1
+  gpu_count         = try(each.value.gpu_count, 0)
   pipeline_endpoint = google_cloud_run_service.scheduler.status[0].url
   pipeline_bucket   = google_storage_bucket.pipeline_bucket.name
 }
