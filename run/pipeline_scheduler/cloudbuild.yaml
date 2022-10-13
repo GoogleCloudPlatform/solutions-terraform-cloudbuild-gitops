@@ -1,11 +1,19 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: [ 'build', '-t', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:$COMMIT_SHA', '.' ]
+  entrypoint: 'bash'
+  args: ['-c', 'docker pull europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:latest || exit 0']
+- name: 'gcr.io/cloud-builders/docker'
+  args: [   'build',
+            '-t', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:latest',
+            '--cache_from', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:latest',
+            '.' ]
   dir: 'run/pipeline_scheduler'
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:$COMMIT_SHA']
+  args: ['push', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:latest']
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: gcloud
-  args: ['run', 'deploy', 'cloudrun-scheduler', '--image', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:$COMMIT_SHA', '--region', 'europe-west4']
+  args: ['run', 'deploy', 'cloudrun-scheduler', '--image', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:latest', '--region', 'europe-west4']
+images:
+- ['europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:latest']
 
 
