@@ -13,7 +13,6 @@ steps:
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: gcloud
   args: ['run', 'deploy', 'cloudrun-scheduler', '--image', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:latest', '--region', 'europe-west4']
-images:
-- ['europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:latest']
+images: ['europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:latest']
 
 
