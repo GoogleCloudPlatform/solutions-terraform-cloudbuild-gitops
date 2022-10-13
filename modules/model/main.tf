@@ -50,7 +50,7 @@ resource "google_cloud_scheduler_job" "job" {
     uri         = var.pipeline_endpoint
     body        = base64encode(jsonencode(local.request_body))
 
-    oauth_token {
+    oidc_token {
       service_account_email = "364866568815-compute@developer.gserviceaccount.com"
     }
   }
