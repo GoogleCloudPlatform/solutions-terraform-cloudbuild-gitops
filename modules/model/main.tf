@@ -26,6 +26,7 @@ resource "google_notebooks_instance" "main" {
 }
 
 
+/* Remove cloud fun service
 resource "google_storage_bucket" "function_bucket" {
     name     = "${var.project}-function"
     location = "europe-west4"
@@ -47,6 +48,7 @@ resource "google_storage_bucket_object" "zip" {
   # to force the zip to be updated as soon as a change occurs
   name          = "src-${data.archive_file.source.output_md5}.zip"
   bucket        = google_storage_bucket.function_bucket.name
+  bucket        = google_storage_bucket.function_bucket.name
 }
 
 # Create the Cloud function triggered by a `Finalize` event on the bucket
@@ -63,3 +65,5 @@ resource "google_cloudfunctions_function" "function" {
   trigger_http          = true
   entry_point           = "_process_request"
 }
+
+*/
