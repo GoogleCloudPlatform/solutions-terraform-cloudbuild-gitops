@@ -41,14 +41,14 @@ resource "google_artifact_registry_repository" "main" {
 
 // Build trigger for pipeline_scheduler Docker image changes
 resource "google_cloudbuild_trigger" "scheduler" {
-  name = "scheduler"
-  filename = "run/pipeline_scheduler/cloudbuild.yaml"
-  included_files = [ "run/pipeline_scheduler/**" ]
+  name              = "scheduler"
+  filename          = "run/pipeline_scheduler/cloudbuild.yaml"
+  included_files    = [ "run/pipeline_scheduler/**" ]
   github {
-    owner = "OlavHN"
-    name = "solutions-terraform-cloudbuild-gitops"
+    owner   = "OlavHN"
+    name    = "solutions-terraform-cloudbuild-gitops"
     push {
-      branch = "prod|dev"
+      branch    = "prod|dev"
     }
   }
 }
