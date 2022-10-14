@@ -86,6 +86,11 @@ resource "google_storage_bucket" "pipeline_bucket" {
     location = "europe-west4"
 }
 
+resource "google_storage_bucket" "data_bucket" {
+    name     = "${var.project}-data"
+    location = "europe-west4"
+}
+
 
 // Build trigger for folder. TODO: Add to model module
 resource "google_cloudbuild_trigger" "pipeline" {
