@@ -28,6 +28,12 @@ module "vpc" {
   region  = "${var.region}"
 }
 
+module "cloud_nat" {
+  source  = "../../modules/cloud_nat"
+  project = "${var.project}"
+  subnet  = "${module.vpc.subnet}"
+}
+
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
@@ -107,11 +113,5 @@ module "load_balancer" {
   project = "${var.project}"
   subnet  = "${module.vpc.subnet}"
   instance_template_id = "${module.instance_template.instance_template_id}"
-}
-
-module "cloud_nat" {
-  source  = "../../modules/cloud_nat"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
 }
 */
