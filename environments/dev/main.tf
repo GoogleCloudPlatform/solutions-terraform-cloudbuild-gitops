@@ -34,7 +34,7 @@ module "cloud_nat" {
   network = "${module.vpc.network}"
   region  = "${var.region}"
 }
-/*
+
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
@@ -43,7 +43,7 @@ module "gke_cluster" {
     subnetwork      = module.vpc.subnet
     master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.1.16/28"
 }
-*/
+
 resource "google_artifact_registry_repository" "my-repo" {
   provider      = google-beta
   project       = var.project
