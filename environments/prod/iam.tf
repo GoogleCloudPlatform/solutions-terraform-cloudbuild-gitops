@@ -67,7 +67,7 @@ resource "google_project_iam_member" "cloud_deploy_admin" {
   role     = "roles/clouddeploy.admin"
   member   = "serviceAccount:${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
 }
-
+/*
 # IAM Roles for the Compute Engine Service Account
 resource "google_project_iam_member" "compute_registry_reader" {
   project  = var.project
@@ -86,7 +86,7 @@ resource "google_project_iam_member" "compute_container_admin" {
   role     = "roles/container.admin"
   member   = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
 }
-
+*/
 # IAM membership for Binary Authorization service agents in GKE projects on attestors
 resource "google_project_service_identity" "binauth_service_agent" {
   provider  = google-beta

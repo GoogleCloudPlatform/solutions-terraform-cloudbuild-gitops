@@ -34,7 +34,7 @@ module "cloud_nat" {
   network = "${module.vpc.network}"
   region  = "${var.region}"
 }
-
+/*
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
@@ -44,6 +44,25 @@ module "gke_cluster" {
     master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.1.16/28"
 }
 
+# IAM Roles for the Compute Engine Service Account
+resource "google_project_iam_member" "compute_registry_reader" {
+  project  = var.project
+  role     = "roles/artifactregistry.reader"
+  member   = "serviceAccount:${module.gke_cluster.service-account}"
+}
+
+resource "google_project_iam_member" "compute_deploy_jobrunner" {
+  project  = var.project
+  role     = "roles/clouddeploy.jobRunner"
+  member   = "serviceAccount:${module.gke_cluster.service-account}"
+}
+
+resource "google_project_iam_member" "compute_container_admin" {
+  project  = var.project
+  role     = "roles/container.admin"
+  member   = "serviceAccount:${module.gke_cluster.service-account}"
+}
+*/
 resource "google_artifact_registry_repository" "my-repo" {
   provider      = google-beta
   project       = var.project

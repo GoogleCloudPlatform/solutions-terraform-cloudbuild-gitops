@@ -11,3 +11,8 @@ output "endpoint" {
   sensitive   = true
   value       = google_container_cluster.cluster.endpoint
 }
+
+output "service-account" {
+  description = "The email address of the gke-cluster service account."
+  value       = google_service_account.default.email
+}
