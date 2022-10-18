@@ -37,6 +37,33 @@ resource "google_project_iam_member" "cloud_deploy_admin" {
   member   = "serviceAccount:${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
 }
 
+# Cloud Deploy Execution Service Account
+resource "google_service_account" "clouddeploy_execution_sa" {
+  project      = var.project
+  account_id   = "clouddeploy-execution-sa"
+  display_name = "clouddeploy-execution-sa"
+}
+
+# IAM membership for Cloud Build SA to act as Cloud Deploy Execution SA
+resource "google_service_account_iam_member" "cloudbuild_clouddeploy_impersonation" {
+  service_account_id = google_service_account.clouddeploy_execution_sa.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
+}
+
+# IAM membership for Cloud Deploy Execution SA deploy to GKE and execute jobs
+resource "google_project_iam_member" "clouddeploy_gke_dev" {
+  project  = var.project
+  role     = "roles/container.developer"
+  member   = "serviceAccount:${google_service_account.clouddeploy_execution_sa.email}"
+}
+
+resource "google_project_iam_member" "clouddeploy_job_runner" {
+  project       = var.project
+  role          = "roles/clouddeploy.jobRunner"
+  member        = "serviceAccount:${google_service_account.clouddeploy_execution_sa.email}"
+}
+
 # IAM membership for Binary Authorization service agents in GKE projects on attestors
 resource "google_project_service_identity" "binauth_service_agent" {
   provider  = google-beta
