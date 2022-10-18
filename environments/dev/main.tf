@@ -44,7 +44,7 @@ module "gke_cluster" {
     master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.1.16/28"
 }
 
-# IAM Roles for the Compute Engine Service Account
+# IAM Roles for the node pool service account
 resource "google_project_iam_member" "compute_registry_reader" {
   project  = var.project
   role     = "roles/artifactregistry.reader"

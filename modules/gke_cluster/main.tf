@@ -37,7 +37,6 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   node_count = 1
 
   node_config {
-    preemptible  = true
     machine_type = "e2-micro"
 
     shielded_instance_config {

@@ -1,18 +1,3 @@
-/*
-# Cloud Deploy Execution Service Account
-resource "google_service_account" "clouddeploy_execution_sa" {
-  project      = var.project
-  account_id   = "clouddeploy-execution-sa"
-  display_name = "clouddeploy-execution-sa"
-}
-
-resource "google_project_iam_member" "cd_sa_iam" {
-  project       = var.project
-  role          = "roles/clouddeploy.jobRunner"
-  member        = "serviceAccount:${google_service_account.clouddeploy_execution_sa.email}"
-}
-*/
-
 # Cloud Deploy Service Agent
 resource "google_project_service_identity" "clouddeploy_service_agent" {
   provider = google-beta
@@ -30,22 +15,6 @@ resource "google_project_iam_member" "clouddeploy_service_agent_role" {
 data "google_project" "project" {
   project_id = var.project
 }
-
-/*
-# IAM membership for Cloud Build SA to act as Cloud Deploy Execution SA
-resource "google_service_account_iam_member" "cloudbuild_clouddeploy_impersonation" {
-  service_account_id = google_service_account.clouddeploy_execution_sa.name
-  role               = "roles/iam.serviceAccountUser"
-  member             = "serviceAccount:${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
-}
-
-# IAM membership for Cloud Deploy Execution SA deploy to GKE
-resource "google_project_iam_member" "clouddeploy_gke_dev" {
-  project  = var.project
-  role     = "roles/container.developer"
-  member   = "serviceAccount:${google_service_account.clouddeploy_execution_sa.email}"
-}
-*/
 
 # Create a custom IAM role
 resource "google_project_iam_custom_role" "cb-custom-role" {
@@ -67,26 +36,7 @@ resource "google_project_iam_member" "cloud_deploy_admin" {
   role     = "roles/clouddeploy.admin"
   member   = "serviceAccount:${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
 }
-/*
-# IAM Roles for the Compute Engine Service Account
-resource "google_project_iam_member" "compute_registry_reader" {
-  project  = var.project
-  role     = "roles/artifactregistry.reader"
-  member   = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
-}
 
-resource "google_project_iam_member" "compute_deploy_jobrunner" {
-  project  = var.project
-  role     = "roles/clouddeploy.jobRunner"
-  member   = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
-}
-
-resource "google_project_iam_member" "compute_container_admin" {
-  project  = var.project
-  role     = "roles/container.admin"
-  member   = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
-}
-*/
 # IAM membership for Binary Authorization service agents in GKE projects on attestors
 resource "google_project_service_identity" "binauth_service_agent" {
   provider  = google-beta
