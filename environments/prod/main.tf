@@ -184,6 +184,11 @@ resource "google_clouddeploy_target" "dev-cluster-target" {
     cluster = "projects/${var.project}/locations/${var.region}/clusters/${var.dev_cluster_name}"
   }
 
+  execution_configs {
+    usages          = ["RENDER", "DEPLOY"]
+    service_account = google_service_account.clouddeploy_execution_sa.email
+  }
+
   depends_on = [
     google_project_iam_member.clouddeploy_service_agent_role
   ]
