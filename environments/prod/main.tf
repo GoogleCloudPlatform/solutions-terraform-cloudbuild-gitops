@@ -19,7 +19,7 @@ locals {
   model_config_files = fileset(path.module, "../../models/*/config.yaml")
 
   model_configs = { for config_file in local.model_config_files:
-                    config_file => merge(yamldecode(file(config_file)), {model_name=basename(dirname(config_file)))}}
+                    config_file => merge(yamldecode(file(config_file)), {model_name=basename(dirname(config_file))})}
 }
 
 provider "google" {
