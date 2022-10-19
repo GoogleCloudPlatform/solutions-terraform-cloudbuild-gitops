@@ -91,17 +91,3 @@ resource "google_storage_bucket" "data_bucket" {
     location = "europe-west4"
 }
 
-
-// Build trigger for folder. TODO: Add to model module
-resource "google_cloudbuild_trigger" "pipeline" {
-  name = "pipeline"
-  filename = "pipeline/cloudbuild.yaml"
-  included_files = [ "pipeline/**" ]
-  github {
-    owner = "OlavHN"
-    name = "solutions-terraform-cloudbuild-gitops"
-    push {
-      branch = "prod|dev"
-    }
-  }
-}

@@ -78,7 +78,7 @@ resource "google_cloudbuild_trigger" "main" {
 
 resource "google_cloudbuild_trigger" "main" {
   name              = var.model_name
-  filename          = "models/cloudbuild.yaml"
+  filename          = fileexists("models/${var.model_name}/cloudbuild.yaml") ? "models/${var.model_name}/cloudbuild.yaml" : "models/cloudbuild.yaml"
   included_files    = [ "models/${var.model_name}/**" ]
   github {
     owner   = "OlavHN"
