@@ -20,13 +20,11 @@ from google_cloud_pipeline_components import aiplatform as gcc_aip
 def get_dataset(
     url: str,
     train_ds: Output[Dataset],
-    test_ds: Output[Dataset],
 ):
     import pandas as pd
 
     df = pd.read_csv('gs://df-data-science-test-data/vt_data.csv')
-    df.to_csv(train_ds.path + '.csv', index=False)
-    df.to_csv(test_ds.path + '.csv', index=False)
+    df.to_csv(train_ds.path + '/data.csv', index=False)
 
 
 
