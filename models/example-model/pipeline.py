@@ -25,7 +25,7 @@ def get_dataset(
 
     df = pd.read_csv('gs://df-data-science-test-data/vt_data.csv')
     df.to_csv(train_ds.path + '/data.csv', index=False)
-
+    print('hola')
 
 
 @component(base_image="gcr.io/deeplearning-platform-release/tf2-gpu.2-10")
