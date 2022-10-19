@@ -10,9 +10,6 @@ from kfp.v2.dsl import (Artifact,
                         OutputPath, 
                         InputPath)
 
-from google.cloud import aiplatform
-from google_cloud_pipeline_components import aiplatform as gcc_aip
-
 @component(
     packages_to_install=["pandas", "fsspec", "gcsfs"],
     base_image="python:3.9",
