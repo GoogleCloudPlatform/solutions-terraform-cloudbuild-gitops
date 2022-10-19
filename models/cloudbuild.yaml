@@ -3,19 +3,16 @@
 steps:
 - name: python
   entrypoint: pip
-  args: ["install", "-r", "requirements.txt", "--user"]
-  dir: 'models/example-model'
+  args: ["install", "-r", "models/$TRIGGER_NAME/requirements.txt", "--user"]
 
   # Compile pipeline
 - name: 'python'
   entrypoint: 'python'
-  args: ['pipeline.py']
-  dir: 'models/example-model'
+  args: ['models/$TRIGGER_NAME/pipeline.py']
   id: 'compile'
 
   # Upload compiled pipeline to GCS.
 - name: 'gcr.io/cloud-builders/gsutil'
-  args: ['cp', 'pipeline.json', 'gs://df-data-science-test-pipelines/example-model/pipeline.json']
-  dir: 'models/example-model'
+  args: ['cp', 'models/$TRIGGER_NAME/pipeline.json', 'gs://df-data-science-test-pipelines/$TRIGGER_NAME/pipeline.json']
   id:  'upload'
   waitFor: ['compile']

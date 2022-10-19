@@ -29,12 +29,12 @@ locals {
   request_body = {
     url = "https://europe-west4-aiplatform.googleapis.com/v1/projects/${var.project}/locations/europe-west4/pipelineJobs"
     gcs_bucket = var.pipeline_bucket
-    gcs_pipeline = "pipeline.json"
+    gcs_pipeline = "${var.model_name}/pipeline.json"
   }
 }
 
 resource "google_cloud_scheduler_job" "job" {
-  name = "${var.model_name}_pipeline_schedule"
+  name = "${var.model_name}"
   project = var.project
   schedule = "0 0 * * *" 
   time_zone = "Europe/Oslo"
@@ -61,6 +61,7 @@ resource "google_cloud_scheduler_job" "job" {
 }
 
 // Build trigger for model pipeline
+/*
 resource "google_cloudbuild_trigger" "main" {
   name              = var.model_name
   filename          = "models/${var.model_name}/cloudbuild.yaml"
@@ -73,5 +74,18 @@ resource "google_cloudbuild_trigger" "main" {
     }
   }
 }
+*/
 
+resource "google_cloudbuild_trigger" "main" {
+  name              = var.model_name
+  filename          = "models/cloudbuild.yaml"
+  included_files    = [ "models/${var.model_name}/**" ]
+  github {
+    owner   = "OlavHN"
+    name    = "solutions-terraform-cloudbuild-gitops"
+    push {
+      branch    = "prod"
+    }
+  }
+}
 
