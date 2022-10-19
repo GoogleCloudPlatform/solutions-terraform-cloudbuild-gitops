@@ -3,7 +3,7 @@
 steps:
 - name: python
   entrypoint: pip
-  args: ["install", "-r", "models/$TRIGGER_NAME/requirements.txt", "--user"]
+  args: ["install", "-r", "models/requirements.txt", "--user"]
 
   # Compile pipeline
 - name: 'python'
