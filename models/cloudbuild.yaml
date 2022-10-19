@@ -13,6 +13,6 @@ steps:
 
   # Upload compiled pipeline to GCS.
 - name: 'gcr.io/cloud-builders/gsutil'
-  args: ['cp', 'models/$TRIGGER_NAME/pipeline.json', 'gs://df-data-science-test-pipelines/$TRIGGER_NAME/pipeline.json']
+  args: ['cp', 'pipeline.json', 'gs://df-data-science-test-pipelines/$TRIGGER_NAME/pipeline.json']
   id:  'upload'
   waitFor: ['compile']
