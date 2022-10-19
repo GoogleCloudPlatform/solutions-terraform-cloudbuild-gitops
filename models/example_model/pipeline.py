@@ -26,6 +26,7 @@ def get_dataset(
 
     df = pd.read_csv('gs://df-data-science-test-data/vt_data.csv')
     df.to_csv(train_ds.path + '.csv', index=False)
+    df.to_csv(test_ds.path + '.csv', index=False)
 
 
 
