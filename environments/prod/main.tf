@@ -132,6 +132,52 @@ resource "google_secret_manager_secret_iam_binding" "signing_secret_binding" {
   ]
 }
 
+# GCS bucket to store raw files to be scanned by DLP
+resource "google_storage_bucket" "raw_bucket" {
+  name                          = "${var.project}_raw_bucket"
+  location                      = var.region
+  uniform_bucket_level_access   = true
+}
+
+# GCS bucket to store redacted files scanned by DLP
+resource "google_storage_bucket" "redacted_bucket" {
+  name                          = "${var.project}_redacted_bucket"
+  location                      = var.region
+  uniform_bucket_level_access   = true
+}
+
+module "dlp-scan-cloud-function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "dlp-scan"
+    function-desc   = "scans new files in a bucket and stores redacted versions in another bucket"
+    entry-point     = "dlp_scan"
+    env-vars        = {
+        PROJECT_NAME            = var.project,
+        REDACTED_BUCKET_NAME    = google_storage_bucket.redacted_bucket.name
+    }
+    triggers        = [
+        {
+            event_type  = "google.storage.object.finalize"
+            resource    = "${var.project}_raw_bucket"
+        }
+    ]
+}
+
+# IAM entry for service account of dlp-scan function to write to redacted bucket
+resource "google_storage_bucket_iam_member" "member" {
+  bucket = google_storage_bucket.redacted_bucket.name
+  role = "roles/storage.objectCreator"
+  member = "serviceAccount:${module.dlp-scan-cloud-function.sa-email}"
+}
+
+# IAM entry for service account of dlp-scan function to use the DLP service
+resource "google_project_iam_member" "project_dlp_user" {
+  project = var.project
+  role    = "roles/dlp.user"
+  member  = "serviceAccount:${module.dlp-scan-cloud-function.sa-email}"
+}
+
 resource "google_pubsub_topic" "operations-pubsub" {
   name = "clouddeploy-operations"
   message_retention_duration = "86400s"
@@ -143,7 +189,12 @@ module "deploy-notification-cloud-function" {
     function-name   = "deploy-notification"
     function-desc   = "triggered by operations-pubsub, communicates result of a deployment"
     entry-point     = "deploy_notification"
-    pubsub_trigger  = google_pubsub_topic.operations-pubsub.id
+    triggers        = [
+        {
+            event_type  = "google.pubsub.topic.publish"
+            resource    = google_pubsub_topic.operations-pubsub.id
+        }
+    ]
     env-vars        = {
         SLACK_DEVOPS_CHANNEL = var.slack_devops_channel
     }

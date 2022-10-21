@@ -29,10 +29,10 @@ resource "google_cloudfunctions_function" "function" {
   ingress_settings      = var.pubsub_trigger == null ? "ALLOW_ALL" : "ALLOW_INTERNAL_ONLY" 
 
   dynamic "event_trigger" {
-    for_each = var.pubsub_trigger == null ? [] : [1]
+    for_each = var.triggers == null ? [] : var.triggers
     content {
-        event_type  = "google.pubsub.topic.publish"
-        resource    = var.pubsub_trigger
+        event_type  = event_trigger.value.event_type
+        resource    = event_trigger.value.resource
     }
   }
   

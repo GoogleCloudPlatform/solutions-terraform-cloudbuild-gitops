@@ -15,7 +15,12 @@ variable "secrets" {
         }
     ))
 }
-variable "pubsub_trigger" {
+variable "triggers" {
     default = null
-    type = string
+    type = list(object(
+        {
+            event_type  = string
+            resource    = string
+        }
+    ))
 }
