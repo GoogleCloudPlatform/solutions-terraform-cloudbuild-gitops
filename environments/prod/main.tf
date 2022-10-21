@@ -164,17 +164,25 @@ module "dlp-scan-cloud-function" {
     ]
 }
 
-# IAM entry for service account of dlp-scan function to read from raw bucket
+# Create a custom IAM role for the dlp-scan function over storage buckets
+resource "google_project_iam_custom_role" "dlp-scan-custom-role" {
+  role_id     = "dlp-scan-custom-role"
+  title       = "Custom Role for the dlp-scan function to read/write from storage buckets"
+  description = "This role is used by the dlp-scan function's SA in ${var.project}"
+  permissions = ["storage.buckets.get","storage.objects.create","storage.objects.delete","storage.objects.get"]
+}
+
+# IAM entry for service account of dlp-scan function over raw bucket
 resource "google_storage_bucket_iam_member" "raw_bucket_read" {
   bucket = google_storage_bucket.raw_bucket.name
-  role = "roles/storage.objectViewer"
+  role = google_project_iam_custom_role.dlp-scan-custom-role.name
   member = "serviceAccount:${module.dlp-scan-cloud-function.sa-email}"
 }
 
-# IAM entry for service account of dlp-scan function to write to redacted bucket
+# IAM entry for service account of dlp-scan function over redacted bucket
 resource "google_storage_bucket_iam_member" "redacted_bucket_write" {
   bucket = google_storage_bucket.redacted_bucket.name
-  role = "roles/storage.objectCreator"
+  role = google_project_iam_custom_role.dlp-scan-custom-role.name
   member = "serviceAccount:${module.dlp-scan-cloud-function.sa-email}"
 }
 
