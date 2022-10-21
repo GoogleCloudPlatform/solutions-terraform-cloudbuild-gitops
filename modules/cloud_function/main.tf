@@ -25,8 +25,8 @@ resource "google_cloudfunctions_function" "function" {
   source_archive_bucket = "${var.project}-source-code"
   source_archive_object = google_storage_bucket_object.cf_source_zip.name
 
-  trigger_http          = var.pubsub_trigger == null ? true : null
-  ingress_settings      = var.pubsub_trigger == null ? "ALLOW_ALL" : "ALLOW_INTERNAL_ONLY" 
+  trigger_http          = var.triggers == null ? true : null
+  ingress_settings      = var.triggers == null ? "ALLOW_ALL" : "ALLOW_INTERNAL_ONLY" 
 
   dynamic "event_trigger" {
     for_each = var.triggers == null ? [] : var.triggers
