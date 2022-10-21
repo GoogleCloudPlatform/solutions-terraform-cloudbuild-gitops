@@ -165,14 +165,14 @@ module "dlp-scan-cloud-function" {
 }
 
 # IAM entry for service account of dlp-scan function to read from raw bucket
-resource "google_storage_bucket_iam_member" "member" {
+resource "google_storage_bucket_iam_member" "raw_bucket_read" {
   bucket = google_storage_bucket.raw_bucket.name
   role = "roles/storage.objectViewer"
   member = "serviceAccount:${module.dlp-scan-cloud-function.sa-email}"
 }
 
 # IAM entry for service account of dlp-scan function to write to redacted bucket
-resource "google_storage_bucket_iam_member" "member" {
+resource "google_storage_bucket_iam_member" "redacted_bucket_write" {
   bucket = google_storage_bucket.redacted_bucket.name
   role = "roles/storage.objectCreator"
   member = "serviceAccount:${module.dlp-scan-cloud-function.sa-email}"
