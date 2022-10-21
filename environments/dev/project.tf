@@ -48,3 +48,8 @@ resource "google_project_service" "container_scanning" {
   project = var.project
   service = "containerscanning.googleapis.com"
 }
+
+resource "google_project_service" "data_loss_prevention" {
+  project = var.project
+  service = "dlp.googleapis.com"
+}
