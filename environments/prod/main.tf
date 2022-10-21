@@ -166,7 +166,7 @@ module "dlp-scan-cloud-function" {
 
 # Create a custom IAM role for the dlp-scan function over storage buckets
 resource "google_project_iam_custom_role" "dlp-scan-custom-role" {
-  role_id     = "dlp-scan-custom-role"
+  role_id     = "dlp_scan_custom_role"
   title       = "Custom Role for the dlp-scan function to read/write from storage buckets"
   description = "This role is used by the dlp-scan function's SA in ${var.project}"
   permissions = ["storage.buckets.get","storage.objects.create","storage.objects.delete","storage.objects.get"]
