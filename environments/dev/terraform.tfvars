@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="kubenews-366220"
