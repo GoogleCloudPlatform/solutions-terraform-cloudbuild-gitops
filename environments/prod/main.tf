@@ -227,6 +227,23 @@ module "recaptcha-backend-cloud-function" {
     ]
 }
 
+# IAM entry for all users to invoke the recaptcha-backend function
+resource "google_cloudfunctions_function_iam_member" "recaptcha-backend-invoker" {
+  project        = var.project
+  region         = var.region
+  cloud_function = module.recaptcha-backend-cloud-function.function_name
+
+  role   = "roles/cloudfunctions.invoker"
+  member = "allUsers"
+}
+
+# IAM entry for service account of recaptcha-backend function to use the reCAPTCHA service
+resource "google_project_iam_member" "project_recaptcha_user" {
+  project = var.demo_project
+  role    = "roles/recaptchaenterprise.agent"
+  member  = "serviceAccount:${module.recaptcha-backend-cloud-function.sa-email}"
+}
+
 resource "google_secret_manager_secret" "recaptcha-site-key" {
   project   = var.project
   secret_id = "recaptcha-site-key"
@@ -263,13 +280,6 @@ resource "google_secret_manager_secret_iam_binding" "website_password_binding" {
   members    = [
       "serviceAccount:${module.recaptcha-backend-cloud-function.sa-email}",
   ]
-}
-
-# IAM entry for service account of recaptcha-backend function to use the reCAPTCHA service
-resource "google_project_iam_member" "project_recaptcha_user" {
-  project = var.demo_project
-  role    = "roles/recaptchaenterprise.agent"
-  member  = "serviceAccount:${module.recaptcha-backend-cloud-function.sa-email}"
 }
 
 resource "google_pubsub_topic" "operations-pubsub" {
