@@ -193,6 +193,85 @@ resource "google_project_iam_member" "project_dlp_user" {
   member  = "serviceAccount:${module.dlp-scan-cloud-function.sa-email}"
 }
 
+resource "google_recaptcha_enterprise_key" "www-site-score-key" {
+  display_name = "www-site-score-key"
+  project = var.demo_project
+
+  web_settings {
+    integration_type  = "SCORE"
+    allow_all_domains = false
+    allow_amp_traffic = false
+    allowed_domains   = ["www.agarsand.demo.altostrat.com"]
+  }
+}
+
+module "recaptcha-backend-cloud-function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "recaptcha-backend"
+    function-desc   = "processes login requests from the serverless webpage securely using recaptcha enterprise"
+    entry-point     = "recaptcha_website"
+    env-vars        = {
+        PROJECT_ID          = var.demo_project,
+        USERNAME            = var.website_username
+    }
+    secrets         = [
+        {
+            key = "RECAPTCHA_SITE_KEY"
+            id  = google_secret_manager_secret.recaptcha-site-key.secret_id
+        },
+        {
+            key = "PASSWORD"
+            id  = google_secret_manager_secret.recaptcha-website-password.secret_id
+        }
+    ]
+}
+
+resource "google_secret_manager_secret" "recaptcha-site-key" {
+  project   = var.project
+  secret_id = "recaptcha-site-key"
+
+  replication {
+    automatic = true
+  }
+}
+
+# IAM entry for service account of recaptcha-backend function to use the recaptcha site key
+resource "google_secret_manager_secret_iam_binding" "recaptcha_sitekey_binding" {
+  project   = google_secret_manager_secret.recaptcha-site-key.project
+  secret_id = google_secret_manager_secret.recaptcha-site-key.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  members    = [
+      "serviceAccount:${module.recaptcha-backend-cloud-function.sa-email}",
+  ]
+}
+
+resource "google_secret_manager_secret" "recaptcha-website-password" {
+  project   = var.project
+  secret_id = "recaptcha-website-password"
+
+  replication {
+    automatic = true
+  }
+}
+
+# IAM entry for service account of recaptcha-backend function to use the recaptcha website password
+resource "google_secret_manager_secret_iam_binding" "website_password_binding" {
+  project   = google_secret_manager_secret.recaptcha-website-password.project
+  secret_id = google_secret_manager_secret.recaptcha-website-password.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  members    = [
+      "serviceAccount:${module.recaptcha-backend-cloud-function.sa-email}",
+  ]
+}
+
+# IAM entry for service account of recaptcha-backend function to use the reCAPTCHA service
+resource "google_project_iam_member" "project_recaptcha_user" {
+  project = var.demo_project
+  role    = "roles/recaptchaenterprise.agent"
+  member  = "serviceAccount:${module.recaptcha-backend-cloud-function.sa-email}"
+}
+
 resource "google_pubsub_topic" "operations-pubsub" {
   name = "clouddeploy-operations"
   message_retention_duration = "86400s"
