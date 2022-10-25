@@ -5,18 +5,14 @@ variable "model_name" {
   nullable  = false
 }
 
-variable "pipeline_endpoint" {
-  type = string
-}
-
-variable "pipeline_bucket" {
-  type = string
-}
-
-# TODO: Specify hardware for default_pipeline.py here. Pass as runtime parameters
 variable "machine_type" {
   type      = string
   default   = "n1-standard-1"
+}
+
+variable "instance_owners" {
+  type      = list(string)
+  default   = ["olav@olavnymoen.com"]
 }
 
 variable "gpu_count" {
@@ -28,5 +24,14 @@ variable "gpu_type" {
   type = string
   default = "NVIDIA_TESLA_T4"
 }
-# TODO END
+
+variable "container" {
+  type = string
+  default = "gcr.io/deeplearning-platform-release/tf2-gpu.2-10"
+}
+
+variable "tag" {
+  type = string
+  default = "latest"
+}
 
