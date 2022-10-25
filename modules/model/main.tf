@@ -7,6 +7,7 @@ locals {
   }
 }
 
+
 resource "google_cloud_scheduler_job" "job" {
   name = var.model_name
   project = var.project
