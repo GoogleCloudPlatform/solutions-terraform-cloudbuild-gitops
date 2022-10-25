@@ -24,8 +24,8 @@ def get_dataset(
     input_data = pd.DataFrame(np.random.random((128, 32)))
     target_data = pd.DataFrame(np.random.random((128, 1)))
 
-    df.to_csv(train_ds.path + '/input.csv', header=None, index=False)
-    df.to_csv(train_ds.path + '/target.csv', header=None, index=False)
+    input_data.to_csv(train_ds.path + '/input.csv', header=None, index=False)
+    target_data.to_csv(train_ds.path + '/target.csv', header=None, index=False)
 
 
 @component(
