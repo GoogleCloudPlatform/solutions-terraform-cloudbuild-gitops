@@ -100,7 +100,8 @@ def pipeline(
     data_op = get_dataset(url)
 
     train_op = (train(
-            dataset=data_op.outputs["train_ds"]
+            input_ds=data_op.outputs["input_ds"],
+            target_ds=data_op.outputs["target_ds"]
         ).
         set_cpu_limit('4').
         set_memory_limit('64G').
