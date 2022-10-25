@@ -20,6 +20,12 @@ locals {
 
   model_configs = { for config_file in local.model_config_files:
                     config_file => merge(yamldecode(file(config_file)), {model_name=basename(dirname(config_file))})}
+
+  workbench_config_files = fileset(path.module, "../../workbenches/*/config.yaml")
+
+  workbench_configs = { for config_file in local.workbench_config_files:
+                    config_file => merge(yamldecode(file(config_file)), {model_name=basename(dirname(config_file))})}
+
 }
 
 provider "google" {
@@ -37,6 +43,21 @@ module "model" {
   pipeline_endpoint = google_cloud_run_service.scheduler.status[0].url
   pipeline_bucket   = google_storage_bucket.pipeline_bucket.name
 }
+
+module "workbench" {
+  source            = "../../modules/workbench"
+
+  for_each          = local.workbench_configs
+
+  model_name        = each.value.model_name
+  project           = var.project
+  gpu_count         = try(each.value.gpu_count, 0)
+  gpu_type          = try(each.value.gpu_type, "NVIDIA_TESLA_T4")
+  machine_type      = try(each.value.machine_type, "n1-standard-1")
+  container         = try(each.value.container, "gcr.io/deeplearning-platform-release/tf2-gpu.2-10")
+  tag               = try(each.value.tag, "latest")
+}
+
 
 // BEGIN STATIC CONFIG
 
