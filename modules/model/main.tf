@@ -60,22 +60,6 @@ resource "google_cloud_scheduler_job" "job" {
   }
 }
 
-// Build trigger for model pipeline
-/*
-resource "google_cloudbuild_trigger" "main" {
-  name              = var.model_name
-  filename          = "models/${var.model_name}/cloudbuild.yaml"
-  included_files    = [ "models/${var.model_name}/**" ]
-  github {
-    owner   = "OlavHN"
-    name    = "solutions-terraform-cloudbuild-gitops"
-    push {
-      branch    = "prod"
-    }
-  }
-}
-*/
-
 resource "google_cloudbuild_trigger" "main" {
   name              = var.model_name
   filename          = fileexists("models/${var.model_name}/cloudbuild.yaml") ? "models/${var.model_name}/cloudbuild.yaml" : "models/cloudbuild.yaml"

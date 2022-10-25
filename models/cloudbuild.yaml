@@ -1,6 +1,18 @@
 # Whenever changes happen in the model folder, we regenerate the pipeline
 
+# Build Docker image, build pipeline
+
+# $TRIGGER_NAME corresponds to model_name
+
 steps:
+  # Build and push Docker image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/$TRIGGER_NAME:latest', '.' ]
+  dir: 'models/$TRIGGER_NAME'
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/$TRIGGER_NAME:latest']
+
 - name: python
   entrypoint: pip
   args: ["install", "-r", "models/requirements.txt", "--user"]
@@ -8,7 +20,7 @@ steps:
   # Compile pipeline
 - name: 'python'
   entrypoint: 'python'
-  args: ['models/$TRIGGER_NAME/pipeline.py']
+  args: ['models/default_pipeline.py', '$TRIGGER_NAME']
   id: 'compile'
 
   # Upload compiled pipeline to GCS.
@@ -16,3 +28,4 @@ steps:
   args: ['cp', 'pipeline.json', 'gs://df-data-science-test-pipelines/$TRIGGER_NAME/pipeline.json']
   id:  'upload'
   waitFor: ['compile']
+images: ['europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/$TRIGGER_NAME:latest']

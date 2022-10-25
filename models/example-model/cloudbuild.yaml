@@ -1,0 +1,19 @@
+# Whenever changes happen in the model folder, we regenerate the pipeline
+
+steps:
+- name: python
+  entrypoint: pip
+  args: ["install", "-r", "models/$TRIGGER_NAME/requirements.txt", "--user"]
+
+  # Compile pipeline
+- name: 'python'
+  entrypoint: 'python'
+  args: ['models/$TRIGGER_NAME/pipeline.py']
+  id: 'compile'
+
+  # Upload compiled pipeline to GCS.
+- name: 'gcr.io/cloud-builders/gsutil'
+  args: ['cp', 'pipeline.json', 'gs://df-data-science-test-pipelines/$TRIGGER_NAME/pipeline.json']
+  id:  'upload'
+  waitFor: ['compile']
+images: ['europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/$TRIGGER_NAME:latest']
