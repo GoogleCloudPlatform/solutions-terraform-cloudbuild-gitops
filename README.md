@@ -11,6 +11,7 @@ Investigations into managing vertex.ai with terraform to get a proper CI/CD work
 - Move google cloud project to Schibsted owned GCP
 - Move Github project to GHE
 - Access to data lake buckets and postgres databases
+- Read schedule param
 - Cloud run model hosting in pipeline
 - Dockerfile "pipeline"
 

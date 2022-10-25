@@ -25,7 +25,7 @@ def get_dataset(
     print('hola')
 
 
-@component(base_image="gcr.io/deeplearning-platform-release/tf2-gpu.2-10")
+@component(base_image="gcr.io/deeplearning-platform-release/tf2-gpu.2-10", output_component_file="component.yaml")
 def train(
         dataset: Input[Dataset],
         model: Output[Model]
