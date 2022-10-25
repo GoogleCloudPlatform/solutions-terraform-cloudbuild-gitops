@@ -11,12 +11,13 @@ from kfp.v2.dsl import (Artifact,
                         InputPath)
 
 @component(
-    packages_to_install=["pandas", "numpy", "fsspec", "gcsfs"],
+    packages_to_install=["pandas", "numpy"],
     base_image="python:3.9",
 )
 def get_dataset(
     url: str,
-    train_ds: Output[Dataset],
+    input_ds: Output[Dataset],
+    target_ds: Output[Dataset],
 ):
     import pandas as pd
     import numpy as np
@@ -24,15 +25,16 @@ def get_dataset(
     input_data = pd.DataFrame(np.random.random((128, 32)))
     target_data = pd.DataFrame(np.random.random((128, 1)))
 
-    input_data.to_csv(train_ds.path + '/input.csv', header=None, index=False)
-    target_data.to_csv(train_ds.path + '/target.csv', header=None, index=False)
+    input_data.to_csv(input_ds.path, header=None, index=False)
+    target_data.to_csv(target_ds.path, header=None, index=False)
 
 
 @component(
     base_image="gcr.io/deeplearning-platform-release/tf2-gpu.2-10",
-    packages_to_install=["pandas", "numpy", "fsspec", "gcsfs"])
+    packages_to_install=["pandas", "numpy"])
 def train(
-        dataset: Input[Dataset],
+        input_ds: Input[Dataset],
+        target_ds: Input[Dataset],
         model: Output[Model]
     ):
 
@@ -54,8 +56,8 @@ def train(
     my_model = get_model()
     
     # Train the model.
-    test_input = pd.read_csv(dataset.path + '/input.csv').values
-    test_input = pd.read_csv(dataset.path + '/target.csv').values
+    test_input = pd.read_csv(input_ds.path).values
+    test_input = pd.read_csv(target_ds.path).values
     # test_input = np.random.random((128, 32))
     # test_target = np.random.random((128, 1))
     my_model.fit(test_input, test_target)
