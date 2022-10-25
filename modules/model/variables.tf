@@ -13,6 +13,12 @@ variable "pipeline_bucket" {
   type = string
 }
 
+# By default executes on day that doesnt exist, i.e never
+variable "cron_schedule" {
+  type = string
+  default = "0 0 5 31 2 ?"
+}
+
 # TODO: Specify hardware for default_pipeline.py here. Pass as runtime parameters
 variable "machine_type" {
   type      = string
