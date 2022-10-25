@@ -1,5 +1,3 @@
-# Whenever changes happen in the model folder, we regenerate the pipeline
-
 steps:
 - name: python
   entrypoint: pip
@@ -16,4 +14,3 @@ steps:
   args: ['cp', 'pipeline.json', 'gs://df-data-science-test-pipelines/$TRIGGER_NAME/pipeline.json']
   id:  'upload'
   waitFor: ['compile']
-images: ['europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/$TRIGGER_NAME:latest']
