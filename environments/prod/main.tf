@@ -118,7 +118,7 @@ resource "google_cloudbuild_trigger" "webhook-config-trigger" {
   git_file_source {
     path      = "cloudbuild.yaml"
     uri       = "https://OlavHN/solutions-terraform-cloudbuild-gitops"
-    ref       = "refs/heads/prod"
+    revision  = "refs/heads/prod"
     repo_type = "GITHUB"
   }
 }
