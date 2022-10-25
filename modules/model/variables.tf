@@ -13,6 +13,10 @@ variable "pipeline_bucket" {
   type = string
 }
 
+variable "cron_schedule" {
+  type = string
+}
+
 # TODO: Specify hardware for default_pipeline.py here. Pass as runtime parameters
 variable "machine_type" {
   type      = string
