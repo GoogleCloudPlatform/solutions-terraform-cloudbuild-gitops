@@ -66,7 +66,7 @@ def train(
 @component(
     packages_to_install=['google-cloud-secret-manager', 'requests'],
     base_image="python:3.9")
-def trigger_cloudbuild(
+def serve(
     model: Input[Model]
 ):
     import requests
@@ -95,18 +95,17 @@ def trigger_cloudbuild(
 def pipeline(
     url: str = "gs://df-data-science-test-data/vt_data.csv"
 ):
-    trigger_cloudbuild()
-    data = get_dataset(url)
+    data_op = get_dataset(url)
 
-    result = (train(
-            dataset=data.outputs["train_ds"]
+    train_op = (train(
+            dataset=data_op.outputs["train_ds"]
         ).
         set_cpu_limit('4').
         set_memory_limit('64G').
         add_node_selector_constraint('cloud.google.com/gke-accelerator', 'NVIDIA_TESLA_T4').
         set_gpu_limit('1'))
 
-    return result
+    serve(train_op.outputs["model"])
 
 
 compiler.Compiler().compile(pipeline_func=pipeline, package_path='pipeline.json')
