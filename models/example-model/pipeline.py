@@ -11,11 +11,68 @@ from kfp.v2.dsl import (Artifact,
                         InputPath)
 
 @component(
+    packages_to_install=["pandas", "numpy", "fsspec", "gcsfs"],
+    base_image="python:3.9",
+)
+def get_dataset(
+    url: str,
+    train_ds: Output[Dataset],
+):
+    import pandas as pd
+    import numpy as np
+
+    input_data = pd.DataFrame(np.random.random((128, 32)))
+    target_data = pd.DataFrame(np.random.random((128, 1)))
+
+    df.to_csv(train_ds.path + '/input.csv', header=None, index=False)
+    df.to_csv(train_ds.path + '/target.csv', header=None, index=False)
+
+
+@component(
+    base_image="gcr.io/deeplearning-platform-release/tf2-gpu.2-10",
+    packages_to_install=["pandas", "numpy", "fsspec", "gcsfs"])
+def train(
+        dataset: Input[Dataset],
+        model: Output[Model]
+    ):
+
+    import pandas as pd
+    import tensorflow as tf
+    print(tf.__version__)
+    print(tf.config.list_physical_devices())
+
+    def get_model():
+        # Create a simple model.
+        inputs = keras.Input(shape=(32,))
+        outputs = keras.layers.Dense(1)(inputs)
+        model = keras.Model(inputs, outputs)
+        model.compile(optimizer="adam", loss="mean_squared_error")
+
+        return model
+
+
+    my_model = get_model()
+    
+    # Train the model.
+    test_input = pd.read_csv(dataset.path + '/input.csv').values
+    test_input = pd.read_csv(dataset.path + '/target.csv').values
+    # test_input = np.random.random((128, 32))
+    # test_target = np.random.random((128, 1))
+    my_model.fit(test_input, test_target)
+
+    my_model.save(model.path + '/my_model')
+
+
+@component(
     packages_to_install=['google-cloud-secret-manager', 'requests'],
     base_image="python:3.9")
-def trigger_cloudbuild():
+def trigger_cloudbuild(
+    model: Input[Model]
+):
     import requests
     from google.cloud import secretmanager
+
+    print(model.path)
 
     secret_client = secretmanager.SecretManagerServiceClient()
     secret_name = f'projects/364866568815/secrets/webhook_trigger-secret-key-1/versions/2'
@@ -30,33 +87,6 @@ def trigger_cloudbuild():
     
     print(payload)
 
-@component(
-    packages_to_install=["pandas", "fsspec", "gcsfs"],
-    base_image="python:3.9",
-)
-def get_dataset(
-    url: str,
-    train_ds: Output[Dataset],
-):
-    import pandas as pd
-
-    df = pd.read_csv('gs://df-data-science-test-data/vt_data.csv')
-    df.to_csv(train_ds.path + '/data.csv', index=False)
-    print('hola')
-
-
-@component(base_image="gcr.io/deeplearning-platform-release/tf2-gpu.2-10", output_component_file="component.yaml")
-def train(
-        dataset: Input[Dataset],
-        model: Output[Model]
-    ):
-
-    import tensorflow as tf
-    print(tf.__version__)
-    print(tf.config.list_physical_devices())
-
-    print(dataset)
-    print(model)
 
 @dsl.pipeline(
     name='training-pipeline',
