@@ -7,13 +7,6 @@ component_text = """
 name: {model_name}
 description: Default Dockerfile based pipeline for {model_name}
 
-#inputs:
-#- {name: input_1, type: String, description: 'Data for input_1'}
-#- {name: parameter_1, type: Integer, default: '100', description: 'Number of lines to copy'}
-#
-#outputs:
-#- {name: output_1, type: String, description: 'output_1 data.'}
-
 implementation:
   container:
     image: europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/{model_name}:latest
