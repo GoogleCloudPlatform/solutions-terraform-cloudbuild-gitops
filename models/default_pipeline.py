@@ -1,4 +1,5 @@
 import sys
+import kfp
 from kfp.v2 import compiler, dsl
 
 MODEL_NAME = sys.argv[1]
@@ -14,7 +15,7 @@ implementation:
   model_name = MODEL_NAME
 )
 
-default_op = dsl.component.load_component_from_text(component_text)
+default_op = kfp.components.load_component_from_text(component_text)
 
 @dsl.pipeline(
     name=MODEL_NAME,
