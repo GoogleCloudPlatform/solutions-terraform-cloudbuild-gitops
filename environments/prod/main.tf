@@ -42,6 +42,7 @@ module "model" {
   gpu_count         = try(each.value.gpu_count, 0)
   pipeline_endpoint = google_cloud_run_service.scheduler.status[0].url
   pipeline_bucket   = google_storage_bucket.pipeline_bucket.name
+  cron_schedule     = try(each.value.cron_schedule, null)
 }
 
 module "workbench" {
