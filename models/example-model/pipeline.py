@@ -57,7 +57,7 @@ def train(
     
     # Train the model.
     test_input = pd.read_csv(input_ds.path).values
-    test_input = pd.read_csv(target_ds.path).values
+    test_target = pd.read_csv(target_ds.path).values
     # test_input = np.random.random((128, 32))
     # test_target = np.random.random((128, 1))
     my_model.fit(test_input, test_target)
