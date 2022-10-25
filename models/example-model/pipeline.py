@@ -14,12 +14,20 @@ from kfp.v2.dsl import (Artifact,
     packages_to_install=['google-cloud-secret-manager'],
     base_image="python:3.9")
 def trigger_cloudbuild():
+    import requests
     from google.cloud import secretmanager
 
     secret_client = secretmanager.SecretManagerServiceClient()
     secret_name = f'projects/364866568815/secrets/webhook_trigger-secret-key-1/versions/2'
     response = secret_client.access_secret_version(request={"name": secret_name})
     payload = response.payload.data.decode("UTF-8")
+
+    url = "https://cloudbuild.googleapis.com/v1/projects/df-data-science-test/triggers/webhook-trigger:webhook?key=AIzaSyBsvZCHfGKRyQUILboAp4q70yCpDGDYp8I&secret=" + payload
+
+    myobj = {}
+    x = requests.post(url, json = myobj)
+    print(x.text)
+    
     print(payload)
 
 @component(
