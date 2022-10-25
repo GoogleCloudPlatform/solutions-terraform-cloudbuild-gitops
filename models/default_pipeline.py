@@ -14,7 +14,7 @@ implementation:
   model_name = MODEL_NAME
 )
 
-default_op = dls.component.load_component_from_text(component_text)
+default_op = dsl.component.load_component_from_text(component_text)
 
 @dsl.pipeline(
     name=MODEL_NAME,
