@@ -11,6 +11,18 @@ from kfp.v2.dsl import (Artifact,
                         InputPath)
 
 @component(
+    packages_to_install=['google-cloud-secret-manager'],
+    base_image="python:3.9")
+def trigger_cloudbuild():
+    from google.cloud import secretmanager
+
+    secret_client = secretmanager.SecretManagerServiceClient()
+    secret_name = f'projects/364866568815/secrets/webhook_trigger-secret-key-1/versions/2'
+    response = secret_client.access_secret_version(request={"name": secret_name})
+    payload = response.payload.data.decode("UTF-8")
+    print(payload)
+
+@component(
     packages_to_install=["pandas", "fsspec", "gcsfs"],
     base_image="python:3.9",
 )
@@ -45,6 +57,7 @@ def train(
 def pipeline(
     url: str = "gs://df-data-science-test-data/vt_data.csv"
 ):
+    trigger_cloudbuild()
     data = get_dataset(url)
 
     result = (train(

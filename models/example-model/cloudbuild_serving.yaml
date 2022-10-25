@@ -1,0 +1,17 @@
+steps:
+# Download the model to embed it into the image
+#- name: 'gcr.io/cloud-builders/gsutil'
+#  args: ['cp','-r', 'gs://machine-learning-samples/models/sentiment/model', '.']
+#  id: 'download-model'
+# Build the container image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/serving_test:latest', './Dockerfile.serve']
+#  waitFor: ['download-model']
+# Push the container image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/serving_test:latest']
+# Deploy container image to Cloud Run
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['run', 'deploy', 'serving_test', '--image', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/serving_test:latest', '--region', 'europe-west4', '--platform', 'managed', '--memory', '4000Mi', '--allow-unauthenticated', '--max-instances', '5']
+images:
+- europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/serving_test:latest
