@@ -21,7 +21,6 @@ default_op = kfp.components.load_component_from_text(component_text)
     name=MODEL_NAME,
     description="Default training pipeline for model",
     pipeline_root="gs://df-data-science-test-pipelines/out")
-)
 def pipeline():
   default_op()
 
