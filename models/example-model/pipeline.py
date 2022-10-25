@@ -45,9 +45,9 @@ def train(
 
     def get_model():
         # Create a simple model.
-        inputs = keras.Input(shape=(32,))
-        outputs = keras.layers.Dense(1)(inputs)
-        model = keras.Model(inputs, outputs)
+        inputs = tf.keras.Input(shape=(32,))
+        outputs = tf.keras.layers.Dense(1)(inputs)
+        model = tf.keras.Model(inputs, outputs)
         model.compile(optimizer="adam", loss="mean_squared_error")
 
         return model
