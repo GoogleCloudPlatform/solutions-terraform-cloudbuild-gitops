@@ -42,7 +42,7 @@ module "model" {
   gpu_count         = try(each.value.gpu_count, 0)
   pipeline_endpoint = google_cloud_run_service.scheduler.status[0].url
   pipeline_bucket   = google_storage_bucket.pipeline_bucket.name
-  cron_schedule     = try(each.value.cron_schedule, "* * 31 2 *")
+  cron_schedule     = try(each.value.cron_schedule, "0 0 29 2 1") # Ugly hack. Will run in 2044
 }
 
 module "workbench" {
