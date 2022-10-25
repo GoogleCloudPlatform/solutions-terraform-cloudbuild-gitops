@@ -71,7 +71,7 @@ resource "google_secret_manager_secret" "webhook_trigger_secret_key" {
   replication {
     user_managed {
       replicas {
-        location = "eu-west4"
+        location = "europe-west4"
       }
     }
   }
