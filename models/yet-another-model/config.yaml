@@ -1,1 +1,2 @@
 model_name: "never-be-read"
+cron_schedule: "0 0 * * *"

@@ -10,7 +10,7 @@ locals {
 resource "google_cloud_scheduler_job" "job" {
   name = var.model_name
   project = var.project
-  schedule = "0 0 * * *" 
+  schedule = var.cron_schedule
   time_zone = "Europe/Oslo"
   attempt_deadline = "320s"
   region = "europe-west1"
