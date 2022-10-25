@@ -60,7 +60,70 @@ module "workbench" {
 }
 
 
+
+
 // BEGIN STATIC CONFIG
+
+// BEGIN WEBHOOK EXPERIMENT
+resource "google_secret_manager_secret" "webhook_trigger_secret_key" {
+  secret_id = "webhook_trigger-secret-key-1"
+
+  replication {
+    user_managed {
+      replicas {
+        location = "eu-west4"
+      }
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "webhook_trigger_secret_key_data" {
+  secret = google_secret_manager_secret.webhook_trigger_secret_key.id
+
+  secret_data = "secretkeygoeshere"
+}
+
+data "google_project" "project" {}
+
+data "google_iam_policy" "secret_accessor" {
+  binding {
+    role = "roles/secretmanager.secretAccessor"
+    members = [
+      "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com",
+    ]
+  }
+}
+
+resource "google_secret_manager_secret_iam_policy" "policy" {
+  project = google_secret_manager_secret.webhook_trigger_secret_key.project
+  secret_id = google_secret_manager_secret.webhook_trigger_secret_key.secret_id
+  policy_data = data.google_iam_policy.secret_accessor.policy_data
+}
+
+
+resource "google_cloudbuild_trigger" "webhook-config-trigger" {
+  name        = "webhook-trigger"
+  description = "acceptance test example webhook build trigger"
+
+ webhook_config {
+    secret = google_secret_manager_secret_version.webhook_trigger_secret_key_data.id
+  }
+
+  source_to_build {
+    uri       = "https://OlavHN/solutions-terraform-cloudbuild-gitops"
+    ref       = "refs/heads/prod"
+    repo_type = "GITHUB"
+  }
+
+  git_file_source {
+    path      = "cloudbuild.yaml"
+    uri       = "https://OlavHN/solutions-terraform-cloudbuild-gitops"
+    ref       = "refs/heads/prod"
+    repo_type = "GITHUB"
+  }
+}
+
+// END EXPERIMENT
 
 // Artifact repository
 resource "google_artifact_registry_repository" "main" {
