@@ -11,7 +11,7 @@ from kfp.v2.dsl import (Artifact,
                         InputPath)
 
 @component(
-    packages_to_install=['google-cloud-secret-manager'],
+    packages_to_install=['google-cloud-secret-manager', 'requests'],
     base_image="python:3.9")
 def trigger_cloudbuild():
     import requests
