@@ -12,6 +12,12 @@ In the basic model version you add a config.yaml containing schedule and (option
 
 In the advanced model version you add a config.yaml as before, but instead of a Dockerfile you specify your own clouldbuild.yaml (which will trigger on commit time) and your own requirements.txt+pipeline.py (which will trigger on schedule time). This allows you to build training pipelines with data, training, validation and hosting.
 
+## `config.yaml`
+
+```
+gpu_count=0
+
+
 ## TODO document:
 - default cloudbuild.yaml
 - config.yaml
