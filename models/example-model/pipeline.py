@@ -31,7 +31,7 @@ def get_dataset(
 
 @component(
     base_image="gcr.io/deeplearning-platform-release/tf2-gpu.2-10",
-    packages_to_install=["pandas", "numpy"])
+    packages_to_install=["pandas"])
 def train(
         input_ds: Input[Dataset],
         target_ds: Input[Dataset],
@@ -62,7 +62,7 @@ def train(
     # test_target = np.random.random((128, 1))
     my_model.fit(test_input, test_target)
 
-    my_model.save(model.path + '/my_model')
+    my_model.save(model.path)
 
 
 @component(
