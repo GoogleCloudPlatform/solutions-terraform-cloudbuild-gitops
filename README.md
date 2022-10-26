@@ -4,16 +4,15 @@ Investigations into managing vertex.ai with terraform to get a proper CI/CD work
 
 ## Goals:
 - A personal workbench with jupyter labs and flexible hardware/framework/versions for model development
-- Scheduled pipelines for periodically training (and versionning) machine learning models
-- Hosting models with cloud run to make experimentation cheaper
+- Scheduled training pipelines for periodically training (and versionning) machine learning models
+- Hosting models with cloud run to make hosting experimental and low traffic models easier and cheaper
+
+All done "automagically" according to our chosen development flow
 
 ## TODO:
 - Move google cloud project to Schibsted owned GCP
 - Move Github project to GHE
 - Specify least access service accounts
-- Access to data lake buckets and postgres databases
-- Read schedule param
-- Cloud run model hosting in pipeline
-- Dockerfile "pipeline"
+- Access to data lake buckets, postgres databases, pulse
+- Cloud run model hosting in pipeline (in progress)
 
-All done "automagically" according to our chosen development flow
