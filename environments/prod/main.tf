@@ -116,10 +116,14 @@ resource "google_cloudbuild_trigger" "webhook-config-trigger" {
   }
 
   git_file_source {
-    path      = "cloudbuild.yaml"
+    path      = "models/example-model/serve/cloudbuild.yaml"
     uri       = "https://github.com/OlavHN/solutions-terraform-cloudbuild-gitops"
     revision  = "refs/heads/prod"
     repo_type = "GITHUB"
+  }
+
+  substitutions = {
+    _MODEL_PATH       = "$(body.message.model_path)"
   }
 }
 
