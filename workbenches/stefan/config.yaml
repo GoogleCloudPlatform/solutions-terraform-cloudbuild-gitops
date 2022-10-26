@@ -1,0 +1,4 @@
+gpu_count: 1
+gpu_type: "NVIDIA_TESLA_T4"
+machine_type: "n1-standard-1"
+container: "gcr.io/deeplearning-platform-release/tf2-gpu.2-10"
