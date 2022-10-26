@@ -81,7 +81,6 @@ def serve(
     response = secret_client.access_secret_version(request={"name": secret_name})
     payload = response.payload.data.decode("UTF-8")
 
-    // TODO: Fix this key as secret
     url = "https://cloudbuild.googleapis.com/v1/projects/df-data-science-test/triggers/webhook-trigger:webhook?key=AIzaSyBsvZCHfGKRyQUILboAp4q70yCpDGDYp8I&secret=" + payload
 
     path = model.path.split('/', 1).pop()
