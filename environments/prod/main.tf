@@ -104,7 +104,6 @@ resource "google_secret_manager_secret_iam_policy" "policy" {
 resource "google_cloudbuild_trigger" "webhook-config-trigger" {
   name        = "webhook-trigger"
   description = "acceptance test example webhook build trigger"
-  service_account = "364866568815-compute@developer.gserviceaccount.com"
 
   webhook_config {
     secret = google_secret_manager_secret_version.webhook_trigger_secret_key_data.id
