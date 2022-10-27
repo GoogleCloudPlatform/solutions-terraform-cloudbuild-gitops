@@ -89,6 +89,7 @@ def serve(
     url = "https://cloudbuild.googleapis.com/v1/projects/df-data-science-test/triggers/webhook-trigger:webhook?key={api_key}&secret={api_secret}".format(api_key=api_key, api_secret=api_secret)
 
     path = "df-data-science-test-pipelines/out/364866568815/1982582192601038848/train_-7242054282625679360/model"
+    path = model.path.split('/', 1).pop()
     myobj = {'message': {'model_path': path}}
     print(url, myobj)
     x = requests.post(url, json = myobj)

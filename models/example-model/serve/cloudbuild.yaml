@@ -16,6 +16,6 @@ steps:
   args: ['push', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/serving_test:latest']
 # Deploy container image to Cloud Run
 - name: 'gcr.io/cloud-builders/gcloud'
-  args: ['run', 'deploy', 'serving_test', '--image', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/serving_test:latest', '--region', 'europe-west4', '--platform', 'managed', '--memory', '4000Mi', '--allow-unauthenticated', '--max-instances', '5']
+  args: ['run', 'deploy', 'serving-test', '--image', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/serving_test:latest', '--region', 'europe-west4', '--platform', 'managed', '--memory', '4000Mi', '--allow-unauthenticated', '--max-instances', '5']
 images:
 - europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/serving_test:latest
