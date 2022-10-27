@@ -1,3 +1,4 @@
+import os
 from typing import NamedTuple
 from kfp.v2 import compiler, dsl
 from kfp.v2.dsl import (Artifact,
@@ -74,52 +75,24 @@ def evaluate(
     return ("true",)
 
 @component(
-    packages_to_install=['google-cloud-secret-manager', 'requests'],
+    packages_to_install=['requests'],
     base_image="python:3.9")
 def serve(
-    model: Input[Model]
+    model: Input[Model],
+    api_key: str,
+    api_secret: str
 ):
-    import os
     import requests
 
     print(model.path)
-    print(os.environ)
 
-    key = os.environ.get("API_KEY", 'API_KEY_NOT_FOUND')
-    secret = os.environ.get("API_SECRET", 'API_SECRET_NOT_FOUND')
-    url = "https://cloudbuild.googleapis.com/v1/projects/df-data-science-test/triggers/webhook-trigger:webhook?key={key}&secret={secret}".format(key=key, secret=secret)
+    url = "https://cloudbuild.googleapis.com/v1/projects/df-data-science-test/triggers/webhook-trigger:webhook?key={api_key}&secret={api_secret}".format(api_key=api_key, api_secret=api_secret)
 
     path = "df-data-science-test-pipelines/out/364866568815/1982582192601038848/train_-7242054282625679360/model"
     myobj = {'message': {'model_path': path}}
     print(url, myobj)
     x = requests.post(url, json = myobj)
-    print(x)
-
-
-'''
-    import os
-    import requests
-    // from google.cloud import secretmanager
-
-    print(model.path)
-    print(os.environ)
-
-    // secret_client = secretmanager.SecretManagerServiceClient()
-    // secret_name = f'projects/364866568815/secrets/webhook_trigger-secret-key-1/versions/2'
-    // response = secret_client.access_secret_version(request={"name": secret_name})
-    // payload = response.payload.data.decode("UTF-8")
-
-    key = os.environ.get("API_KEY", 'API_KEY_NOT_FOUND')
-    secret = os.environ.get("API_SECRET", 'API_SECRET_NOT_FOUND')
-    url = "https://cloudbuild.googleapis.com/v1/projects/df-data-science-test/triggers/webhook-trigger:webhook?key={key}&secret={secret}".format(key=key, secret=secret)
-
-    // path = model.path.split('/', 1).pop()
-    path = "df-data-science-test-pipelines/out/364866568815/1982582192601038848/train_-7242054282625679360/model"
-    myobj = {'message': {'model_path': path}}
-    print(url, myobj)
-    x = requests.post(url, json = myobj)
-    print(x)
-'''
+    print(x.text)
 
 
 @dsl.pipeline(
@@ -144,7 +117,7 @@ def pipeline(
         train_op.outputs["model"])
 
     with dsl.Condition(evaluate_op.outputs["deploy"] == "true", name="deploy"):
-        serve(train_op.outputs["model"])
+        serve(train_op.outputs["model"], os.environ.get('API_KEY'), os.environ.get('API_SECRET'))
 
 
 compiler.Compiler().compile(pipeline_func=pipeline, package_path='pipeline.json')
