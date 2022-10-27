@@ -81,6 +81,24 @@ def serve(
 ):
     import os
     import requests
+
+    print(model.path)
+    print(os.environ)
+
+    key = os.environ.get("API_KEY", 'API_KEY_NOT_FOUND')
+    secret = os.environ.get("API_SECRET", 'API_SECRET_NOT_FOUND')
+    url = "https://cloudbuild.googleapis.com/v1/projects/df-data-science-test/triggers/webhook-trigger:webhook?key={key}&secret={secret}".format(key=key, secret=secret)
+
+    path = "df-data-science-test-pipelines/out/364866568815/1982582192601038848/train_-7242054282625679360/model"
+    myobj = {'message': {'model_path': path}}
+    print(url, myobj)
+    x = requests.post(url, json = myobj)
+    print(x)
+
+
+'''
+    import os
+    import requests
     // from google.cloud import secretmanager
 
     print(model.path)
@@ -101,6 +119,7 @@ def serve(
     print(url, myobj)
     x = requests.post(url, json = myobj)
     print(x)
+'''
 
 
 @dsl.pipeline(
