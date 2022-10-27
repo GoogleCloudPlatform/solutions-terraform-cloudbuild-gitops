@@ -56,7 +56,7 @@ def train(
     my_model = get_model()
     
     # Train the model.
-    train_data = pd.read_csv(input_ds.path).values
+    train_data = pd.read_csv(train_ds.path).values
     train_input = train_data[:,:-1]
     train_target = train_data[:,-1:]
     my_model.fit(train_input, train_target)
