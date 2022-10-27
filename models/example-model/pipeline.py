@@ -81,24 +81,26 @@ def serve(
 ):
     import os
     import requests
-    from google.cloud import secretmanager
+    // from google.cloud import secretmanager
 
     print(model.path)
     print(os.environ)
 
-    secret_client = secretmanager.SecretManagerServiceClient()
-    secret_name = f'projects/364866568815/secrets/webhook_trigger-secret-key-1/versions/2'
-    response = secret_client.access_secret_version(request={"name": secret_name})
-    payload = response.payload.data.decode("UTF-8")
+    // secret_client = secretmanager.SecretManagerServiceClient()
+    // secret_name = f'projects/364866568815/secrets/webhook_trigger-secret-key-1/versions/2'
+    // response = secret_client.access_secret_version(request={"name": secret_name})
+    // payload = response.payload.data.decode("UTF-8")
 
-    key = os.environ["API_KEY"]
-    secret = os.environ["API_SECRET"]
+    key = os.environ.get("API_KEY", 'API_KEY_NOT_FOUND')
+    secret = os.environ.get("API_SECRET", 'API_SECRET_NOT_FOUND')
     url = "https://cloudbuild.googleapis.com/v1/projects/df-data-science-test/triggers/webhook-trigger:webhook?key={key}&secret={secret}".format(key=key, secret=secret)
 
-    path = model.path.split('/', 1).pop()
+    // path = model.path.split('/', 1).pop()
     path = "df-data-science-test-pipelines/out/364866568815/1982582192601038848/train_-7242054282625679360/model"
     myobj = {'message': {'model_path': path}}
-    requests.post(url, json = myobj)
+    print(url, myobj)
+    x = requests.post(url, json = myobj)
+    print(x)
 
 
 @dsl.pipeline(
