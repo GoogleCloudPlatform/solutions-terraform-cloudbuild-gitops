@@ -1,3 +1,4 @@
+from typing import NamedTuple
 from kfp.v2 import compiler, dsl
 from kfp.v2.dsl import (Artifact,
                         Dataset,
@@ -16,25 +17,24 @@ from kfp.v2.dsl import (Artifact,
 )
 def get_dataset(
     url: str,
-    input_ds: Output[Dataset],
-    target_ds: Output[Dataset],
+    train_ds: Output[Dataset],
+    test_ds: Output[Dataset],
 ):
     import pandas as pd
     import numpy as np
 
-    input_data = pd.DataFrame(np.random.random((128, 32)))
-    target_data = pd.DataFrame(np.random.random((128, 1)))
+    train_data = pd.DataFrame(np.random.random((128, 33)))
+    test_data = pd.DataFrame(np.random.random((128, 33)))
 
-    input_data.to_csv(input_ds.path, header=None, index=False)
-    target_data.to_csv(target_ds.path, header=None, index=False)
+    train_data.to_csv(train_ds.path, header=None, index=False)
+    test_data.to_csv(test_ds.path, header=None, index=False)
 
 
 @component(
     base_image="gcr.io/deeplearning-platform-release/tf2-gpu.2-10",
     packages_to_install=["pandas"])
 def train(
-        input_ds: Input[Dataset],
-        target_ds: Input[Dataset],
+        train_ds: Input[Dataset],
         model: Output[Model]
     ):
 
@@ -56,14 +56,22 @@ def train(
     my_model = get_model()
     
     # Train the model.
-    test_input = pd.read_csv(input_ds.path).values
-    test_target = pd.read_csv(target_ds.path).values
-    # test_input = np.random.random((128, 32))
-    # test_target = np.random.random((128, 1))
-    my_model.fit(test_input, test_target)
+    train_data = pd.read_csv(input_ds.path).values
+    train_input = train_data[:,:-1]
+    train_target = train_data[:,-1:]
+    my_model.fit(train_input, train_target)
 
     my_model.save(model.path)
 
+
+@component(
+    base_image="gcr.io/deeplearning-platform-release/tf2-cpu.2-10")
+def evaluate(
+    test_ds: Input[Dataset],
+    model: Input[Model],
+    kpi: Output[Metrics]
+) -> NamedTuple("output", [("deploy", str)]):
+    return ("true",)
 
 @component(
     packages_to_install=['google-cloud-secret-manager', 'requests'],
@@ -98,15 +106,19 @@ def pipeline(
     data_op = get_dataset(url)
 
     train_op = (train(
-            input_ds=data_op.outputs["input_ds"],
-            target_ds=data_op.outputs["target_ds"]
+            train_ds=data_op.outputs["train_ds"],
         ).
         set_cpu_limit('4').
         set_memory_limit('64G').
         add_node_selector_constraint('cloud.google.com/gke-accelerator', 'NVIDIA_TESLA_T4').
         set_gpu_limit('1'))
 
-    serve(train_op.outputs["model"])
+    evaluate_op = evaluate(
+        data_op.outputs["test_ds"],
+        train_op.outputs["model"])
+
+    with dsl.Condition(evaluate_op.outputs["deploy"] == "true", name="deploy"):
+        serve(train_op.outputs["model"])
 
 
 compiler.Compiler().compile(pipeline_func=pipeline, package_path='pipeline.json')
