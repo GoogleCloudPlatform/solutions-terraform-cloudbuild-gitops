@@ -79,17 +79,21 @@ def evaluate(
 def serve(
     model: Input[Model]
 ):
+    import os
     import requests
     from google.cloud import secretmanager
 
     print(model.path)
+    print(os.environ)
 
     secret_client = secretmanager.SecretManagerServiceClient()
     secret_name = f'projects/364866568815/secrets/webhook_trigger-secret-key-1/versions/2'
     response = secret_client.access_secret_version(request={"name": secret_name})
     payload = response.payload.data.decode("UTF-8")
 
-    url = "https://cloudbuild.googleapis.com/v1/projects/df-data-science-test/triggers/webhook-trigger:webhook?key=AIzaSyBsvZCHfGKRyQUILboAp4q70yCpDGDYp8I&secret=" + payload
+    key = os.environ["API_KEY"]
+    secret = os.environ["API_SECRET"]
+    url = "https://cloudbuild.googleapis.com/v1/projects/df-data-science-test/triggers/webhook-trigger:webhook?key={key}&secret={secret}".format(key=key, secret=secret)
 
     path = model.path.split('/', 1).pop()
     path = "df-data-science-test-pipelines/out/364866568815/1982582192601038848/train_-7242054282625679360/model"

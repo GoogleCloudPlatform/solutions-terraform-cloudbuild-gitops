@@ -65,8 +65,11 @@ module "workbench" {
 // BEGIN STATIC CONFIG
 
 // BEGIN WEBHOOK EXPERIMENT
+// TODO: Secrets will be injected into TF in root cloudbuild
+
+// 
 resource "google_secret_manager_secret" "webhook_trigger_secret_key" {
-  secret_id = "webhook_trigger-secret-key-1"
+  secret_id = "webhook_trigger-secret-key"
 
   replication {
     user_managed {
@@ -81,6 +84,24 @@ resource "google_secret_manager_secret_version" "webhook_trigger_secret_key_data
   secret = google_secret_manager_secret.webhook_trigger_secret_key.id
 
   secret_data = "secretkeygoeshere"
+}
+
+resource "google_secret_manager_secret" "webhook_trigger_api_key" {
+  secret_id = "webhook_trigger-secret-api-key"
+
+  replication {
+    user_managed {
+      replicas {
+        location = "europe-west4"
+      }
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "webhook_trigger_api_key_data" {
+  secret = google_secret_manager_secret.webhook_trigger_api_key.id
+
+  secret_data = "AIzaSyCZ0MtGARFu_oF7i97DdcCd1s_Bz9nePvM"
 }
 
 data "google_project" "project" {}
