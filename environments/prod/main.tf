@@ -89,13 +89,13 @@ data "google_iam_policy" "secret_accessor" {
 }
 
 resource "google_secret_manager_secret_iam_policy" "trigger-secret-policy" {
-  project = data.google_project.project
+  project = data.google_project.project.project_id
   secret_id = data.google_secret_manager_secret_version.webhook-trigger-secret.secret
   policy_data = data.google_iam_policy.secret_accessor.policy_data
 }
 
 resource "google_secret_manager_secret_iam_policy" "trigger-key-policy" {
-  project = data.google_project.project
+  project = data.google_project.project.project_id
   secret_id = data.google_secret_manager_secret_version.webhook-trigger-api-key.secret
   policy_data = data.google_iam_policy.secret_accessor.policy_data
 }
