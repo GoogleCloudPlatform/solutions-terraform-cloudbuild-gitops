@@ -84,7 +84,7 @@ def serve(
 ):
     import requests
 
-    print(model.path)
+    print('path', model.path)
 
     url = "https://cloudbuild.googleapis.com/v1/projects/df-data-science-test/triggers/webhook-trigger:webhook?key={api_key}&secret={api_secret}".format(api_key=api_key, api_secret=api_secret)
 
