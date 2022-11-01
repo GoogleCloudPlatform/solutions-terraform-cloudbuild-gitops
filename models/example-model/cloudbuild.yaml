@@ -18,8 +18,8 @@ steps:
 
 availableSecrets:
   secretManager:
-  - versionName: projects/$PROJECT_ID/secrets/webhook_trigger-secret-key/versions/latest
+  - versionName: projects/$PROJECT_ID/secrets/webhook-trigger-secret/versions/latest
     env: API_SECRET
-  - versionName: projects/$PROJECT_ID/secrets/webhook_trigger-secret-api-key/versions/latest
+  - versionName: projects/$PROJECT_ID/secrets/webhook-trigger-api-key/versions/latest
     env: API_KEY
 
