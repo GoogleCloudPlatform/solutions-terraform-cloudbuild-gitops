@@ -1,31 +1,18 @@
-# Managing infrastructure as code with Terraform, Cloud Build, and GitOps
+# Machine learning platform experiment
 
-This is the repo for the [Managing infrastructure as code with Terraform, Cloud Build, and GitOps](https://cloud.google.com/solutions/managing-infrastructure-as-code) tutorial. This tutorial explains how to manage infrastructure as code with Terraform and Cloud Build using the popular GitOps methodology. 
+Investigations into managing vertex.ai with terraform to get a proper CI/CD workflow and make suitable abstractions for easy developer experience.
 
-## Configuring your **dev** environment
+## Goals:
+- A personal workbench with jupyter labs and flexible hardware/framework/versions for model development
+- Scheduled training pipelines for periodically training (and versionning) machine learning models
+- Hosting models with cloud run to make hosting experimental and low traffic models easier and cheaper
 
-Just for demostration, this step will:
- 1. Configure an apache2 http server on network '**dev**' and subnet '**dev**-subnet-01'
- 2. Open port 80 on firewall for this http server 
+All done "automagically" according to our chosen development flow
 
-```bash
-cd ../environments/dev
-terraform init
-terraform plan
-terraform apply
-terraform destroy
-```
+## TODO:
+- Move google cloud project to Schibsted owned GCP
+- Move Github project to GHE
+- Specify least access service accounts
+- Access to data lake buckets, postgres databases, pulse
+- Cloud run model hosting in pipeline (in progress)
 
-## Promoting your environment to **production**
-
-Once you have tested your app (in this example an apache2 http server), you can promote your configuration to prodution. This step will:
- 1. Configure an apache2 http server on network '**prod**' and subnet '**prod**-subnet-01'
- 2. Open port 80 on firewall for this http server 
-
-```bash
-cd ../prod
-terraform init
-terraform plan
-terraform apply
-terraform destroy
-```

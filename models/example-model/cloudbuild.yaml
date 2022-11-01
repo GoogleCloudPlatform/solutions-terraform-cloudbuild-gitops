@@ -1,0 +1,25 @@
+steps:
+- name: python
+  entrypoint: pip
+  args: ["install", "-r", "models/$TRIGGER_NAME/requirements.txt", "--user"]
+
+  # Compile pipeline
+- name: 'python'
+  entrypoint: 'python'
+  args: ['models/$TRIGGER_NAME/pipeline.py']
+  secretEnv: ['API_SECRET', 'API_KEY']
+  id: 'compile'
+
+  # Upload compiled pipeline to GCS.
+- name: 'gcr.io/cloud-builders/gsutil'
+  args: ['cp', 'pipeline.json', 'gs://df-data-science-test-pipelines/$TRIGGER_NAME/pipeline.json']
+  id:  'upload'
+  waitFor: ['compile']
+
+availableSecrets:
+  secretManager:
+  - versionName: projects/$PROJECT_ID/secrets/webhook-trigger-secret/versions/latest
+    env: API_SECRET
+  - versionName: projects/$PROJECT_ID/secrets/webhook-trigger-api-key/versions/latest
+    env: API_KEY
+

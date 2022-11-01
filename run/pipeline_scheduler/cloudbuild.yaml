@@ -1,0 +1,14 @@
+# Note that the :latest tag must match the :latest tag used in terraform cloud run resource
+
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:latest', '.' ]
+  dir: 'run/pipeline_scheduler'
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:latest']
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args: ['run', 'deploy', 'cloudrun-scheduler', '--image', 'europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:latest', '--region', 'europe-west4']
+images: ['europe-west4-docker.pkg.dev/df-data-science-test/df-ds-repo/scheduler:latest']
+
+
