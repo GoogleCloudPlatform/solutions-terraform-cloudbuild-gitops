@@ -1,1 +1,1 @@
-project="apigee-whirpool-001"
+project="apigee-whirpool-private"
