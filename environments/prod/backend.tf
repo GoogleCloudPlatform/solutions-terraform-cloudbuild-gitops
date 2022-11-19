@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "trial-presales-toberosa-tfstate"
+    bucket = "-tfstate"
     prefix = "env/prod"
   }
 }
