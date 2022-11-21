@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="bb-demo-project"
