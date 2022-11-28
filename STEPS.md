@@ -44,6 +44,10 @@ In GCP Console, go to trigger, create new trigger in specific project and zone
 in Source, Select Source:  GitHub, Authenticate, Fill Account and Repository.
 Branch .*, use service account CLOUDBUILD_SA.
 
+sign Google Contributor Agreement
+https://cla.developers.google.com/
+
+
 
 
 
