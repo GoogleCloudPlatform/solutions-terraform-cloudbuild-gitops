@@ -434,7 +434,7 @@ module "scc-remediation-cloud-function" {
     secrets         = [
         {
             key = "SLACK_SIGNING_SECRET"
-            id  = google_secret_manager_secret.slack-signing-secret.secret_id
+            id  = google_secret_manager_secret.slack-scc-signing-secret.secret_id
         }
     ]
 }
@@ -449,9 +449,9 @@ resource "google_cloudfunctions_function_iam_member" "scc-remediation-invoker" {
   member = "allUsers"
 }
 
-resource "google_secret_manager_secret" "slack-signing-secret" {
+resource "google_secret_manager_secret" "slack-scc-signing-secret" {
   project   = var.project
-  secret_id = "slack-signing-secret"
+  secret_id = "slack-scc-signing-secret"
 
   replication {
     automatic = true
@@ -460,8 +460,8 @@ resource "google_secret_manager_secret" "slack-signing-secret" {
 
 # IAM entry for service account of scc-remediation function to use the slack signing secret
 resource "google_secret_manager_secret_iam_binding" "scc_signing_secret_binding" {
-  project   = google_secret_manager_secret.slack-signing-secret.project
-  secret_id = google_secret_manager_secret.slack-signing-secret.secret_id
+  project   = google_secret_manager_secret.slack-scc-signing-secret.project
+  secret_id = google_secret_manager_secret.slack-scc-signing-secret.secret_id
   role      = "roles/secretmanager.secretAccessor"
   members    = [
       "serviceAccount:${module.scc-remediation-cloud-function.sa-email}",
