@@ -88,7 +88,7 @@ resource "google_cloudfunctions_function_iam_member" "provision-access-invoker" 
 }
 
 # IAM entry for service account of provision-access function to manage IAM policies
-resource "google_organization_iam_member" "organization" {
+resource "google_organization_iam_member" "provision_access_org_iam_admin" {
   org_id    = var.organization
   role      = "roles/resourcemanager.projectIamAdmin"
   member    = "serviceAccount:${module.provision-access-cloud-function.sa-email}"
@@ -362,7 +362,6 @@ resource "google_clouddeploy_delivery_pipeline" "pipeline" {
   }
 }
 
-
 # Binary Authorization Policy
 resource "google_binary_authorization_policy" "binauthz_policy" {
   project = var.project
@@ -488,18 +487,27 @@ resource "google_cloudfunctions_function_iam_member" "mute-finding-invoker" {
 }
 
 # IAM entry for service account of mute-finding function to mute SCC findings
-resource "google_organization_iam_member" "organization" {
+resource "google_organization_iam_member" "mute_finding_org_role" {
   org_id    = var.organization
   role      = "roles/securitycenter.findingsMuteSetter"
   member    = "serviceAccount:${module.mute-finding-cloud-function.sa-email}"
 }
 
 # Create a custom IAM role for the scc-remediation function over the entire org
-resource "google_project_iam_custom_role" "scc-remediation-custom-role" {
+resource "google_organization_iam_custom_role" "scc-remediation-custom-role" {
   role_id     = "scc_remediation_custom_role"
-  title       = "Custom Role for the SCC Remediation functions to remediate SCC findings"
-  description = "This role is used by various scc-remediation function SA's to remediate SCC findings"
-  // permissions = ["storage.buckets.get","storage.objects.create","storage.objects.delete","storage.objects.get"]
+  org_id      = var.organization
+  title       = "Custom Role for SCC Remediation Cloud Functions"
+  description = "This role is used by various remediate-* function SAs to remediate SCC findings"
+  permissions = ["compute.firewalls.delete","compute.instances.delete","compute.networks.updatePolicy","compute.globalOperations.get","compute.zoneOperations.get"]
+}
+
+module "remediate-firewall-cloud-function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "remediate-firewall"
+    function-desc   = "remediates scc findings related to misconfigured firewalls"
+    entry-point     = "remediate_firewall"
 }
 
 # IAM entry for service account of scc-remediation function to invoke the remediate-firewall function
@@ -513,10 +521,18 @@ resource "google_cloudfunctions_function_iam_member" "remediate-firewall-invoker
 }
 
 # IAM entry for service account of remediate-firewall function
-resource "google_storage_bucket_iam_member" "remediate-firewall" {
-  bucket = google_storage_bucket.raw_bucket.name
-  role = google_project_iam_custom_role.scc-remediation-custom-role.name
-  member = "serviceAccount:${module.remediate-firewall-cloud-function.sa-email}"
+resource "google_organization_iam_member" "remediate_firewall_org_scc_remediation" {
+  org_id    = var.organization
+  role      = google_organization_iam_custom_role.scc-remediation-custom-role.name
+  member    = "serviceAccount:${module.remediate-firewall-cloud-function.sa-email}"
+}
+
+module "remediate-instance-cloud-function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "remediate-instance"
+    function-desc   = "remediates scc findings related to misconfigured instances"
+    entry-point     = "remediate_instance"
 }
 
 # IAM entry for service account of scc-remediation function to invoke the remediate-instance function
@@ -530,10 +546,10 @@ resource "google_cloudfunctions_function_iam_member" "remediate-instance-invoker
 }
 
 # IAM entry for service account of remediate-instance function
-resource "google_storage_bucket_iam_member" "remediate-instance" {
-  bucket = google_storage_bucket.raw_bucket.name
-  role = google_project_iam_custom_role.scc-remediation-custom-role.name
-  member = "serviceAccount:${module.remediate-instance-cloud-function.sa-email}"
+resource "google_organization_iam_member" "remediate_instance_org_scc_remediation" {
+  org_id    = var.organization
+  role      = google_organization_iam_custom_role.scc-remediation-custom-role.name
+  member    = "serviceAccount:${module.remediate-instance-cloud-function.sa-email}"
 }
 
 /*
