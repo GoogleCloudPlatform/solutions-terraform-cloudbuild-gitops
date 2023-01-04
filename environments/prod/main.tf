@@ -395,7 +395,7 @@ module "scc-automation-cloud-function" {
     secrets         = [
         {
             key = "SLACK_ACCESS_TOKEN"
-            id  = google_secret_manager_secret.slack-bot-access-token.secret_id
+            id  = google_secret_manager_secret.slack-scc-bot-token.secret_id
         }
     ]
     triggers        = [
@@ -406,9 +406,9 @@ module "scc-automation-cloud-function" {
     ]
 }
 
-resource "google_secret_manager_secret" "slack-bot-access-token" {
+resource "google_secret_manager_secret" "slack-scc-bot-token" {
   project   = var.project
-  secret_id = "slack-bot-access-token"
+  secret_id = "slack-scc-bot-token"
 
   replication {
     automatic = true
@@ -417,8 +417,8 @@ resource "google_secret_manager_secret" "slack-bot-access-token" {
 
 # IAM entry for service account of scc-automation function to use the slack bot token
 resource "google_secret_manager_secret_iam_binding" "scc_bot_token_binding" {
-  project   = google_secret_manager_secret.slack-bot-access-token.project
-  secret_id = google_secret_manager_secret.slack-bot-access-token.secret_id
+  project   = google_secret_manager_secret.slack-scc-bot-token.project
+  secret_id = google_secret_manager_secret.slack-scc-bot-token.secret_id
   role      = "roles/secretmanager.secretAccessor"
   members    = [
       "serviceAccount:${module.scc-automation-cloud-function.sa-email}",
