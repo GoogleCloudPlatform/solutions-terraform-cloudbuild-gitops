@@ -15,6 +15,7 @@ resource "google_project_service" "resourcemanager" {
 }
 
 resource "google_project_service" "scc" {
+  project = var.demo_project
   service = "securitycenter.googleapis.com"
   disable_on_destroy = false
 }
