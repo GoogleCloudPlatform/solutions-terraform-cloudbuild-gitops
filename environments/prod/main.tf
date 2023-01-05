@@ -383,6 +383,22 @@ resource "google_binary_authorization_policy" "binauthz_policy" {
   }
 }
 
+resource "google_pubsub_topic" "scc-notifications-pubsub" {
+  name = "scc-notifications-pubsub"
+  message_retention_duration = "86400s"
+}
+
+resource "google_scc_notification_config" "scc-notification-config" {
+  config_id    = "scc-notification-config"
+  organization = var.organization
+  description  = "My Cloud Security Command Center Finding Notification Configuration"
+  pubsub_topic =  google_pubsub_topic.scc-notifications-pubsub.id
+
+  streaming_config {
+    filter = "state = \"ACTIVE\" AND mute != \"MUTED\""
+  }
+}
+
 module "scc-automation-cloud-function" {
     source          = "../../modules/cloud_function"
     project         = var.project
@@ -401,7 +417,7 @@ module "scc-automation-cloud-function" {
     triggers        = [
         {
             event_type  = "google.pubsub.topic.publish"
-            resource    = var.scc_notifications_topic
+            resource    = google_pubsub_topic.scc-notifications-pubsub.id
         }
     ]
 }

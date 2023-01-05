@@ -31,10 +31,6 @@ variable "region" {
   type        = string
 }
 
-variable "scc_notifications_topic" {
-  type        = string
-}
-
 variable "slack_secops_channel" {
   type        = string
 }
