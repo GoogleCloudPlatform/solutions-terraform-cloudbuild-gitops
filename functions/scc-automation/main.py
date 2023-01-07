@@ -16,7 +16,7 @@ def scc_automation(event, context):
     send_slack_chat_notification(message_json['finding'], message_json['resource'])
 
 def send_slack_chat_notification(finding_json, resource_json):
-    event_timestamp = datetime.fromisoformat(finding_json['eventTime'][:-1]).astimezone(timezone('Asia/Kolkata')).strftime('%Y-%m-%d %H:%M:%S')
+    event_timestamp = datetime.fromisoformat(finding_json['eventTime'][0:19]).astimezone(timezone('Asia/Kolkata')).strftime('%Y-%m-%d %H:%M:%S')
     
     if 'severity' in finding_json: 
         severity = finding_json['severity']
