@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "kafka-to-bq-348716-tfstate"
     prefix = "env/prod"
   }
 }
