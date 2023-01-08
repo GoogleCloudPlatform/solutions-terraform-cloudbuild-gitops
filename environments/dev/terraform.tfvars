@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="kafka-to-bq-348716"
