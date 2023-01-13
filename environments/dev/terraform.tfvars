@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="gitopstutorial-374616"
