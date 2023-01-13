@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "black-practice-312123-tfstate"
+    bucket = "terraform2022-371717-tfstate"
     prefix = "env/dev"
   }
 }
