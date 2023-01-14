@@ -52,6 +52,7 @@ steps:
 - id: 'tf plan'
   name: 'hashicorp/terraform:1.3.3'
   entrypoint: 'sh'
+  out: 'planfile'
   args: 
   - '-c'
   - | 
