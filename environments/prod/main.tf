@@ -41,5 +41,4 @@ module "firewall" {
 
 module "pub_sub" {
   source  = "../../modules/pub_sub"
-  project = "${var.project}"
 }
