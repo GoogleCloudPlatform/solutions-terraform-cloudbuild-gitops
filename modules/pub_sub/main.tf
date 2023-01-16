@@ -23,5 +23,5 @@ resource "google_pubsub_topic" "pubsub-topic" {
     foo = "bar"
   }
 
-  message_retention_duration = "86600s"
+  message_retention_duration = "8660s"
 }
