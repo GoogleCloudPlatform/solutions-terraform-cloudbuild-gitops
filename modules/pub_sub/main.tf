@@ -21,13 +21,12 @@ resource "google_pubsub_topic" "pubsub-topic" {
     foo = "bar"
   }
   
+}
+  
   resource "google_pubsub_subscription" "pubsub-topic-sub" {
   name  = "terraform-topic-subscription"
   topic = google_pubsub_topic.pubsub-topic.name
 
   ack_deadline_seconds = 20
 
-  labels = {
-    foo = "bar"
-  }
 }
