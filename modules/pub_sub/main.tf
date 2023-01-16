@@ -13,34 +13,15 @@
 # limitations under the License.
 
 
-locals {
-  env = "dev"
-}
+resource "google_pubsub_topic" "pubsub-topic" {
+  name = "terraform-topic"
+  project = "baymanagement"
 
-provider "google" {
-  project = "${var.project}"
-}
+  id = "projects/baymanagement/topics/terraform-topic"
 
-module "vpc" {
-  source  = "../../modules/vpc"
-  project = "${var.project}"
-  env     = "${local.env}"
-}
+  labels = {
+    foo = "bar"
+  }
 
-module "http_server" {
-  source  = "../../modules/http_server"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
+  message_retention_duration = "86600s"
 }
-
-module "firewall" {
-  source  = "../../modules/firewall"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
-
-module "pub_sub" {
-  source  = "../../modules/pub_sub"
-  project = "${var.project}"
-}
-
