@@ -13,34 +13,6 @@
 # limitations under the License.
 
 
-locals {
-  env = "dev"
+terraform {
+  required_version = "~> 1.3.3"
 }
-
-provider "google" {
-  project = "${var.project}"
-}
-
-module "vpc" {
-  source  = "../../modules/vpc"
-  project = "${var.project}"
-  env     = "${local.env}"
-}
-
-module "http_server" {
-  source  = "../../modules/http_server"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
-
-module "firewall" {
-  source  = "../../modules/firewall"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
-
-module "pub_sub" {
-  source  = "../../modules/pub_sub"
-  project = "${var.project}"
-}
-
