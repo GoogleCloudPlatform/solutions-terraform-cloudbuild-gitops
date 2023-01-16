@@ -17,8 +17,6 @@ resource "google_pubsub_topic" "pubsub-topic" {
   name = "terraform-topic"
   project = "baymanagement"
 
-  id = "projects/baymanagement/topics/terraform-topic"
-
   labels = {
     foo = "bar"
   }
