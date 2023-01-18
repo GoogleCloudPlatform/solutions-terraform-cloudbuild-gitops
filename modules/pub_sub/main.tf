@@ -17,11 +17,16 @@ resource "google_pubsub_topic" "pubsub-topic" {
   name = "terraform-topic"
   project = "baymanagement"
 
-  id = "projects/baymanagement/topics/terraform-topic"
-
   labels = {
     foo = "bar"
   }
+  
+}
+  
+  resource "google_pubsub_subscription" "pubsub-topic-sub" {
+  name  = "terraform-topic-subscription"
+  topic = google_pubsub_topic.pubsub-topic.name
 
-  message_retention_duration = "86600s"
+  ack_deadline_seconds = 20
+
 }
