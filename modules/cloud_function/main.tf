@@ -40,8 +40,8 @@ resource "google_cloudfunctions_function" "function" {
 # IAM entry for all users to invoke the function
 resource "google_cloudfunctions_function_iam_member" "invoker" {
   project        = "baymanagement"
-  region         = google_cloudfunctions_function.function.region
-  cloud_function = google_cloudfunctions_function.function.name
+  region         = "us-central1"
+  cloud_function = "http-function"
 
   role   = "roles/cloudfunctions.invoker"
   member = "allUsers"
