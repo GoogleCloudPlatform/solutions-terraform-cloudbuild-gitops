@@ -24,7 +24,7 @@ resource "google_storage_bucket_object" "archive" {
   source = "${path.module}/CF_ZIPS/test-cf.zip"
 }
 
-resource "google_cloudfunctions_function" "function" {
+resource "google_cloudfunctions_function" "test-function" {
   name        = "http-function-test"
   description = "Http trigger test function"
   runtime     = "python310"
