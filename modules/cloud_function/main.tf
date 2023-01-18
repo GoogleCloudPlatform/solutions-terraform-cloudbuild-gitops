@@ -25,7 +25,7 @@ resource "google_storage_bucket_object" "archive" {
 }
 
 resource "google_cloudfunctions_function" "function" {
-  name        = "http-function"
+  name        = "http-function-test"
   description = "Http trigger test function"
   runtime     = "python310"
   region      = "us-central1"
@@ -39,10 +39,10 @@ resource "google_cloudfunctions_function" "function" {
 
 resource "google_cloudfunctions_function_iam_binding" "binding" {
   project = "baymanagement"
-  region = google_cloudfunctions_function.function.region
-  cloud_function = google_cloudfunctions_function.function.name
+  region = "us-central1"
+  cloud_function = "http-function-test"
   role = "roles/cloudfunctions.invoker"
   members = [
-    "allUsers",
+    "serviceAccount:baymanagement@appspot.gserviceaccount.com",
   ]
 }
