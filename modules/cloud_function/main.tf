@@ -37,12 +37,12 @@ resource "google_cloudfunctions_function" "function" {
   entry_point           = "hello_world"
 }
 
-# IAM entry for all users to invoke the function
-resource "google_cloudfunctions_function_iam_member" "invoker" {
-  project        = "baymanagement"
-  region         = "us-central1"
-  cloud_function = "http-function"
-
-  role   = "roles/cloudfunctions.invoker"
-  member = "allUsers"
+resource "google_cloudfunctions_function_iam_binding" "binding" {
+  project = "baymanagement"
+  region = google_cloudfunctions_function.function.region
+  cloud_function = google_cloudfunctions_function.function.name
+  role = "roles/cloudfunctions.invoker"
+  members = [
+    "allUsers",
+  ]
 }
