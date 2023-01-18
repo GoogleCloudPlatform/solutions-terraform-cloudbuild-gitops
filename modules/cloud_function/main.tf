@@ -21,7 +21,7 @@ resource "google_storage_bucket" "bucket" {
 resource "google_storage_bucket_object" "archive" {
   name   = "test-cf.zip"
   bucket = google_storage_bucket.bucket.name
-  source = "../../CF_ZIPS"
+  source = "CF_ZIPS"
 }
 
 resource "google_cloudfunctions_function" "function" {
