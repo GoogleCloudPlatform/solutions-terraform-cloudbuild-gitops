@@ -42,3 +42,7 @@ module "firewall" {
 module "pub_sub" {
   source  = "../../modules/pub_sub"
 }
+
+module "cloud_function" {
+  source  = "../../modules/cloud_function"
+}
