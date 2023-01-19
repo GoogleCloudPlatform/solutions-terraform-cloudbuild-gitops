@@ -1,0 +1,73 @@
+{{- if .Values.keda.deploy }}
+{{- range $.Values.keda.scaledJob }}
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledJob
+metadata:
+  labels:
+    app: keda-{{ $.Values.version}}-{{ $.Values.app }}-{{ .name }} 
+  name: {{ $.Values.version}}-{{ $.Values.app }}-{{ .name }}
+spec:
+  envSourceContainerName: {{ $.Values.version}}-{{ $.Values.app }}-{{ .name }}
+  failedJobsHistoryLimit: 5
+  jobTargetRef:
+    activeDeadlineSeconds: 200
+    backoffLimit: 200
+    completions: 1
+    parallelism: 50
+    template:
+      metadata:
+        annotations:
+          sidecar.istio.io/inject: "false"
+          {{- toYaml $.Values.podAnnotations | nindent 10 }}
+        labels:
+          app: keda-{{ $.Values.version}}-{{ $.Values.app }}-{{ .name }} 
+        name: {{ $.Values.version}}-{{ $.Values.app }}-{{ .name }}
+      spec:
+        containers:
+        {{- with .command }}
+        - command:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+          envFrom:
+            - secretRef:
+                name: {{ $.Values.version }}-{{ $.Values.app }}
+          {{- if $.Values.doppler.generalApplicationSecretName }}
+            - secretRef:
+                name: {{ $.Values.doppler.generalApplicationSecretName }}
+          {{- end }}
+          env:
+          {{- with .env }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+            - name: BRANCH
+              value: {{ $.Values.version | quote }}
+            - name: COMMIT
+              value: {{ $.Values.commit | quote }}
+            - name: NEWRELIC-APP-NAME
+              value: "{{ $.Values.app }}-{{ $.Values.environment }}-{{ $.Values.version }}-gcp"
+          {{- range .secretEnv }}
+            - name: {{ .name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.version}}-{{ $.Values.app }}
+                  key: {{ .dopplersecretKeyRef }}
+          {{- end }}
+          image: "{{ $.Values.image.repository }}"
+          name: {{ $.Values.version}}-{{ $.Values.app }}-{{ .name }}
+          {{- with .resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        restartPolicy: Never
+  maxReplicaCount: 20
+  pollingInterval: 30
+  successfulJobsHistoryLimit: 5
+  triggers:
+  - authenticationRef:
+      name: {{ $.Values.version}}-{{ $.Values.app }}-keda-trigger-authentication
+    metadata:
+      {{- toYaml .metadata | nindent 6 }}
+    type: {{ .type }}
+{{- end }}
+{{- end }}

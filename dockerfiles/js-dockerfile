@@ -1,0 +1,57 @@
+FROM node@sha256:c43cb605ab4bb3e2735154169e451b16b62f255b005e7e6fb1589f99558be20d AS build-env
+
+WORKDIR /app
+
+RUN apk add --update --no-cache python2 make g++
+
+COPY package.json ./package.json
+COPY web/package.json ./web/package.json
+COPY ui/package.json ./ui/package.json
+
+COPY yarn.lock ./yarn.lock
+
+COPY patches ./patches
+RUN for f in $(ls ./patches); do tr -d '\r' < "./patches/$f" >"$f.copy" && mv "$f.copy" "./patches/$f"; done
+
+# Copy from the storybook folder
+COPY storybook/package.json ./storybook/package.json
+
+# Install dependencies
+RUN yarn install && rm -rf /usr/local/share/.cache/yarn
+
+# Copy from the root folder
+COPY .stylelintrc .eslintrc.js .dockerignore babel.config.js apollo.config.js graphql-schema.json tsconfig.json ./
+
+# Copy from storybook folder
+COPY storybook/src ./storybook/src
+
+# Copy the UI folder
+COPY ui/babel.config.js ui/babel.config.styles.js ui/.eslintignore ui/.eslintrc.js ui/global.d.ts ui/index.ts ui/jest.config.js ui/postcss.config.js ui/.stylelintrc ui/tsconfig.json ui/webpack.config.js ./ui/
+COPY ui/components/ ./ui/components/
+COPY ui/hooks/ ./ui/hooks/
+COPY ui/icons/ ./ui/icons/
+COPY ui/styles/ ./ui/styles/
+COPY ui/types/ ./ui/types/
+COPY ui/typings/ ./ui/typings/
+COPY ui/utils/ ./ui/utils/
+
+# Copy the web folder
+COPY web/babel.config.js web/.eslintrc.js web/jest.config.js web/next.config.js web/nodemon.json web/postcss.config.js web/.stylelintrc web/tsconfig.build.json web/tsconfig.json ./web/
+
+COPY web/fonts ./web/fonts
+COPY web/jest ./web/fonts
+COPY web/src/pages ./web/src/pages
+COPY web/scripts ./web/scripts
+COPY web/src ./web/src
+COPY web/static ./web/static
+
+#COPY storybook/babel.config.js ./storybook/babel.config.js
+COPY storybook/postcss.config.js ./storybook/postcss.config.js
+COPY storybook/.storybook ./storybook/.storybook
+COPY storybook/tsconfig.json ./storybook/tsconfig.json
+
+RUN yarn workspace @travelshift/storybook build
+
+FROM nginx:1.19.8
+
+COPY --from=build-env /app/storybook/storybook-static /usr/share/nginx/html

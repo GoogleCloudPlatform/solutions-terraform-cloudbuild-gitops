@@ -1,0 +1,256 @@
+# Default values for helm-template.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+app: "<app-name>" #Update App Name
+commit: "commit-test"
+environment: "dev"
+team: "team-test"
+
+#varsion is branch name
+version: "sarjan"
+
+image:
+  repository: <image repository path> # update image
+  pullPolicy: Always
+
+imagePullSecrets: []
+nameOverride: "<app name>"
+fullnameOverride: ""
+
+strategy:
+  rollingUpdate:
+    maxSurge: 100%
+    maxUnavailable: 0
+
+
+
+env: []
+  # - name: RUNTIME_ENV
+  #   value: dev
+  # - name: ASPNETCORE_URLS
+  #   value: http://+:8080
+secretEnv: []
+  # - name: FtpUserName
+  #   dopplersecretKeyRef: FtpUserName
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+
+
+podAnnotations:
+  proxy.istio.io/config: |
+    holdApplicationUntilProxyStarts: true
+  sidecar.istio.io/proxyCPU: 250m
+  sidecar.istio.io/proxyMemory: 512Mi
+
+
+podSecurityContext: {}
+  # allowPrivilegeEscalation: false
+  # privileged: false
+  # readOnlyRootFilesystem: false
+  # runAsNonRoot: true
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service: {}
+  # type: ClusterIP
+  # ports:
+  #   - port: 8080
+  #     targetPort: 8080
+  #     protocol: TCP
+  #     name: http
+
+
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+ports: []
+  # - containerPort: 8080
+  #   name: 8080tcp0
+  #   protocol: TCP
+
+probs: {}
+  # liveness:
+  #   httpGet:
+  #     path: /healthz
+  #     port: 8080
+  #     scheme: HTTP
+  # readiness:
+  #   httpGet:
+  #     path: /healthz
+  #     port: 8080
+  #     scheme: HTTP
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+          # preferredDuringSchedulingIgnoredDuringExecution:
+          # - podAffinityTerm:
+          #     labelSelector:
+          #       matchExpressions:
+          #       - key: app
+          #         operator: In
+          #         values:
+          #         - service-car
+          #     topologyKey: kubernetes.io/hostname
+          #   weight: 100
+
+gateway:
+  istioIngressGateway: "ingressgateway"
+  istioGatewayNamespace: "istio-gateway"
+  istioGateWayName: "wildcard-staging-gcptravelshift"
+  hosts:
+    - service-car.staging.gcptravelshift.com
+    - external-service-car.staging.gcptravelshift.com
+  headers: {}
+
+
+podDisruptionBudget:
+  minAvailable: 90%
+
+doppler:
+  generalApplicationSecretName: ""
+  applicationSecret: true
+  serviceToken: ""
+
+
+volumes: []
+
+##sidecar container
+nginxSideCar: {}
+  # image:
+  #   repository: gcr.io/stage-ts/service-car:1-02b1b079
+  #   pullPolicy: Always
+  # imagePullSecrets: []
+  # ports:
+  #   - containerPort: 80
+  #     name: 80tcp2
+  #     protocol: TCP
+  # livenessProbe:
+  #   failureThreshold: 3
+  #   httpGet:
+  #     path: /
+  #     port: 80
+  #     scheme: HTTP
+  #   initialDelaySeconds: 10
+  #   periodSeconds: 10
+  #   successThreshold: 1
+  #   timeoutSeconds: 5
+  # readinessProbe:
+  #   failureThreshold: 3
+  #   httpGet:
+  #     path: /
+  #     port: 80
+  #     scheme: HTTP
+  #   initialDelaySeconds: 10
+  #   periodSeconds: 10
+  #   successThreshold: 1
+  #   timeoutSeconds: 5
+  # resources:
+  #   limits:
+  #     cpu: 400m
+  #     memory: 512Mi
+  #   requests:
+  #     cpu: 10m
+  #     memory: 64Mi
+  # securityContext:
+  #   allowPrivilegeEscalation: false
+  #   privileged: false
+  #   readOnlyRootFilesystem: false
+  #   runAsNonRoot: false
+  # volumeMounts:
+  # - mountPath: /etc/nginx/conf.d/default.conf
+  #   name: nginx-proxy-config
+  #   subPath: default.conf
+  # nginxConfig:
+
+keda:
+  deploy: false
+  # secretTargetRef:
+  #   - key: AWS_ACCESS_KEY_ID
+  #     parameter: awsAccessKeyID
+  #   - key: AWS_SECRET_ACCESS_KEY
+  #     parameter: awsSecretAccessKey
+  # scaledJob:
+  #   - name: availability-dequeuer
+  #     type: aws-sqs-queue
+  #     command:
+  #       - /bin/sh
+  #       - -c
+  #       - cd /app/out && dotnet AnixeConnector.Dequeuers.dll
+  #     metadata:
+  #       awsRegion: eu-west-1
+  #       queueLength: "10"
+  #       queueURL: https://sqs.eu-west-1.amazonaws.com/411918746762/stays_anixe_availability_received_master_dev
+  #     secretEnv:
+  #       - name: FtpUserName
+  #         dopplersecretKeyRef: FtpUserName
+  #     env:
+  #       - name: RUNTIME_ENV
+  #         value: dev
+  #       - name: SENTRY_ENVIRONMENT
+  #         value: Development
+  #       - name: ASPNETCORE_URLS
+  #         value: http://+:%{container_port}
+  #       - name: ASPNETCORE_ENVIRONMENT
+  #         value: Development
+  #       - name: ConnectionStrings__AnixeDbContext
+  #         valueFrom:
+  #           secretKeyRef:
+  #             key: ConnectionStrings__AnixeDbContext
+  #             name: connector-anixe
+  #       - name: ConnectionStrings__PlacesDbContext
+  #         valueFrom:
+  #           secretKeyRef:
+  #             key: ConnectionStrings__PlacesDbContext
+  #             name: stays
+  #       - name: ApplicationInsights__InstrumentationKey
+  #         valueFrom:
+  #           secretKeyRef:
+  #             key: ApplicationInsights__InstrumentationKey
+  #             name: application-insights
+  #       - name: ApplicationInsights__Enabled
+  #         value: "false"
+  #       - name: AWS_ACCESS_KEY_ID
+  #         valueFrom:
+  #           secretKeyRef:
+  #             key: AWS_ACCESS_KEY_ID
+  #             name: stays
+  #       - name: AWS_SECRET_ACCESS_KEY
+  #         valueFrom:
+  #           secretKeyRef:
+  #             key: AWS_SECRET_ACCESS_KEY
+  #             name: stays
+  #       - name: TopicName
+  #         value: stays_anixe_availability_received
+
+
+cronJob:
+  deploy: false
+  job: []

@@ -1,0 +1,26 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  labels:
+    {{- include "helm-template.labels" . | nindent 4 }}
+  name: {{ .Values.version}}-{{ .Values.app }}
+spec:
+  gateways:
+  - {{ .Values.gateway.istioGatewayNamespace }}/{{ .Values.gateway.istioGateWayName }}
+  hosts: {{ range  $.Values.gateway.hosts }}
+    - {{ $.Values.version}}-{{ . }} {{- end }}
+  http:
+  - route:
+    - destination:
+        host: {{ .Values.version}}-{{ .Values.app }}.{{.Release.Namespace}}.svc.cluster.local
+        {{- with .Values.gateway.port }}
+        port:
+        {{- toYaml . | nindent 10 }}
+        {{- end}}
+        subset: {{ .Values.version }}
+      {{- with .Values.gateway.headers }}  
+      headers:
+      {{- toYaml . | nindent 8 }}
+      {{- end}}
+      
+      

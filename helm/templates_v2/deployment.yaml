@@ -1,0 +1,140 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.version}}-{{ .Values.app }}
+  labels:
+    {{- include "travelshift-template.labels" . | nindent 4 }}
+  annotations:
+    secrets.doppler.com/reload: 'true'
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "travelshift-template.selectorLabels" . | nindent 6 }}
+  strategy:
+    rollingUpdate:
+      maxSurge: {{ .Values.strategy.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.strategy.rollingUpdate.maxUnavailable }}
+    type: RollingUpdate
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "travelshift-template.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "travelshift-template.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Values.app }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if or (.Values.doppler.applicationSecret)  (.Values.doppler.generalApplicationSecretName) }}
+          envFrom:
+          {{- if .Values.doppler.applicationSecret }}
+            - secretRef:
+                name: {{ .Values.version }}-{{ .Values.app }}
+          {{- end }}
+          {{- if .Values.doppler.generalApplicationSecretName }}
+            - secretRef:
+                name: {{ .Values.doppler.generalApplicationSecretName }}
+          {{- end }}
+          {{- end }}
+          env:
+          {{- with .Values.env }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+            - name: BRANCH
+              value: {{ .Values.version | quote }}
+            - name: COMMIT
+              value: {{ .Values.commit | quote }}
+            - name: NEWRELIC_APP_NAME
+              value: "{{ .Values.app }}-{{ .Values.environment }}-{{ .Values.version }}-gcp"
+            - name: NEW_RELIC_APP_NAME
+              value: "{{ .Values.app }}-{{ .Values.environment }}-{{ .Values.version }}-gcp"
+          {{- range $.Values.secretEnv }}
+            - name: {{ .name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.version}}-{{ $.Values.app }}
+                  key: {{ .dopplersecretKeyRef }}
+          {{- end }}
+          lifecycle:
+            postStart:
+              httpGet:
+                path: healthz/ready
+                port: 15020
+                scheme: HTTP
+          {{- with .Values.ports }}
+          ports:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.probs.liveness }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.probs.readiness }}
+          readinessProbe:
+              {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+        {{- if .Values.nginxSideCar }}
+        - name: {{ .Values.app }}-nginx
+          securityContext:
+            {{- toYaml .Values.nginxSideCar.securityContext | nindent 12 }}
+          image: "{{ .Values.nginxSideCar.image.repository }}"
+          imagePullPolicy: {{ .Values.nginxSideCar.image.pullPolicy }}
+          {{- with .Values.nginxSideCar.ports }}
+          ports:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.nginxSideCar.liveness }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.nginxSideCar.readiness }}
+          readinessProbe:
+              {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.nginxSideCar.resources | nindent 12 }}
+          volumeMounts:
+          - mountPath: /etc/nginx/conf.d/default.conf
+            name: {{ .Values.version}}-{{ .Values.app }}-proxy-config
+            subPath: default.conf
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or (.Values.nginxSideCar) (.Values.volumes) }}
+      volumes:
+      {{- with .Values.volumes }}
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- if .Values.nginxSideCar }}
+      - name: {{ .Values.version}}-{{ .Values.app }}-proxy-config
+        configMap:
+          name: {{ .Values.version}}-{{ .Values.app }}
+      {{- end }}
+      {{- end }}

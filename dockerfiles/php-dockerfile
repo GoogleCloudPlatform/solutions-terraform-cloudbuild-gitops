@@ -1,0 +1,10 @@
+FROM php:7.3-fpm-alpine
+
+RUN docker-php-ext-install sockets pdo_mysql
+
+RUN curl https://getcomposer.org/download/1.10.10/composer.phar > /usr/local/bin/composer && chmod +x /usr/local/bin/composer
+COPY . /var/www
+RUN rm -rf /var/www/html && mv /var/www/public/ /var/www/html/
+RUN chown www-data /var/www -R
+
+RUN cd /var/www/ && composer install

@@ -1,0 +1,82 @@
+{{- if .Values.cronJob.deploy }}
+{{- range $.Values.cronJob.job }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ $.Values.version}}-{{ .name }}
+  labels:
+    {{- include "travelshift-template.labels" $ | nindent 4 }}
+spec:
+  schedule: '{{ .schedule }}'
+  successfulJobsHistoryLimit: {{ .successfulJobsHistoryLimit }}
+  suspend: {{ .suspend }}
+  concurrencyPolicy: {{ .concurrencyPolicy }}
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+        annotations:
+          sidecar.istio.io/inject: "{{ .istioProxyInject }}"
+          {{- toYaml $.Values.podAnnotations | nindent 10 }}
+        labels:
+          cron : {{ .name }}
+    spec:
+      backoffLimit: {{ .backoffLimit }}
+      activeDeadlineSeconds: {{ .activeDeadlineSeconds | default 600 }}
+      template:
+        metadata:
+            annotations:
+              sidecar.istio.io/inject: "{{ .istioProxyInject }}"
+              {{- toYaml $.Values.podAnnotations | nindent 14 }}
+            labels:
+              cron : {{ .name }}
+        spec:
+          restartPolicy: {{ .restartPolicy }}
+          containers:
+          {{- with .command }}
+          - command:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+            envFrom:
+              - secretRef:
+                  name: {{ $.Values.version }}-{{ $.Values.app }}
+            {{- if $.Values.doppler.generalApplicationSecretName }}
+              - secretRef:
+                  name: {{ $.Values.doppler.generalApplicationSecretName }}
+            {{- end }}
+            env:
+            {{- with .env }}
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+            {{- with $.Values.cronJob.env }}
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+              - name: BRANCH
+                value: {{ $.Values.version | quote }}
+              - name: COMMIT
+                value: {{ $.Values.commit | quote }}
+              - name: NEWRELIC-APP-NAME
+                value: "{{ $.Values.app }}-{{ $.Values.environment }}-{{ $.Values.version }}-gcp"
+            {{- range .secretEnv }}
+              - name: {{ .name }}
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ $.Values.version}}-{{ $.Values.app }}
+                    key: {{ .dopplersecretKeyRef }}
+            {{- end }}
+            {{- range  $.Values.cronJob.secretEnv }}
+              - name: {{ .name }}
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ $.Values.version}}-{{ $.Values.app }}
+                    key: {{ .dopplersecretKeyRef }}
+            {{- end }}
+            image: "{{ $.Values.image.repository }}"
+            imagePullPolicy: IfNotPresent
+            name: {{ $.Values.version }}-{{ .name }}
+            {{- with .resources }}
+            resources:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+{{- end }}
+{{- end }}

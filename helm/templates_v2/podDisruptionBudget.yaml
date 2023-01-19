@@ -1,0 +1,11 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  labels:
+    {{- include "travelshift-template.labels" . | nindent 4 }}
+  name: {{ .Values.version}}-{{ .Values.app }}
+spec:
+  minAvailable: {{ .Values.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "travelshift-template.selectorLabels" . | nindent 6 }}

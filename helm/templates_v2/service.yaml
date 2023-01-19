@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.version}}-{{ .Values.app }}
+  labels:
+    {{- include "travelshift-template.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  {{- with .Values.service.ports }}
+  ports:
+    {{- toYaml . | nindent 2 }}
+  {{- end }}  
+  selector:
+    {{- include "travelshift-template.selectorLabels" . | nindent 4 }}

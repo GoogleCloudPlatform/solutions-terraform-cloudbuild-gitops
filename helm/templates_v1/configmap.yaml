@@ -1,0 +1,13 @@
+{{- if .Values.nginxSideCar }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.version}}-{{ .Values.app }}
+  labels:
+      {{- include "<helm-template.labels>" . | nindent 4 }}
+data:
+  {{- with .Values.nginxSideCar.nginxConfig }}
+  default.conf:
+    {{- toYaml . | nindent 4 }}
+  {{- end}}    
+{{- end }}

@@ -1,0 +1,12 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  labels:
+    {{- include "helm-template.labels" . | nindent 4 }}
+  name: {{ .Values.version}}-{{ .Values.app }}
+spec:
+  host: {{ .Values.version}}-{{ .Values.app }}.{{.Release.Namespace}}.svc.cluster.local
+  subsets:
+  - labels:
+      version: {{ .Values.version }}
+    name: {{ .Values.version }}

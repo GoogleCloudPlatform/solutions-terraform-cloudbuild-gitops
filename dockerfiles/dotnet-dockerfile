@@ -1,0 +1,34 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as build-env
+
+ARG NUGET_GITHUB_PACKAGE_TOKEN
+ARG NUGET_GITHUB_URL
+ARG NUGET_GITHUB_PACKAGE_USER
+
+ENV DOTNET_USE_POLLING_FILE_WATCHER=1
+
+WORKDIR /app
+
+COPY nuget.config ./nuget.config
+
+COPY connector-shared/LambdaConnectorShared.Common ./connector-shared/LambdaConnectorShared.Common
+COPY connector-shared/LambdaConnectorShared.Flight ./connector-shared/LambdaConnectorShared.Flight
+COPY connector-shared/Tests/LambdaConnectorShared.Tests.Common ./connector-shared/Tests/LambdaConnectorShared.Tests.Common
+
+COPY flights/connector-models/FlightConnectorModels/FlightConnectorModels ./flights/connector-models/FlightConnectorModels/FlightConnectorModels
+
+COPY connector-kiwi ./connector-kiwi
+
+WORKDIR /app/connector-kiwi
+
+RUN dotnet nuget add source --username $NUGET_GITHUB_PACKAGE_USER --password $NUGET_GITHUB_PACKAGE_TOKEN --store-password-in-clear-text --name github $NUGET_GITHUB_URL
+
+RUN dotnet restore
+
+RUN dotnet publish ./KiwiConnector/KiwiConnector.csproj -c Release -o out
+
+# Build runtime image
+#FROM mcr.microsoft.com/dotnet/aspnet:5.0
+#WORKDIR /app
+#COPY --from=build-env /app/connector-kiwi/out .
+#ENTRYPOINT ["dotnet", "KiwiConnector.dll"]
+CMD ["dotnet", "out/KiwiConnector.dll"]

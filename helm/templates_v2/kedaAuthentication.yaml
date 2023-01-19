@@ -1,0 +1,15 @@
+{{- if .Values.keda.deploy }}
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: {{ .Values.version}}-{{ .Values.app }}-keda-trigger-authentication
+  labels:
+    {{- include "travelshift-template.labels" . | nindent 4 }}
+spec:
+  secretTargetRef:
+    {{- range $.Values.keda.secretTargetRef }}
+  - key: {{ .key }}
+    name: {{ $.Values.version }}-{{ $.Values.app }}
+    parameter: {{ .parameter }}
+    {{- end }}
+{{- end }}
