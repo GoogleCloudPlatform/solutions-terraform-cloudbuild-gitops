@@ -34,9 +34,9 @@ resource "google_container_cluster" "cluster" {
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
   name       = "${var.cluster_name}-node-pool"
-  #location   = var.region
+  location   = var.region
   cluster    = google_container_cluster.cluster.name
-  #node_count = 1
+  node_count = 1
 
   node_config {
     machine_type = "e2-micro"
