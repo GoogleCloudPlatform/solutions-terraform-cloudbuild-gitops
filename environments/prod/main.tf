@@ -16,16 +16,16 @@ locals {
   env                           = "prod"
   attestor_name                 = "build-attestor"
 }
-
+/*
 provider "google" {
   project   = var.project
 }
-/*
+*/
 provider "google-beta" {
   project   = var.project
   region    = var.region
 }
-*/
+
 # GCS bucket to store cloud function source codes
 resource "google_storage_bucket" "bucket" {
   name                          = "${var.project}-source-code"
