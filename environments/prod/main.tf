@@ -61,7 +61,8 @@ module "vpc" {
 module "cloud_nat" {
   source  = "../../modules/cloud_nat"
   project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
+  network = "${module.vpc.network}"
+  region  = "${var.region}"
 }
 
 module "gke_cluster" {
