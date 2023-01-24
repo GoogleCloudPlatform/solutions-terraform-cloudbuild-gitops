@@ -81,8 +81,8 @@ resource "google_project_iam_member" "compute_container_admin" {
 }
 
 resource "google_pubsub_topic" "operations-pubsub" {
-  name = local.clouddeploy_pubsub_topic_name
-  message_retention_duration = "86400s"
+  name                          = "${local.clouddeploy_pubsub_topic_name}"
+  message_retention_duration    = "86400s"
 }
 
 module "deploy-notification-cloud-function" {
