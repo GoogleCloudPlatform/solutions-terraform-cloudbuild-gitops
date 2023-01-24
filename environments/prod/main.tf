@@ -14,7 +14,6 @@
 
 locals {
   env                           = "prod"
-  clouddeploy_pubsub_topic_name = "clouddeploy-operations"
   attestor_name                 = "build-attestor"
 }
 
@@ -81,7 +80,7 @@ resource "google_project_iam_member" "compute_container_admin" {
 }
 
 resource "google_pubsub_topic" "operations-pubsub" {
-  name                          = "${local.clouddeploy_pubsub_topic_name}"
+  name                          = "clouddeploy-operations"
   message_retention_duration    = "86400s"
 }
 
