@@ -73,7 +73,7 @@ resource "google_project_service_identity" "binauth_service_agent" {
 
 resource "google_binary_authorization_attestor_iam_member" "binauthz_verifier" {
   project  = var.project
-  attestor = var.dev_attestor_id
+  attestor = google_binary_authorization_attestor.attestor.id
   role     = "roles/binaryauthorization.attestorsVerifier"
   member   = "serviceAccount:${google_project_service_identity.binauth_service_agent.email}"
 }
