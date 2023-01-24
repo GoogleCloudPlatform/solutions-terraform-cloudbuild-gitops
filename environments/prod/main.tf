@@ -36,32 +36,18 @@ resource "google_storage_bucket" "bucket" {
 ############################################
 ## Secure CI/CD Binary Authorization Demo ##
 ############################################
-/*
-module "vpc" {
+
+module "prod_vpc" {
   source  = "../../modules/vpc"
   project = "${var.project}"
   env     = "${local.env}"
   region  = "${var.region}"
 }
 
-module "cloud_nat" {
+module "prod_cloud_nat" {
   source  = "../../modules/cloud_nat"
   project = "${var.project}"
-  network = "${module.vpc.network}"
-  region  = "${var.region}"
-}
-*/
-module "vpc" {
-  source  = "../../modules/vpc"
-  project = "${var.project}"
-  env     = "${local.env}"
-  region  = "${var.region}"
-}
-
-module "cloud_nat" {
-  source  = "../../modules/cloud_nat"
-  project = "${var.project}"
-  network = "${module.vpc.network}"
+  network = "${module.prod_vpc.network}"
   region  = "${var.region}"
 }
 
@@ -69,8 +55,8 @@ module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
     region          = var.region
-    network         = module.vpc.network
-    subnetwork      = module.vpc.subnet
+    network         = module.prod_vpc.network
+    subnetwork      = module.prod_vpc.subnet
     master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.1.16/28"
 }
 
@@ -717,18 +703,3 @@ resource "google_organization_iam_member" "remediate_instance_org_scc_remediatio
   role      = google_organization_iam_custom_role.scc-remediation-custom-role.name
   member    = "serviceAccount:${module.remediate-instance-cloud-function.sa-email}"
 }
-
-/*
-module "instance_template" {
-  source  = "../../modules/instance_template"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
-
-module "http_lb" {
-  source  = "../../modules/http_lb"
-  project = "${var.project}"
-  network  = "${module.vpc.network}"
-  instance_template_id = "${module.instance_template.instance_template_id}"
-}
-*/
