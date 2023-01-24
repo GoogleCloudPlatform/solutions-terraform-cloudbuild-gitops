@@ -78,12 +78,12 @@ resource "google_project_iam_member" "compute_container_admin" {
   role     = "roles/container.admin"
   member   = "serviceAccount:${module.gke_cluster.service-account}"
 }
-
+/*
 resource "google_pubsub_topic" "operations-pubsub" {
   name                          = "clouddeploy-operations"
   message_retention_duration    = "86400s"
 }
-
+*/
 module "deploy-notification-cloud-function" {
     source          = "../../modules/cloud_function"
     project         = var.project
