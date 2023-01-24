@@ -36,7 +36,7 @@ resource "google_storage_bucket" "bucket" {
 ############################################
 ## Secure CI/CD Binary Authorization Demo ##
 ############################################
-/*
+
 module "vpc" {
   source  = "../../modules/vpc"
   project = "${var.project}"
@@ -59,7 +59,7 @@ module "gke_cluster" {
     subnetwork      = module.vpc.subnet
     master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.1.16/28"
 }
-
+/*
 # IAM Roles for the node pool service account
 resource "google_project_iam_member" "compute_registry_reader" {
   project  = var.project
