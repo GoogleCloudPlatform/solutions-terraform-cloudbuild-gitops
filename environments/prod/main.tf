@@ -36,14 +36,14 @@ resource "google_storage_bucket" "bucket" {
 ############################################
 ## Secure CI/CD Binary Authorization Demo ##
 ############################################
-/*
+
 module "vpc" {
   source  = "../../modules/vpc"
   project = "${var.project}"
   env     = "${local.env}"
   region  = "${var.region}"
 }
-
+/*
 module "cloud_nat" {
   source  = "../../modules/cloud_nat"
   project = "${var.project}"
