@@ -15,6 +15,7 @@
 locals {
   env                           = "prod"
   clouddeploy_pubsub_topic_name = "clouddeploy-operations"
+  attestor_name                 = "build-attestor"
 }
 
 provider "google" {
@@ -32,6 +33,231 @@ resource "google_storage_bucket" "bucket" {
   location                      = var.region
   uniform_bucket_level_access   = true
 }
+
+############################################
+## Secure CI/CD Binary Authorization Demo ##
+############################################
+
+module "vpc" {
+  source  = "../../modules/vpc"
+  project = "${var.project}"
+  env     = "${local.env}"
+  region  = "${var.region}"
+}
+
+module "cloud_nat" {
+  source  = "../../modules/cloud_nat"
+  project = "${var.project}"
+  network = "${module.vpc.network}"
+  region  = "${var.region}"
+}
+
+module "gke_cluster" {
+    source          = "../../modules/gke_cluster"
+    cluster_name    = "${local.env}-binauthz"
+    region          = var.region
+    network         = module.vpc.network
+    subnetwork      = module.vpc.subnet
+    master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.1.16/28"
+}
+
+# IAM Roles for the node pool service account
+resource "google_project_iam_member" "compute_registry_reader" {
+  project  = var.project
+  role     = "roles/artifactregistry.reader"
+  member   = "serviceAccount:${module.gke_cluster.service-account}"
+}
+
+resource "google_project_iam_member" "compute_deploy_jobrunner" {
+  project  = var.project
+  role     = "roles/clouddeploy.jobRunner"
+  member   = "serviceAccount:${module.gke_cluster.service-account}"
+}
+
+resource "google_project_iam_member" "compute_container_admin" {
+  project  = var.project
+  role     = "roles/container.admin"
+  member   = "serviceAccount:${module.gke_cluster.service-account}"
+}
+
+resource "google_pubsub_topic" "operations-pubsub" {
+  name = local.clouddeploy_pubsub_topic_name
+  message_retention_duration = "86400s"
+}
+
+module "deploy-notification-cloud-function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "deploy-notification"
+    function-desc   = "triggered by operations-pubsub, communicates result of a deployment"
+    entry-point     = "deploy_notification"
+    triggers        = [
+        {
+            event_type  = "google.pubsub.topic.publish"
+            resource    = google_pubsub_topic.operations-pubsub.id
+        }
+    ]
+    env-vars        = {
+        SLACK_DEVOPS_CHANNEL = var.slack_devops_channel
+    }
+    secrets         = [
+        {
+            key = "SLACK_ACCESS_TOKEN"
+            id  = google_secret_manager_secret.slack-secure-cicd-bot-token.secret_id
+        }
+    ]
+}
+
+resource "google_secret_manager_secret" "slack-secure-cicd-bot-token" {
+  project   = var.project
+  secret_id = "slack-secure-cicd-bot-token"
+
+  replication {
+    automatic = true
+  }
+}
+
+# IAM entry for service account of deploy-notification function to use the slack bot token
+resource "google_secret_manager_secret_iam_binding" "cicd_bot_token_binding" {
+  project   = google_secret_manager_secret.slack-secure-cicd-bot-token.project
+  secret_id = google_secret_manager_secret.slack-secure-cicd-bot-token.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  members    = [
+      "serviceAccount:${module.deploy-notification-cloud-function.sa-email}",
+  ]
+}
+
+resource "google_clouddeploy_target" "dev-cluster-target" {
+  name              = "dev-cluster"
+  description       = "Target for dev environment"
+  project           = var.project
+  location          = var.region
+  require_approval  = false
+
+  gke {
+    cluster = "projects/${var.project}/locations/${var.region}/clusters/${var.dev_cluster_name}"
+  }
+
+  execution_configs {
+    usages          = ["RENDER", "DEPLOY"]
+    service_account = google_service_account.clouddeploy_execution_sa.email
+  }
+
+  depends_on = [
+    google_project_iam_member.clouddeploy_service_agent_role
+  ]
+}
+
+resource "google_clouddeploy_target" "prod-cluster-target" {
+  name              = "prod-cluster"
+  description       = "Target for prod environment"
+  project           = var.project
+  location          = var.region
+  require_approval  = true
+
+  gke {
+    cluster = "projects/${var.project}/locations/${var.region}/clusters/${module.gke_cluster.name}"
+  }
+
+  execution_configs {
+    usages          = ["RENDER", "DEPLOY"]
+    service_account = google_service_account.clouddeploy_execution_sa.email
+  }
+
+  depends_on = [
+    google_project_iam_member.clouddeploy_service_agent_role
+  ]
+}
+
+resource "google_clouddeploy_delivery_pipeline" "pipeline" {
+  name        = "binauthz-demo-pipeline"
+  description = "Pipeline for binauthz application" #TODO parameterize
+  project     = var.project
+  location    = var.region
+
+  serial_pipeline {
+    stages {
+        target_id = google_clouddeploy_target.dev-cluster-target.name
+    }
+
+    stages {
+      target_id = google_clouddeploy_target.prod-cluster-target.name
+    }
+  }
+}
+
+# KMS resources
+resource "google_kms_key_ring" "keyring" {
+  name     = "${local.attestor_name}-keyring"
+  location = "global"
+}
+
+resource "google_kms_crypto_key" "crypto-key" {
+  name     = "${local.attestor_name}-key"
+  key_ring = google_kms_key_ring.keyring.id
+  purpose  = "ASYMMETRIC_SIGN"
+
+  version_template {
+    algorithm           = "EC_SIGN_P256_SHA256"
+    protection_level    = "SOFTWARE"
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+data "google_kms_crypto_key_version" "version" {
+  crypto_key = google_kms_crypto_key.crypto-key.id
+}
+
+resource "google_container_analysis_note" "note" {
+  name = "${local.attestor_name}-note"
+  attestation_authority {
+    hint {
+      human_readable_name = "My Binary Authorization Demo!"
+    }
+  }
+}
+
+resource "google_binary_authorization_attestor" "attestor" {
+  name = "${local.attestor_name}"
+  attestation_authority_note {
+    note_reference = google_container_analysis_note.note.name
+    public_keys {
+      id = data.google_kms_crypto_key_version.version.id
+      pkix_public_key {
+        public_key_pem      = data.google_kms_crypto_key_version.version.public_key[0].pem
+        signature_algorithm = data.google_kms_crypto_key_version.version.public_key[0].algorithm
+      }
+    }
+  }
+}
+
+# Binary Authorization Policy for the prod gke_cluster
+resource "google_binary_authorization_policy" "prod_binauthz_policy" {
+  project = var.project
+  
+  admission_whitelist_patterns {
+    name_pattern = "gcr.io/google_containers/*"
+  }
+
+  default_admission_rule {
+    evaluation_mode  = "ALWAYS_ALLOW"
+    enforcement_mode = "ENFORCED_BLOCK_AND_AUDIT_LOG"
+  }
+  
+  cluster_admission_rules {
+    cluster                 = "${var.region}.${module.gke_cluster.name}"
+    evaluation_mode         = "REQUIRE_ATTESTATION"
+    enforcement_mode        = "ENFORCED_BLOCK_AND_AUDIT_LOG"
+    require_attestations_by = "${google_binary_authorization_attestor.attestor.id}"
+  }
+}
+
+###########################################
+## JIT Privileged Access Management Demo ##
+###########################################
 
 module "admin-access-cloud-function" {
     source          = "../../modules/cloud_function"
@@ -132,6 +358,10 @@ resource "google_secret_manager_secret_iam_binding" "signing_secret_binding" {
   ]
 }
 
+#############################
+## Cloud DLP API Scan Demo ##
+#############################
+
 # GCS bucket to store raw files to be scanned by DLP
 resource "google_storage_bucket" "raw_bucket" {
   name                          = "${var.project}-raw-bucket"
@@ -192,6 +422,10 @@ resource "google_project_iam_member" "project_dlp_user" {
   role    = "roles/dlp.user"
   member  = "serviceAccount:${module.dlp-scan-cloud-function.sa-email}"
 }
+
+###############################
+## reCAPTCHA Enterprise Demo ##
+###############################
 
 resource "google_recaptcha_enterprise_key" "www-site-score-key" {
   display_name = "www-site-score-key"
@@ -282,106 +516,9 @@ resource "google_secret_manager_secret_iam_binding" "website_password_binding" {
   ]
 }
 
-resource "google_pubsub_topic" "operations-pubsub" {
-  name = "clouddeploy-operations"
-  message_retention_duration = "86400s"
-}
-
-module "deploy-notification-cloud-function" {
-    source          = "../../modules/cloud_function"
-    project         = var.project
-    function-name   = "deploy-notification"
-    function-desc   = "triggered by operations-pubsub, communicates result of a deployment"
-    entry-point     = "deploy_notification"
-    triggers        = [
-        {
-            event_type  = "google.pubsub.topic.publish"
-            resource    = google_pubsub_topic.operations-pubsub.id
-        }
-    ]
-    env-vars        = {
-        SLACK_DEVOPS_CHANNEL = var.slack_devops_channel
-    }
-    secrets         = [
-        {
-            key = "SLACK_ACCESS_TOKEN"
-            id  = google_secret_manager_secret.slack-secure-cicd-bot-token.secret_id
-        }
-    ]
-}
-
-resource "google_secret_manager_secret" "slack-secure-cicd-bot-token" {
-  project   = var.project
-  secret_id = "slack-secure-cicd-bot-token"
-
-  replication {
-    automatic = true
-  }
-}
-
-# IAM entry for service account of deploy-notification function to use the slack bot token
-resource "google_secret_manager_secret_iam_binding" "cicd_bot_token_binding" {
-  project   = google_secret_manager_secret.slack-secure-cicd-bot-token.project
-  secret_id = google_secret_manager_secret.slack-secure-cicd-bot-token.secret_id
-  role      = "roles/secretmanager.secretAccessor"
-  members    = [
-      "serviceAccount:${module.deploy-notification-cloud-function.sa-email}",
-  ]
-}
-
-resource "google_clouddeploy_target" "dev-cluster-target" {
-  name        = "dev-cluster"
-  description = "Target for dev environment"
-  project     = var.project
-  location    = var.region
-
-  gke {
-    cluster = "projects/${var.project}/locations/${var.region}/clusters/${var.dev_cluster_name}"
-  }
-
-  execution_configs {
-    usages          = ["RENDER", "DEPLOY"]
-    service_account = google_service_account.clouddeploy_execution_sa.email
-  }
-
-  depends_on = [
-    google_project_iam_member.clouddeploy_service_agent_role
-  ]
-}
-
-resource "google_clouddeploy_delivery_pipeline" "pipeline" {
-  name        = "binauthz-demo-pipeline"
-  description = "Pipeline for application" #TODO parameterize
-  project     = var.project
-  location    = var.region
-
-  serial_pipeline {
-    stages {
-        target_id = google_clouddeploy_target.dev-cluster-target.name
-    }
-  }
-}
-
-# Binary Authorization Policy
-resource "google_binary_authorization_policy" "binauthz_policy" {
-  project = var.project
-  
-  admission_whitelist_patterns {
-    name_pattern = "gcr.io/google_containers/*"
-  }
-
-  default_admission_rule {
-    evaluation_mode  = "ALWAYS_ALLOW"
-    enforcement_mode = "ENFORCED_BLOCK_AND_AUDIT_LOG"
-  }
-  
-  cluster_admission_rules {
-    cluster                 = "${var.region}.${var.dev_cluster_name}"
-    evaluation_mode         = "REQUIRE_ATTESTATION"
-    enforcement_mode        = "ENFORCED_BLOCK_AND_AUDIT_LOG"
-    require_attestations_by = [var.dev_attestor_id]
-  }
-}
+#####################################################
+## SCC Automatic Notification and Remediation Demo ##
+#####################################################
 
 resource "google_pubsub_topic" "scc-notifications-pubsub" {
   name = "scc-notifications-pubsub"

@@ -19,7 +19,3 @@ output "external_ip" {
 output "dev_cluster_name" {
   value = "${module.gke_cluster.name}"
 }
-
-output "dev_attestor_id" {
-  value = "${google_binary_authorization_attestor.attestor.id}"
-}

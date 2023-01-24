@@ -54,7 +54,3 @@ variable "slack_devops_channel" {
 variable "dev_cluster_name" {
   type      = string
 }
-
-variable "dev_attestor_id" {
-  type      = string
-}
