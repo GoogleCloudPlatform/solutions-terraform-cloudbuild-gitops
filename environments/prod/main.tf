@@ -51,6 +51,18 @@ module "cloud_nat" {
   region  = "${var.region}"
 }
 */
+module "vpc" {
+  source  = "../../modules/vpc"
+  project = "${var.project}"
+  env     = "${local.env}"
+}
+
+module "cloud_nat" {
+  source  = "../../modules/cloud_nat"
+  project = "${var.project}"
+  subnet  = "${module.vpc.subnet}"
+}
+
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
@@ -705,12 +717,6 @@ resource "google_organization_iam_member" "remediate_instance_org_scc_remediatio
 }
 
 /*
-module "vpc" {
-  source  = "../../modules/vpc"
-  project = "${var.project}"
-  env     = "${local.env}"
-}
-
 module "instance_template" {
   source  = "../../modules/instance_template"
   project = "${var.project}"
@@ -722,11 +728,5 @@ module "http_lb" {
   project = "${var.project}"
   network  = "${module.vpc.network}"
   instance_template_id = "${module.instance_template.instance_template_id}"
-}
-
-module "cloud_nat" {
-  source  = "../../modules/cloud_nat"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
 }
 */
