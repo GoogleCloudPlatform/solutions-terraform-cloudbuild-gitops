@@ -91,7 +91,7 @@ resource "google_binary_authorization_policy" "dev_binauthz_policy" {
     cluster                 = "${var.region}.${module.gke_cluster.name}"
     evaluation_mode         = "REQUIRE_ATTESTATION"
     enforcement_mode        = "ENFORCED_BLOCK_AND_AUDIT_LOG"
-    require_attestations_by = "projects/${var.project}/attestors/built-by-cloud-build"
+    require_attestations_by = ["projects/${var.project}/attestors/built-by-cloud-build"]
   }
 }
 
