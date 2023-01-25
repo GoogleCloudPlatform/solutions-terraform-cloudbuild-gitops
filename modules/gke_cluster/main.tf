@@ -30,6 +30,10 @@ resource "google_container_cluster" "cluster" {
     enable_private_endpoint   = false
     master_ipv4_cidr_block    = var.master_ipv4_cidr
   }
+
+  ip_allocation_policy {
+    
+  }
 }
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
