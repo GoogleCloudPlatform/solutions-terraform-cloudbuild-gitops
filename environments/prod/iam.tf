@@ -65,7 +65,7 @@ resource "google_project_iam_member" "clouddeploy_job_runner" {
 }
 
 # IAM membership for Binary Authorization service agents in GKE projects on attestors
-resource "google_project_service_identity" "binauth_service_agent" {
+resource "google_project_service_identity" "binauthz_service_agent" {
   provider  = google-beta
   project   = var.project
   service   = "binaryauthorization.googleapis.com"
@@ -75,5 +75,5 @@ resource "google_binary_authorization_attestor_iam_member" "binauthz_verifier" {
   project  = var.project
   attestor = google_binary_authorization_attestor.attestor.id
   role     = "roles/binaryauthorization.attestorsVerifier"
-  member   = "serviceAccount:${google_project_service_identity.binauth_service_agent.email}"
+  member   = "serviceAccount:${google_project_service_identity.binauthz_service_agent.email}"
 }
