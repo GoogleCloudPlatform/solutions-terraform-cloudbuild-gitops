@@ -36,18 +36,49 @@ resource "google_storage_bucket" "bucket" {
 ############################################
 ## Secure CI/CD Binary Authorization Demo ##
 ############################################
+/*
+resource "google_compute_network" "vpc" {
+  name                    = "${local.env}-vpc"
+  auto_create_subnetworks = false
+}
 
-module "prod_vpc" {
+subnets = [
+    {
+      subnet_name           = "${var.env}-subnet-01"
+      subnet_ip             = 
+      subnet_region         = 
+      subnet_private_access = "true"
+    },
+  ]
+
+  secondary_ranges = {
+    "${var.env}-subnet" = []
+  }
+
+resource "google_compute_subnetwork" "subnet-with-logging" {
+  name          = "${var.env}-subnet-01"
+  ip_cidr_range = "10.${var.env == "dev" ? 10 : 20}.0.0/24"
+  region        = "${var.region}"
+  network       = google_compute_network.vpc.id
+
+  secondary_ip_range {
+    range_name    = "tf-test-secondary-range-update1"
+    ip_cidr_range = "192.168.10.0/24"
+  }
+}
+*/
+
+module "vpc" {
   source  = "../../modules/vpc"
   project = "${var.project}"
   env     = "${local.env}"
   region  = "${var.region}"
 }
 
-module "prod_cloud_nat" {
+module "cloud_nat" {
   source  = "../../modules/cloud_nat"
   project = "${var.project}"
-  network = "${module.prod_vpc.network}"
+  network = "${module.vpc.network}"
   region  = "${var.region}"
 }
 
@@ -55,8 +86,8 @@ module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
     region          = var.region
-    network         = module.prod_vpc.network
-    subnetwork      = module.prod_vpc.subnet
+    network         = module.vpc.network
+    subnetwork      = module.vpc.subnet
     master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.1.16/28"
 }
 
