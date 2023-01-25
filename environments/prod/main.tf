@@ -44,7 +44,7 @@ resource "google_compute_network" "vpc" {
 
 resource "google_compute_subnetwork" "subnet" {
   name                      = "${local.env}-subnet-01"
-  ip_cidr_range             = "10.${var.env == "dev" ? 10 : 20}.0.0/24"
+  ip_cidr_range             = "10.${local.env == "dev" ? 10 : 20}.0.0/24"
   region                    = "${var.region}"
   network                   = google_compute_network.vpc.id
   private_ip_google_access  = true
