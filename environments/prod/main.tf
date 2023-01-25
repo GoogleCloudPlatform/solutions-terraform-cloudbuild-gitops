@@ -264,7 +264,7 @@ resource "google_binary_authorization_policy" "prod_binauthz_policy" {
     cluster                 = "${var.region}.${module.gke_cluster.name}"
     evaluation_mode         = "REQUIRE_ATTESTATION"
     enforcement_mode        = "ENFORCED_BLOCK_AND_AUDIT_LOG"
-    require_attestations_by = "${google_binary_authorization_attestor.attestor.id}"
+    require_attestations_by = ["${google_binary_authorization_attestor.attestor.id}"]
   }
 }
 
