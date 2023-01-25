@@ -36,7 +36,7 @@ resource "google_storage_bucket" "bucket" {
 ############################################
 ## Secure CI/CD Binary Authorization Demo ##
 ############################################
-/*
+
 resource "google_compute_network" "vpc" {
   name                    = "${local.env}-vpc"
   auto_create_subnetworks = false
@@ -60,14 +60,15 @@ resource "google_compute_subnetwork" "subnet-with-logging" {
   ip_cidr_range = "10.${var.env == "dev" ? 10 : 20}.0.0/24"
   region        = "${var.region}"
   network       = google_compute_network.vpc.id
+  private_ip_google_access = true
 
   secondary_ip_range {
     range_name    = "tf-test-secondary-range-update1"
     ip_cidr_range = "192.168.10.0/24"
   }
 }
-*/
 
+/*
 module "vpc" {
   source  = "../../modules/vpc"
   project = "${var.project}"
@@ -81,7 +82,7 @@ module "cloud_nat" {
   network = "${module.vpc.network}"
   region  = "${var.region}"
 }
-
+*/
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
