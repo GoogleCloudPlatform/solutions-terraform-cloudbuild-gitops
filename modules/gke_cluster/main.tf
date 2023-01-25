@@ -17,7 +17,7 @@ resource "google_container_cluster" "cluster" {
   
   enable_shielded_nodes         = true
   
-  binary_authorization {
+  binary_authorization = {
     evaluation_mode = "PROJECT_SINGLETON_POLICY_ENFORCE"
   }
   
