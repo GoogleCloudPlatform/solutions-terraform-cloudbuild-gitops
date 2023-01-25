@@ -16,10 +16,7 @@ resource "google_container_cluster" "cluster" {
   initial_node_count            = 1
   
   enable_shielded_nodes         = true
-  
-  binary_authorization = {
-    evaluation_mode = "PROJECT_SINGLETON_POLICY_ENFORCE"
-  }
+  enable_binary_authorization   = true
   
   node_config {
     shielded_instance_config {
