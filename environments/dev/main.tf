@@ -20,7 +20,7 @@ locals {
 provider "google" {
   project = "${var.project}"
 }
-/*
+
 module "vpc" {
   source  = "../../modules/vpc"
   project = "${var.project}"
@@ -83,7 +83,7 @@ resource "google_binary_authorization_policy" "dev_binauthz_policy" {
     require_attestations_by = ["projects/${var.project}/attestors/built-by-cloud-build"]
   }
 }
-*/
+
 # Artifact Registry repo for binauthz-demo
 resource "google_artifact_registry_repository" "binauth-demo-repo" {
   provider      = google-beta
