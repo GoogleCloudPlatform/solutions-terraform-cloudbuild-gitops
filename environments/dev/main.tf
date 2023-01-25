@@ -20,7 +20,7 @@ locals {
 provider "google" {
   project = "${var.project}"
 }
-
+/*
 module "vpc" {
   source  = "../../modules/vpc"
   project = "${var.project}"
@@ -34,7 +34,7 @@ module "cloud_nat" {
   network = "${module.vpc.network}"
   region  = "${var.region}"
 }
-/*
+
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
@@ -62,17 +62,6 @@ resource "google_project_iam_member" "compute_container_admin" {
   role     = "roles/container.admin"
   member   = "serviceAccount:${module.gke_cluster.service-account}"
 }
-*/
-# Artifact Registry repo for binauthz-demo
-resource "google_artifact_registry_repository" "binauth-demo-repo" {
-  provider      = google-beta
-  project       = var.project
-
-  location      = var.region
-  repository_id = "binauth-demo-repo"
-  description   = "Docker repository for binauthz demo"
-  format        = "DOCKER"
-}
 
 # Binary Authorization Policy for the dev gke_cluster
 resource "google_binary_authorization_policy" "dev_binauthz_policy" {
@@ -94,18 +83,14 @@ resource "google_binary_authorization_policy" "dev_binauthz_policy" {
     require_attestations_by = ["projects/${var.project}/attestors/built-by-cloud-build"]
   }
 }
-
-/*
-module "instance_template" {
-  source  = "../../modules/instance_template"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
-
-module "load_balancer" {
-  source  = "../../modules/load_balancer"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-  instance_template_id = "${module.instance_template.instance_template_id}"
-}
 */
+# Artifact Registry repo for binauthz-demo
+resource "google_artifact_registry_repository" "binauth-demo-repo" {
+  provider      = google-beta
+  project       = var.project
+
+  location      = var.region
+  repository_id = "binauth-demo-repo"
+  description   = "Docker repository for binauthz demo"
+  format        = "DOCKER"
+}
