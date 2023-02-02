@@ -1,1 +1,1 @@
-project="rishabhterraformplayground"
+project="cimb-cicd-demo"
