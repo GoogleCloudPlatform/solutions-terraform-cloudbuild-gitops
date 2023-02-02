@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "rishabhterraformplayground-tfstate"
+    bucket = "cimb-cicd-demo-tfstate"
     prefix = "env/prod"
   }
 }
