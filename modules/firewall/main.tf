@@ -24,7 +24,7 @@ resource "google_compute_firewall" "allow-http" {
 
   allow {
     protocol = "tcp"
-    ports    = ["808"]
+    ports    = ["80"]
   }
 
   target_tags   = ["http-server"]
