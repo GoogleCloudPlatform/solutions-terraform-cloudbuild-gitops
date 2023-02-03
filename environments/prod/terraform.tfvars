@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="cimb-cicd-demo"

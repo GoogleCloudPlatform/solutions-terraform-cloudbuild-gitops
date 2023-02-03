@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "cimb-cicd-demo-tfstate"
     prefix = "env/prod"
   }
 }
