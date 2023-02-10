@@ -54,3 +54,15 @@ variable "slack_devops_channel" {
 variable "dev_cluster_name" {
   type      = string
 }
+
+variable "atlassian_email" {
+  type      = string
+}
+
+variable "atlassian_domain" {
+  type      = string
+}
+
+variable "jira_project_key" {
+  type      = string
+}

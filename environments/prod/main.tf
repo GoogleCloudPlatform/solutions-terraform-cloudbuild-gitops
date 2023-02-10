@@ -264,7 +264,7 @@ resource "google_binary_authorization_policy" "prod_binauthz_policy" {
     cluster                 = "${var.region}.${module.gke_cluster.name}"
     evaluation_mode         = "REQUIRE_ATTESTATION"
     enforcement_mode        = "ENFORCED_BLOCK_AND_AUDIT_LOG"
-    require_attestations_by = ["${google_binary_authorization_attestor.attestor.id}"]
+    require_attestations_by = ["projects/${var.project}/attestors/built-by-cloud-build","${google_binary_authorization_attestor.attestor.id}"]
   }
 }
 
@@ -716,4 +716,84 @@ resource "google_organization_iam_member" "remediate_instance_org_scc_remediatio
   org_id    = var.organization
   role      = google_organization_iam_custom_role.scc-remediation-custom-role.name
   member    = "serviceAccount:${module.remediate-instance-cloud-function.sa-email}"
+}
+
+##########################################
+## SCC JIRA Automatic Notification Demo ##
+##########################################
+
+resource "google_pubsub_topic" "scc-jira-notification-topic" {
+  name = "scc-jira-notification-topic"
+  message_retention_duration = "86400s"
+}
+
+resource "google_scc_notification_config" "scc-jira-notification-config" {
+  config_id    = "scc-jira-notification-config"
+  organization = var.organization
+  description  = "My SCC Finding Notification Configuration for JIRA"
+  pubsub_topic =  google_pubsub_topic.scc-jira-notification-topic.id
+
+  streaming_config {
+    filter = "mute != \"MUTED\""
+  }
+}
+
+module "scc-jira-notification-cloud-function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "scc-jira-notification"
+    function-desc   = "triggered by scc-jira-notification-topic, communicates scc findings to jira board"
+    entry-point     = "process_notification"
+    env-vars        = {
+        USER_ID             =   var.atlassian_email,
+        DOMAIN              =   var.atlassian_domain,
+        JIRA_PROJECT_KEY    =   var.jira_project_key,
+        ISSUE_TYPE          =   "Task",
+        STATUS_OPEN         =   "TO DO",
+        STATUS_DONE         =   "DONE", 
+    }
+    secrets         = [
+        {
+            key = "ATLASSIAN_API_TOKEN"
+            id  = google_secret_manager_secret.atlassian-api-token.secret_id
+        }
+    ]
+    triggers        = [
+        {
+            event_type  = "google.pubsub.topic.publish"
+            resource    = google_pubsub_topic.scc-jira-notification-topic.id
+        }
+    ]
+}
+
+resource "google_secret_manager_secret" "atlassian-api-token" {
+  project   = var.project
+  secret_id = "atlassian-api-token"
+
+  replication {
+    automatic = true
+  }
+}
+
+# IAM entry for service account of scc-jira-notification function to use the atlassian api token
+resource "google_secret_manager_secret_iam_binding" "atlassian_api_token_binding" {
+  project   = google_secret_manager_secret.atlassian-api-token.project
+  secret_id = google_secret_manager_secret.atlassian-api-token.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  members    = [
+      "serviceAccount:${module.scc-jira-notification-cloud-function.sa-email}",
+  ]
+}
+
+resource "google_app_engine_application" "app" {
+  project       = var.project
+  location_id   = var.region
+  database_type = "CLOUD_FIRESTORE"
+}
+
+# IAM entry for service account of scc-jira-notification function to use the Firestore database
+resource "google_project_iam_member" "project" {
+  project = var.project
+  role    = "roles/datastore.user"
+  member  = "serviceAccount:${module.scc-jira-notification-cloud-function.sa-email}"
 }
