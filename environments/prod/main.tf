@@ -787,7 +787,7 @@ resource "google_secret_manager_secret_iam_binding" "atlassian_api_token_binding
 
 resource "google_app_engine_application" "app" {
   project       = var.project
-  location_id   = var.region
+  location_id   = "us-central"
   database_type = "CLOUD_FIRESTORE"
 }
 
