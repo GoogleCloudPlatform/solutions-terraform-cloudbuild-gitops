@@ -749,8 +749,8 @@ module "scc-jira-notification-cloud-function" {
         DOMAIN              =   var.atlassian_domain,
         JIRA_PROJECT_KEY    =   var.jira_project_key,
         ISSUE_TYPE          =   "Task",
-        STATUS_OPEN         =   "TO DO",
-        STATUS_DONE         =   "DONE", 
+        STATUS_OPEN         =   "To Do",
+        STATUS_DONE         =   "Done",
     }
     secrets         = [
         {
