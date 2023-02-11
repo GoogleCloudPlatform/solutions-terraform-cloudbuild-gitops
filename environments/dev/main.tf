@@ -34,7 +34,7 @@ module "cloud_nat" {
   network = "${module.vpc.network}"
   region  = "${var.region}"
 }
-/*
+
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
@@ -83,7 +83,7 @@ resource "google_binary_authorization_policy" "dev_binauthz_policy" {
     require_attestations_by = ["projects/${var.project}/attestors/built-by-cloud-build"]
   }
 }
-*/
+
 # Artifact Registry repo for binauthz-demo
 resource "google_artifact_registry_repository" "binauthz-demo-repo" {
   provider      = google-beta
