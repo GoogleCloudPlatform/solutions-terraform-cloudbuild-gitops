@@ -19,12 +19,24 @@ locals {
 provider "google" {
   project = "${var.project}"
 }
-/*
+
 module "vpc" {
-  source  = "../../modules/vpc"
-  project = var.project
-  env     = local.env
-  region  = var.region
+  source            = "../../modules/vpc"
+  project           = var.project
+  env               = local.env
+  region            = var.region
+  secondary_ranges  = {
+    "${local.env}-subnet-01" = [
+        {
+            range_name      = "cluster_ipv4_cidr_block"
+            ip_cidr_range   = "10.224.0.0/14"
+        },
+        {
+            range_name      = "services_ipv4_cidr_block"
+            ip_cidr_range   = "10.228.0.0/20"
+        }
+    ]
+  }
 }
 
 module "cloud_nat" {
@@ -61,7 +73,7 @@ resource "google_project_iam_member" "compute_container_admin" {
   role     = "roles/container.admin"
   member   = "serviceAccount:${module.gke_cluster.service-account}"
 }
-*/
+
 # Artifact Registry repo for binauthz-demo
 resource "google_artifact_registry_repository" "binauthz-demo-repo" {
   provider      = google-beta

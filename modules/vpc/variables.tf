@@ -15,3 +15,7 @@
 variable "project" {}
 variable "env" {}
 variable "region" {}
+variable "secondary_ranges" {
+    default = null
+    type = map
+}

@@ -28,4 +28,7 @@ module "vpc" {
       subnet_private_access = "true"
     },
   ]
+  
+  secondary_ranges = var.secondary_ranges == null ? null : var.secondary_ranges
+
 }
