@@ -36,7 +36,7 @@ resource "google_storage_bucket" "bucket" {
 ############################################
 ## Secure CI/CD Binary Authorization Demo ##
 ############################################
-
+/*
 resource "google_compute_network" "vpc" {
   name                    = "${local.env}-vpc"
   auto_create_subnetworks = false
@@ -77,7 +77,7 @@ resource "google_project_iam_member" "compute_container_admin" {
   role     = "roles/container.admin"
   member   = "serviceAccount:${module.gke_cluster.service-account}"
 }
-
+*/
 resource "google_pubsub_topic" "operations-pubsub" {
   name                          = "clouddeploy-operations"
   message_retention_duration    = "86400s"
@@ -145,7 +145,7 @@ resource "google_clouddeploy_target" "dev-cluster-target" {
     google_project_iam_member.clouddeploy_service_agent_role
   ]
 }
-
+/*
 resource "google_clouddeploy_target" "prod-cluster-target" {
   name              = "prod-cluster"
   description       = "Target for prod environment"
@@ -183,7 +183,7 @@ resource "google_clouddeploy_delivery_pipeline" "pipeline" {
     }
   }
 }
-
+*/
 # KMS resources
 resource "google_kms_key_ring" "keyring" {
   name     = "${local.attestor_name}-keyring"
@@ -231,7 +231,7 @@ resource "google_binary_authorization_attestor" "attestor" {
     }
   }
 }
-
+/*
 # Binary Authorization Policy for the dev and prod gke_clusters
 resource "google_binary_authorization_policy" "prod_binauthz_policy" {
   project = var.project
@@ -259,7 +259,7 @@ resource "google_binary_authorization_policy" "prod_binauthz_policy" {
     require_attestations_by = ["projects/${var.project}/attestors/built-by-cloud-build","${google_binary_authorization_attestor.attestor.id}"]
   }
 }
-
+*/
 ###########################################
 ## JIT Privileged Access Management Demo ##
 ###########################################
