@@ -56,6 +56,13 @@ module "vpc" {
   }
 }
 
+module "cloud_nat" {
+  source  = "../../modules/cloud_nat"
+  project = var.project
+  network = module.vpc.name
+  region  = var.region
+}
+
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
