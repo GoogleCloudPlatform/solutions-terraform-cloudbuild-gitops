@@ -12,11 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+output "id" {
+  value = "${module.vpc.network_id}"
+}
 
-output "network" {
+output "name" {
   value = "${module.vpc.network_name}"
 }
 
 output "subnet" {
-  value = "${element(module.vpc.subnets_names, 0)}"
+  value = "${element(module.vpc.subnets_ids, 0)}"
 }

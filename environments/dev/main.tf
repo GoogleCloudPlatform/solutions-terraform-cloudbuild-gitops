@@ -20,7 +20,7 @@ locals {
 provider "google" {
   project = "${var.project}"
 }
-
+/*
 resource "google_compute_network" "vpc" {
   name                    = "${local.env}-vpc"
   auto_create_subnetworks = false
@@ -47,6 +47,30 @@ module "gke_cluster" {
     region          = var.region
     network         = google_compute_network.vpc.id
     subnetwork      = google_compute_subnetwork.subnet.id
+    master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.1.16/28"
+}
+*/
+
+module "vpc" {
+  source  = "../../modules/vpc"
+  project = var.project
+  env     = local.env
+  region  = var.region
+}
+
+module "cloud_nat" {
+  source  = "../../modules/cloud_nat"
+  project = var.project
+  network = module.vpc.name
+  region  = var.region
+}
+
+module "gke_cluster" {
+    source          = "../../modules/gke_cluster"
+    cluster_name    = "${local.env}-binauthz"
+    region          = var.region
+    network         = module.vpc.id
+    subnetwork      = module.vpc.subnet
     master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.1.16/28"
 }
 
