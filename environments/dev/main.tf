@@ -63,27 +63,6 @@ resource "google_project_iam_member" "compute_container_admin" {
   member   = "serviceAccount:${module.gke_cluster.service-account}"
 }
 
-# Binary Authorization Policy for the dev gke_cluster
-resource "google_binary_authorization_policy" "dev_binauthz_policy" {
-  project = var.project
-  
-  admission_whitelist_patterns {
-    name_pattern = "gcr.io/google_containers/*"
-  }
-
-  default_admission_rule {
-    evaluation_mode  = "ALWAYS_ALLOW"
-    enforcement_mode = "ENFORCED_BLOCK_AND_AUDIT_LOG"
-  }
-  
-  cluster_admission_rules {
-    cluster                 = "${var.region}.${module.gke_cluster.name}"
-    evaluation_mode         = "REQUIRE_ATTESTATION"
-    enforcement_mode        = "ENFORCED_BLOCK_AND_AUDIT_LOG"
-    require_attestations_by = ["projects/${var.project}/attestors/built-by-cloud-build"]
-  }
-}
-
 # Artifact Registry repo for binauthz-demo
 resource "google_artifact_registry_repository" "binauthz-demo-repo" {
   provider      = google-beta

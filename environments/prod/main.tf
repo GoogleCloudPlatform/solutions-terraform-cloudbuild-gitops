@@ -50,21 +50,6 @@ resource "google_compute_subnetwork" "subnet" {
   private_ip_google_access  = true
 }
 
-/*
-module "vpc" {
-  source  = "../../modules/vpc"
-  project = "${var.project}"
-  env     = "${local.env}"
-  region  = "${var.region}"
-}
-
-module "cloud_nat" {
-  source  = "../../modules/cloud_nat"
-  project = "${var.project}"
-  network = "${module.vpc.network}"
-  region  = "${var.region}"
-}
-*/
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
@@ -247,7 +232,7 @@ resource "google_binary_authorization_attestor" "attestor" {
   }
 }
 
-# Binary Authorization Policy for the prod gke_cluster
+# Binary Authorization Policy for the dev and prod gke_clusters
 resource "google_binary_authorization_policy" "prod_binauthz_policy" {
   project = var.project
   
@@ -260,6 +245,13 @@ resource "google_binary_authorization_policy" "prod_binauthz_policy" {
     enforcement_mode = "ENFORCED_BLOCK_AND_AUDIT_LOG"
   }
   
+  cluster_admission_rules {
+    cluster                 = "${var.region}.${var.dev_cluster_name}"
+    evaluation_mode         = "REQUIRE_ATTESTATION"
+    enforcement_mode        = "ENFORCED_BLOCK_AND_AUDIT_LOG"
+    require_attestations_by = ["projects/${var.project}/attestors/built-by-cloud-build"]
+  }
+
   cluster_admission_rules {
     cluster                 = "${var.region}.${module.gke_cluster.name}"
     evaluation_mode         = "REQUIRE_ATTESTATION"
