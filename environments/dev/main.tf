@@ -37,7 +37,7 @@ resource "google_compute_subnetwork" "subnet" {
 module "cloud_nat" {
   source  = "../../modules/cloud_nat"
   project = var.project
-  network = google_compute_network.vpc.id
+  network = google_compute_network.vpc.name
   region  = var.region
 }
 
