@@ -31,7 +31,7 @@ def send_slack_chat_notification(message_json):
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": f"Cloud Deploy Operation Alert!"
+                    "text": f"Deploy Operation Alert for {message_json['DeliveryPipelineId']}!"
                 }
             },
             {
@@ -46,11 +46,11 @@ def send_slack_chat_notification(message_json):
                     },
                     {
                         "type": "mrkdwn",
-                        "text": f"*PipelineID:*\n{message_json['DeliveryPipelineId']}"
+                        "text": f"*TargetId:*\n{message_json['TargetId']}"
                     },
                     {
                         "type": "mrkdwn",
-                        "text": f"*TargetId:*\n{message_json['TargetId']}"
+                        "text": f"*ReleaseId:*\n{message_json['ReleaseId']}"
                     }
                 ]
             }
