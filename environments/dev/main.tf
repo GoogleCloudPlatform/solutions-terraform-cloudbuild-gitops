@@ -28,11 +28,11 @@ module "vpc" {
   secondary_ranges  = {
     "${local.env}-subnet-01" = [
         {
-            range_name      = "cluster_ipv4_cidr_block"
+            range_name      = "cluster-ipv4-cidr-block"
             ip_cidr_range   = "10.224.0.0/14"
         },
         {
-            range_name      = "services_ipv4_cidr_block"
+            range_name      = "services-ipv4-cidr-block"
             ip_cidr_range   = "10.228.0.0/20"
         }
     ]
