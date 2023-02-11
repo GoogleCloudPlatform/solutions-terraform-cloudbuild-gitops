@@ -50,13 +50,6 @@ resource "google_compute_subnetwork" "subnet" {
   private_ip_google_access  = true
 }
 
-module "cloud_nat" {
-  source  = "../../modules/cloud_nat"
-  project = var.project
-  network = google_compute_network.vpc.name
-  region  = var.region
-}
-
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
