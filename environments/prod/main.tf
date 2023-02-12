@@ -160,6 +160,59 @@ resource "google_secret_manager_secret_iam_binding" "cicd_bot_token_binding" {
   ]
 }
 
+module "deploy-approval-cloud-function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "deploy-approval"
+    function-desc   = "intakes approval decisions from slack for rollout a release to prod"
+    entry-point     = "deploy_approval"
+    env-vars        = {
+        PROJECT_ID  = var.project
+    }
+    secrets         = [
+        {
+            key = "SLACK_SIGNING_SECRET"
+            id  = google_secret_manager_secret.slack-secure-cicd-signing-secret.secret_id
+        }
+    ]
+}
+
+# IAM entry for all users to invoke the deploy-approval function
+resource "google_cloudfunctions_function_iam_member" "deploy-approval-invoker" {
+  project        = var.project
+  region         = var.region
+  cloud_function = module.deploy-approval-cloud-function.function_name
+
+  role   = "roles/cloudfunctions.invoker"
+  member = "allUsers"
+}
+
+# IAM entry for service account of deploy-approval function to approve or reject rollouts
+resource "google_project_iam_member" "deploy_approval_approver" {
+  project   = var.project
+  role      = "roles/clouddeploy.approver"
+  member    = "serviceAccount:${module.deploy-approval-cloud-function.sa-email}"
+}
+
+resource "google_secret_manager_secret" "slack-secure-cicd-signing-secret" {
+  project   = var.project
+  secret_id = "slack-secure-cicd-signing-secret"
+
+  replication {
+    automatic = true
+  }
+}
+
+# IAM entry for service account of deploy-approval function to use the slack signing secret
+resource "google_secret_manager_secret_iam_binding" "signing_secret_binding" {
+  project   = google_secret_manager_secret.slack-secure-cicd-signing-secret.project
+  secret_id = google_secret_manager_secret.slack-secure-cicd-signing-secret.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  members    = [
+      "serviceAccount:${module.deploy-approval-cloud-function.sa-email}",
+  ]
+}
+
 resource "google_clouddeploy_target" "dev-cluster-target" {
   name              = "dev-cluster"
   description       = "Target for dev environment"
