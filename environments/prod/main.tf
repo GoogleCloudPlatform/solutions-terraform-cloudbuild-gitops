@@ -204,7 +204,7 @@ resource "google_secret_manager_secret" "slack-secure-cicd-signing-secret" {
 }
 
 # IAM entry for service account of deploy-approval function to use the slack signing secret
-resource "google_secret_manager_secret_iam_binding" "signing_secret_binding" {
+resource "google_secret_manager_secret_iam_binding" "cicd_signing_secret_binding" {
   project   = google_secret_manager_secret.slack-secure-cicd-signing-secret.project
   secret_id = google_secret_manager_secret.slack-secure-cicd-signing-secret.secret_id
   role      = "roles/secretmanager.secretAccessor"
