@@ -613,28 +613,28 @@ resource "google_secret_manager_secret_iam_binding" "website_password_binding" {
 ## SCC Automatic Notification and Remediation Demo ##
 #####################################################
 
-resource "google_pubsub_topic" "scc-notifications-pubsub" {
-  name = "scc-notifications-pubsub"
+resource "google_pubsub_topic" "scc-slack-notification-topic" {
+  name = "scc-slack-notification-topic"
   message_retention_duration = "86400s"
 }
 
-resource "google_scc_notification_config" "scc-notification-config" {
-  config_id    = "scc-notification-config"
+resource "google_scc_notification_config" "scc-slack-notification-config" {
+  config_id    = "scc-slack-notification-config"
   organization = var.organization
-  description  = "My Cloud Security Command Center Finding Notification Configuration"
-  pubsub_topic =  google_pubsub_topic.scc-notifications-pubsub.id
+  description  = "My SCC Finding Notification Configuration for SLACK"
+  pubsub_topic =  google_pubsub_topic.scc-slack-notification-topic.id
 
   streaming_config {
     filter = "state = \"ACTIVE\" AND mute != \"MUTED\""
   }
 }
 
-module "scc-automation-cloud-function" {
+module "scc-slack-notification-cloud-function" {
     source          = "../../modules/cloud_function"
     project         = var.project
-    function-name   = "scc-automation"
+    function-name   = "scc-slack-notification"
     function-desc   = "triggered by scc-notifications-topic, communicates findings reported by scc"
-    entry-point     = "scc_automation"
+    entry-point     = "scc_slack_notification"
     env-vars        = {
         SLACK_CHANNEL = var.slack_secops_channel,
     }
@@ -647,7 +647,7 @@ module "scc-automation-cloud-function" {
     triggers        = [
         {
             event_type  = "google.pubsub.topic.publish"
-            resource    = google_pubsub_topic.scc-notifications-pubsub.id
+            resource    = google_pubsub_topic.scc-slack-notification-topic.id
         }
     ]
 }
@@ -661,13 +661,13 @@ resource "google_secret_manager_secret" "slack-scc-bot-token" {
   }
 }
 
-# IAM entry for service account of scc-automation function to use the slack bot token
+# IAM entry for service account of scc-slack-notification function to use the slack bot token
 resource "google_secret_manager_secret_iam_binding" "scc_bot_token_binding" {
   project   = google_secret_manager_secret.slack-scc-bot-token.project
   secret_id = google_secret_manager_secret.slack-scc-bot-token.secret_id
   role      = "roles/secretmanager.secretAccessor"
   members    = [
-      "serviceAccount:${module.scc-automation-cloud-function.sa-email}",
+      "serviceAccount:${module.scc-slack-notification-cloud-function.sa-email}",
   ]
 }
 

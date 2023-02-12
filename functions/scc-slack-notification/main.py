@@ -5,7 +5,7 @@ import requests
 from pytz import timezone
 from datetime import datetime
 
-def scc_automation(event, context):
+def scc_slack_notification(event, context):
     """Triggered from a message on a Cloud Pub/Sub topic.
     Args:
          event (dict): Event payload.

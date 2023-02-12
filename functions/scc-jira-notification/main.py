@@ -122,7 +122,7 @@ def create_open_jira_issue(finding):
         json={
             "update": {},
             "fields": {
-                "summary": f"{finding['severity']} severity {finding['category']} finding",
+                "summary": f"{finding['severity'] if 'severity' in finding else 'Unspecified'} severity {finding['category']} finding",
                 "project": {"key": project_key},
                 "issuetype": {"name": os.environ["ISSUE_TYPE"]},
                 "description": {
