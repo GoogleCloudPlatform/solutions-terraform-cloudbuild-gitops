@@ -82,7 +82,7 @@ def set_inactive_finding(finding_path):
             request={
                 "name": finding_path,
                 "state": securitycenter.Finding.State.INACTIVE,
-                "start_time": datetime.now(timezone.utc),
+                "start_time": datetime.now(),
             }
         )
         print(f"New state: {finding.state}")
