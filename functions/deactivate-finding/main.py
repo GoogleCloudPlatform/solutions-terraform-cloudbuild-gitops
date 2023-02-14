@@ -85,7 +85,7 @@ def set_inactive_finding(finding_path):
                 "start_time": datetime.now(),
             }
         )
-        print(f"New state: {finding.state}")
+        print(f"New state for the finding: {finding.state.name}")
 
         if finding.state.name == "INACTIVE":
             return True

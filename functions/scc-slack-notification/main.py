@@ -68,8 +68,12 @@ def send_slack_chat_notification(finding_json, resource_json):
             },
             {
                 "type": "actions",
-                "elements": [
-                    {
+                "elements": []
+            }
+        ]
+    
+    if finding_json['findingClass'] == "MISCONFIGURATION":
+        slack_message[4]['elements'].append({
                         "type": "button",
                         "text": {
                             "type": "plain_text",
@@ -77,7 +81,7 @@ def send_slack_chat_notification(finding_json, resource_json):
                             "text": "Remediate"
                         },
                         "style": "primary",
-                        "value": f"project_name={resource_json['projectDisplayName']}+resource_name={resource_json['displayName']}+resource_type={resource_json['type']}+resource_id={resource_json['name']}+finding_path={finding_json['name']}+decision=Remediate",
+                        "value": f"project_name={resource_json['projectDisplayName']}+resource_name={resource_json['displayName']}+resource_type={resource_json['type']}+resource_id={resource_json['name']}+decision=Remediate",
                         "confirm": {
                             "title": {
                                 "type": "plain_text",
@@ -96,8 +100,38 @@ def send_slack_chat_notification(finding_json, resource_json):
                                 "text": "Stop, I've changed my mind!"
                             }
                         }
-                    },
-                    {
+                    })
+    else:
+        slack_message[4]['elements'].append({
+                        "type": "button",
+                        "text": {
+                            "type": "plain_text",
+                            "emoji": True,
+                            "text": "Deactivate"
+                        },
+                        "style": "primary",
+                        "value": f"project_name={resource_json['projectDisplayName']}+resource_name={resource_json['displayName']}+resource_type={resource_json['type']}+finding_path={finding_json['name']}+decision=Deactivate",
+                        "confirm": {
+                            "title": {
+                                "type": "plain_text",
+                                "text": "Are you sure?"
+                            },
+                            "text": {
+                                "type": "mrkdwn",
+                                "text": f"Do you want to deactivate the finding *{finding_json['category']}*?"
+                            },
+                            "confirm": {
+                                "type": "plain_text",
+                                "text": "Deactivate it"
+                            },
+                            "deny": {
+                                "type": "plain_text",
+                                "text": "Stop, I've changed my mind!"
+                            }
+                        }
+                    })
+
+    slack_message[4]['elements'].append({
                         "type": "button",
                         "text": {
                             "type": "plain_text",
@@ -124,10 +158,8 @@ def send_slack_chat_notification(finding_json, resource_json):
                                 "text": "Stop, I've changed my mind!"
                             }
                         }
-                    }
-                ]
-            }
-        ]
+                    })
+
     try:
         slack_token = os.environ.get('SLACK_ACCESS_TOKEN', 'Specified environment variable is not set.')
         slack_channel = os.environ.get('SLACK_CHANNEL', 'Specified environment variable is not set.')
