@@ -55,7 +55,7 @@ module "vpc" {
     ]
   }
 }
-
+/*
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
@@ -83,7 +83,7 @@ resource "google_project_iam_member" "compute_container_admin" {
   role     = "roles/container.admin"
   member   = "serviceAccount:${module.gke_cluster.service-account}"
 }
-
+*/
 resource "google_pubsub_topic" "operations-pubsub" {
   name                          = "clouddeploy-operations"
   message_retention_duration    = "86400s"
@@ -212,7 +212,7 @@ resource "google_secret_manager_secret_iam_binding" "cicd_signing_secret_binding
       "serviceAccount:${module.deploy-approval-cloud-function.sa-email}",
   ]
 }
-
+/*
 resource "google_clouddeploy_target" "dev-cluster-target" {
   name              = "dev-cluster"
   description       = "Target for dev environment"
@@ -271,7 +271,7 @@ resource "google_clouddeploy_delivery_pipeline" "pipeline" {
     }
   }
 }
-
+*/
 # KMS resources
 resource "google_kms_key_ring" "keyring" {
   name     = "${local.attestor_name}-keyring"
@@ -319,7 +319,7 @@ resource "google_binary_authorization_attestor" "attestor" {
     }
   }
 }
-
+/*
 # Binary Authorization Policy for the dev and prod gke_clusters
 resource "google_binary_authorization_policy" "prod_binauthz_policy" {
   project = var.project
@@ -347,7 +347,7 @@ resource "google_binary_authorization_policy" "prod_binauthz_policy" {
     require_attestations_by = ["projects/${var.project}/attestors/built-by-cloud-build","${google_binary_authorization_attestor.attestor.id}"]
   }
 }
-
+*/
 ###########################################
 ## JIT Privileged Access Management Demo ##
 ###########################################
@@ -737,6 +737,31 @@ resource "google_organization_iam_member" "mute_finding_org_role" {
   org_id    = var.organization
   role      = "roles/securitycenter.findingsMuteSetter"
   member    = "serviceAccount:${module.mute-finding-cloud-function.sa-email}"
+}
+
+module "deactivate-finding-cloud-function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "deactivate-finding"
+    function-desc   = "deactivates scc findings"
+    entry-point     = "deactivate_finding"
+}
+
+# IAM entry for service account of scc-remediation function to invoke the deactivate-finding function
+resource "google_cloudfunctions_function_iam_member" "deactivate-finding-invoker" {
+  project        = var.project
+  region         = var.region
+  cloud_function = module.deactivate-finding-cloud-function.function_name
+
+  role   = "roles/cloudfunctions.invoker"
+  member = "serviceAccount:${module.scc-remediation-cloud-function.sa-email}"
+}
+
+# IAM entry for service account of deactivate-finding function to deactivate SCC findings
+resource "google_organization_iam_member" "deactivate_finding_org_role" {
+  org_id    = var.organization
+  role      = "roles/securitycenter.findingsStateSetter"
+  member    = "serviceAccount:${module.deactivate-finding-cloud-function.sa-email}"
 }
 
 # Create a custom IAM role for the scc-remediation function over the entire org

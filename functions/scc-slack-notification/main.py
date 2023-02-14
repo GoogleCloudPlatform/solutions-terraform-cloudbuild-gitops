@@ -77,7 +77,7 @@ def send_slack_chat_notification(finding_json, resource_json):
                             "text": "Remediate"
                         },
                         "style": "primary",
-                        "value": f"project_name={resource_json['projectDisplayName']}+resource_name={resource_json['displayName']}+resource_type={resource_json['type']}+resource_id={resource_json['name']}+decision=Remediate",
+                        "value": f"project_name={resource_json['projectDisplayName']}+resource_name={resource_json['displayName']}+resource_type={resource_json['type']}+resource_id={resource_json['name']}+finding_path={finding_json['name']}+decision=Remediate",
                         "confirm": {
                             "title": {
                                 "type": "plain_text",
