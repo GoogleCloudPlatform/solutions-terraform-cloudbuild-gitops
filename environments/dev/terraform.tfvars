@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="mds-tf2-lab"
