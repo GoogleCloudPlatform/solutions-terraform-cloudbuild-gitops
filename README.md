@@ -29,3 +29,28 @@ terraform plan
 terraform apply
 terraform destroy
 ```
+
+## Objective
+- Set up your GitHub repository.
+- Configure Terraform to store state in a Cloud Storage bucket.
+- Grant permissions to your Cloud Build service account.
+- Connect Cloud Build to your GitHub repository.
+- Change your environment configuration in a feature branch.
+- Promote changes to the development environment.
+- Promote changes to the production environment.
+
+## what is backend?
+    - where to store terraform state data remotely, allow multiple people to work on the same terraform project
+    - reference link: https://developer.hashicorp.com/terraform/language/settings/backends/configuration
+    - in this example, we learn about how to config terraform backend with gcp cloud storage bucket
+
+## using steam editor (sed) command to replace or substitute 
+- sed -i s/PROJECT_ID/$PROJECT_ID/g environments/*/terraform.tfvars
+- sed -i s/PROJECT_ID/$PROJECT_ID/g environments/*/backend.tf
+
+## grant editor role for cloud build service account
+- cloud build have a special default service account
+- get cloud build sa with command: CLOUDBUILD_SA="$(gcloud projects describe $PROJECT_ID \
+    --format 'value(projectNumber)')@cloudbuild.gserviceaccount.com"
+- grant default cloud build service account with editor role: gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member serviceAccount:$CLOUDBUILD_SA --role roles/editor
