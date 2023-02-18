@@ -58,3 +58,25 @@ terraform destroy
 ## directly connect cloud build with github
 - follow the intruction from reference link to connect cloudbuild with github
 - create trigger which listen to change change in all branch or a specific brand
+
+## pull request and merge
+- pull request: we have a feature branche and want to merge with main branch. we need to make a request.
+- merge: the process of approve the pull request to merge between main branch and feature branch
+
+## protect branch
+- cloud build must be success on other branch before merge to the protected branch. 
+- follow instruction from the reference link.
+- repo > setting > branch > add protection role > etc.
+
+## what is the main purpose of cloudbuild.yaml in this excercise
+- to be the entry to to execute terraform init, terraform plan and terraform apply
+- script test:
+    - check branch name
+    - base on branch name then move to correct directory for correct environment to execute terraform config for that environment
+
+## how github repo, cloud build trigger, cloud build logic and terraform work together
+- github is your repo with version control
+- cloudbuild trigger is where you define what change on git hub will trigger cloudbuild.yaml steps logic
+- cloud build will execute cloudbuild.yamml logic file. cloudbuil.yaml have to be in the root of that repo
+- cloudbuild.yaml is define to execute terraform command base on branch name
+- terraform config files is where you define your resources. 
