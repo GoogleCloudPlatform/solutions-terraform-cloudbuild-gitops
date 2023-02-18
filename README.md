@@ -54,3 +54,7 @@ terraform destroy
     --format 'value(projectNumber)')@cloudbuild.gserviceaccount.com"
 - grant default cloud build service account with editor role: gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member serviceAccount:$CLOUDBUILD_SA --role roles/editor
+
+## directly connect cloud build with github
+- follow the intruction from reference link to connect cloudbuild with github
+- create trigger which listen to change change in all branch or a specific brand
