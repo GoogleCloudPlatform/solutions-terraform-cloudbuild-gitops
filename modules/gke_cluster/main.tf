@@ -44,7 +44,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   node_count = 1
 
   node_config {
-    machine_type = "e2-micro"
+    machine_type = "e2-medium"
 
     shielded_instance_config {
         enable_integrity_monitoring = true 
