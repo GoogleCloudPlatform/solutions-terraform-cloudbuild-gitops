@@ -15,18 +15,17 @@ def recaptcha_website(request):
     """
     if request.form:
         if 'g-recaptcha-response' in request.form:
-            if request.form.get('username') == os.environ.get('USERNAME') and request.form.get('password') == os.environ.get('PASSWORD'):
-                result = "Login successful!"
+            project_id = os.environ.get('PROJECT_ID', 'Specified environment variable is not set.')
+            recaptcha_site_key = os.environ.get('RECAPTCHA_SITE_KEY', 'Specified environment variable is not set.')
                 
-                project_id = os.environ.get('PROJECT_ID', 'Specified environment variable is not set.')
-                recaptcha_site_key = os.environ.get('RECAPTCHA_SITE_KEY', 'Specified environment variable is not set.')
-                
-                if create_assessment(project_id, recaptcha_site_key, request.form.get('g-recaptcha-response'), "login"):
-                    result += "  reCAPTCHA assessment successful!"
+            if create_assessment(project_id, recaptcha_site_key, request.form.get('g-recaptcha-response'), "login"):    
+                result = "reCAPTCHA assessment successful!"
+                if request.form.get('username') == os.environ.get('USERNAME') and request.form.get('password') == os.environ.get('PASSWORD'):
+                    result += "  Login successful!"
                 else:
-                    result += "  reCAPTCHA assessment failed!"
+                    result += "  Login failed! User credentials do not match."
             else:
-                result = "Login failed! User credentials do not match."
+                result = "reCAPTCHA assessment failed!"
             return result
         else:
             return "No reCAPTCHA token found!"
