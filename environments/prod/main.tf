@@ -212,7 +212,7 @@ resource "google_secret_manager_secret_iam_binding" "cicd_signing_secret_binding
       "serviceAccount:${module.deploy-approval-cloud-function.sa-email}",
   ]
 }
-/*
+
 resource "google_clouddeploy_target" "dev-cluster-target" {
   name              = "dev-cluster"
   description       = "Target for dev environment"
@@ -233,7 +233,7 @@ resource "google_clouddeploy_target" "dev-cluster-target" {
     google_project_iam_member.clouddeploy_service_agent_role
   ]
 }
-
+/*
 resource "google_clouddeploy_target" "prod-cluster-target" {
   name              = "prod-cluster"
   description       = "Target for prod environment"
@@ -254,7 +254,7 @@ resource "google_clouddeploy_target" "prod-cluster-target" {
     google_project_iam_member.clouddeploy_service_agent_role
   ]
 }
-
+*/
 resource "google_clouddeploy_delivery_pipeline" "pipeline" {
   name        = "binauthz-demo-pipeline"
   description = "Pipeline for binauthz application" #TODO parameterize
@@ -266,12 +266,12 @@ resource "google_clouddeploy_delivery_pipeline" "pipeline" {
         target_id = google_clouddeploy_target.dev-cluster-target.name
     }
 
-    stages {
-      target_id = google_clouddeploy_target.prod-cluster-target.name
-    }
+    #stages {
+    #  target_id = google_clouddeploy_target.prod-cluster-target.name
+    #}
   }
 }
-*/
+
 # KMS resources
 resource "google_kms_key_ring" "keyring" {
   name     = "${local.attestor_name}-keyring"
