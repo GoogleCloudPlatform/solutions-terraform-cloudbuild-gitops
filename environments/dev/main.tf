@@ -67,7 +67,7 @@ module "my-k8s-app-workload-identity" {
   use_existing_k8s_sa = true
   name                = kubernetes_service_account.preexisting.metadata[0].name
   namespace           = kubernetes_service_account.preexisting.metadata[0].namespace
-  project_id          = var.project_id
+  project_id          = var.project
 }
 
 resource "google_secret_manager_secret" "mysql-root-password" {
