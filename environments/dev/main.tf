@@ -45,7 +45,7 @@ module "cloud_nat" {
   network = module.vpc.name
   region  = var.region
 }
-/*
+
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
@@ -53,6 +53,32 @@ module "gke_cluster" {
     network         = module.vpc.id
     subnetwork      = module.vpc.subnet
     master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.1.16/28"
+}
+
+module "my-k8s-app-workload-identity" {
+  source     = "terraform-google-modules/kubernetes-engine/google//modules/workload-identity"
+  name       = "my-k8s-app"
+  namespace  = "default"
+  project_id = var.project
+}
+
+resource "google_secret_manager_secret" "mysql-root-password" {
+  project   = var.project
+  secret_id = "mysql-root-password"
+
+  replication {
+    automatic = true
+  }
+}
+
+# IAM entry for service account of workload identity to use the mysql-root-password secret
+resource "google_secret_manager_secret_iam_binding" "mysql_root_password_secret_binding" {
+  project   = google_secret_manager_secret.mysql-root-password.project
+  secret_id = google_secret_manager_secret.mysql-root-password.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  members    = [
+      "serviceAccount:${module.my-k8s-app-workload-identity.gcp_service_account_email}",
+  ]
 }
 
 # IAM Roles for the node pool service account
@@ -73,7 +99,7 @@ resource "google_project_iam_member" "compute_container_admin" {
   role     = "roles/container.admin"
   member   = "serviceAccount:${module.gke_cluster.service-account}"
 }
-*/
+
 # Artifact Registry repo for binauthz-demo
 resource "google_artifact_registry_repository" "binauthz-demo-repo" {
   provider      = google-beta
