@@ -55,19 +55,11 @@ module "gke_cluster" {
     master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.1.16/28"
 }
 
-resource "kubernetes_service_account" "preexisting" {
-  metadata {
-    name      = "my-k8s-app"
-    namespace = "default"
-  }
-}
-
 module "my-k8s-app-workload-identity" {
-  source              = "terraform-google-modules/kubernetes-engine/google//modules/workload-identity"
-  use_existing_k8s_sa = true
-  name                = kubernetes_service_account.preexisting.metadata[0].name
-  namespace           = kubernetes_service_account.preexisting.metadata[0].namespace
-  project_id          = var.project
+    source     = "terraform-google-modules/kubernetes-engine/google//modules/workload-identity"
+    name       = "my-k8s-app"
+    namespace  = "default"
+    project_id = var.project
 }
 
 resource "google_secret_manager_secret" "mysql-root-password" {
