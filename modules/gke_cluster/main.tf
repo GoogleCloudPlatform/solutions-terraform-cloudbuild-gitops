@@ -62,10 +62,4 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
     create = "30m"
     update = "40m"
   }
-
-  lifecycle {
-    ignore_changes = [
-      version
-    ]
-  }
 }
