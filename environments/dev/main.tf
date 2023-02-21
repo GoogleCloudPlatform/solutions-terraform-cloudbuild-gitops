@@ -49,6 +49,7 @@ module "cloud_nat" {
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
+    project         = var.project
     region          = var.region
     network         = module.vpc.id
     subnetwork      = module.vpc.subnet
@@ -64,7 +65,7 @@ resource "google_service_account" "k8s_app_service_account" {
 resource "google_service_account_iam_member" "workload_identity-role" {
   service_account_id = google_service_account.k8s_app_service_account.name
   role               = "roles/iam.workloadIdentityUser"
-  member             = "serviceAccount:${local.env}-binauthz.svc.id.goog[default/my-k8s-app]"
+  member             = "serviceAccount:${var.project}.svc.id.goog[default/my-k8s-app]"
 }
 
 resource "google_secret_manager_secret" "mysql-root-password" {
