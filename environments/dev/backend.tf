@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "solar-curve-378603-tfstate"
     prefix = "env/dev"
   }
 }
