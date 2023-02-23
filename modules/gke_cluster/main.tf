@@ -54,6 +54,10 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
         enable_integrity_monitoring = true 
         enable_secure_boot          = true
     }
+
+    workload_metadata_config {
+        mode = "GKE_METADATA_SERVER"
+    }
     
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     service_account = google_service_account.default.email
