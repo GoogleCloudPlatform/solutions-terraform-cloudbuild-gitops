@@ -56,37 +56,6 @@ module "gke_cluster" {
     master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.1.16/28"
 }
 
-resource "google_service_account" "k8s_app_service_account" {
-  account_id   = "sa-k8s-app"
-  display_name = "Service Account For Workload Identity"
-}
-
-# IAM entry for k8s service account to use the service account of workload identity
-resource "google_service_account_iam_member" "workload_identity-role" {
-  service_account_id = google_service_account.k8s_app_service_account.name
-  role               = "roles/iam.workloadIdentityUser"
-  member             = "serviceAccount:${var.project}.svc.id.goog[default/my-k8s-app]"
-}
-
-resource "google_secret_manager_secret" "mysql-root-password" {
-  project   = var.project
-  secret_id = "mysql-root-password"
-
-  replication {
-    automatic = true
-  }
-}
-
-# IAM entry for service account of workload identity to use the mysql-root-password secret
-resource "google_secret_manager_secret_iam_binding" "mysql_root_password_secret_binding" {
-  project   = google_secret_manager_secret.mysql-root-password.project
-  secret_id = google_secret_manager_secret.mysql-root-password.secret_id
-  role      = "roles/secretmanager.secretAccessor"
-  members    = [
-      "serviceAccount:${google_service_account.k8s_app_service_account.email}",
-  ]
-}
-
 # IAM Roles for the node pool service account
 resource "google_project_iam_member" "compute_registry_reader" {
   project  = var.project
@@ -104,6 +73,45 @@ resource "google_project_iam_member" "compute_container_admin" {
   project  = var.project
   role     = "roles/container.admin"
   member   = "serviceAccount:${module.gke_cluster.service-account}"
+}
+
+# Workload Identity for the Kubernetes Cluster
+module "k8s-app-workload-identity" {
+  source     = "terraform-google-modules/kubernetes-engine/google//modules/workload-identity"
+  name       = "sa-k8s-app"
+  namespace  = "default"
+  project_id = var.project
+}
+/*
+resource "google_service_account" "k8s_app_service_account" {
+  account_id   = "sa-k8s-app"
+  display_name = "Service Account For Workload Identity"
+}
+
+# IAM entry for k8s service account to use the service account of workload identity
+resource "google_service_account_iam_member" "workload_identity-role" {
+  service_account_id = google_service_account.k8s_app_service_account.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "serviceAccount:${var.project}.svc.id.goog[default/my-k8s-app]"
+}
+*/
+resource "google_secret_manager_secret" "mysql-root-password" {
+  project   = var.project
+  secret_id = "mysql-root-password"
+
+  replication {
+    automatic = true
+  }
+}
+
+# IAM entry for service account of workload identity to use the mysql-root-password secret
+resource "google_secret_manager_secret_iam_binding" "mysql_root_password_secret_binding" {
+  project   = google_secret_manager_secret.mysql-root-password.project
+  secret_id = google_secret_manager_secret.mysql-root-password.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  members    = [
+      "serviceAccount:${module.k8s-app-workload-identity.gcp_service_account_email}",
+  ]
 }
 
 # Artifact Registry repo for binauthz-demo
