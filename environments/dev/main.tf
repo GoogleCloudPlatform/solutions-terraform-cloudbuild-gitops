@@ -76,13 +76,6 @@ resource "google_project_iam_member" "compute_container_admin" {
 }
 
 # Workload Identity for the Kubernetes Cluster
-module "k8s-app-workload-identity" {
-  source     = "terraform-google-modules/kubernetes-engine/google//modules/workload-identity"
-  name       = "sa-k8s-app"
-  namespace  = "default"
-  project_id = var.project
-}
-/*
 resource "google_service_account" "k8s_app_service_account" {
   account_id   = "sa-k8s-app"
   display_name = "Service Account For Workload Identity"
@@ -94,7 +87,7 @@ resource "google_service_account_iam_member" "workload_identity-role" {
   role               = "roles/iam.workloadIdentityUser"
   member             = "serviceAccount:${var.project}.svc.id.goog[default/my-k8s-app]"
 }
-*/
+
 resource "google_secret_manager_secret" "mysql-root-password" {
   project   = var.project
   secret_id = "mysql-root-password"
@@ -110,7 +103,7 @@ resource "google_secret_manager_secret_iam_binding" "mysql_root_password_secret_
   secret_id = google_secret_manager_secret.mysql-root-password.secret_id
   role      = "roles/secretmanager.secretAccessor"
   members    = [
-      "serviceAccount:${module.k8s-app-workload-identity.gcp_service_account_email}",
+      "serviceAccount:${google_service_account.k8s_app_service_account.email}",
   ]
 }
 
