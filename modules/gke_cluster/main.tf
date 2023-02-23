@@ -56,7 +56,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
     }
 
     workload_metadata_config {
-        mode = "GKE_METADATA_SERVER"
+        mode = "GKE_METADATA"
     }
     
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
