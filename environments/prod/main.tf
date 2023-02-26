@@ -55,7 +55,7 @@ module "vpc" {
     ]
   }
 }
-/*
+
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
@@ -83,7 +83,7 @@ resource "google_project_iam_member" "compute_container_admin" {
   role     = "roles/container.admin"
   member   = "serviceAccount:${module.gke_cluster.service-account}"
 }
-*/
+
 resource "google_pubsub_topic" "operations-pubsub" {
   name                          = "clouddeploy-operations"
   message_retention_duration    = "86400s"
@@ -233,7 +233,7 @@ resource "google_clouddeploy_target" "dev-cluster-target" {
     google_project_iam_member.clouddeploy_service_agent_role
   ]
 }
-/*
+
 resource "google_clouddeploy_target" "prod-cluster-target" {
   name              = "prod-cluster"
   description       = "Target for prod environment"
