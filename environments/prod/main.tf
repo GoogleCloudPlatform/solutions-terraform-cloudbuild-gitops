@@ -254,7 +254,7 @@ resource "google_clouddeploy_target" "prod-cluster-target" {
     google_project_iam_member.clouddeploy_service_agent_role
   ]
 }
-*/
+
 resource "google_clouddeploy_delivery_pipeline" "pipeline" {
   name        = "binauthz-demo-pipeline"
   description = "Pipeline for binauthz application" #TODO parameterize
@@ -266,9 +266,9 @@ resource "google_clouddeploy_delivery_pipeline" "pipeline" {
         target_id = google_clouddeploy_target.dev-cluster-target.name
     }
 
-    #stages {
-    #  target_id = google_clouddeploy_target.prod-cluster-target.name
-    #}
+    stages {
+      target_id = google_clouddeploy_target.prod-cluster-target.name
+    }
   }
 }
 
@@ -319,7 +319,7 @@ resource "google_binary_authorization_attestor" "attestor" {
     }
   }
 }
-/*
+
 # Binary Authorization Policy for the dev and prod gke_clusters
 resource "google_binary_authorization_policy" "prod_binauthz_policy" {
   project = var.project
@@ -347,7 +347,7 @@ resource "google_binary_authorization_policy" "prod_binauthz_policy" {
     require_attestations_by = ["projects/${var.project}/attestors/built-by-cloud-build","${google_binary_authorization_attestor.attestor.id}"]
   }
 }
-*/
+
 ###########################################
 ## JIT Privileged Access Management Demo ##
 ###########################################
