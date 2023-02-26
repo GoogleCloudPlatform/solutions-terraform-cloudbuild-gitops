@@ -59,6 +59,7 @@ module "vpc" {
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
+    project         = var.project
     region          = var.region
     network         = module.vpc.id
     subnetwork      = module.vpc.subnet
