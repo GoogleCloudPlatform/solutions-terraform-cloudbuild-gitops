@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "archeanz-com-cloudbuild-tfstate"
     prefix = "env/dev"
   }
 }
