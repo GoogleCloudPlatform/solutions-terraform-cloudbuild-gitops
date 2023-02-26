@@ -333,6 +333,10 @@ resource "google_binary_authorization_policy" "prod_binauthz_policy" {
     evaluation_mode  = "ALWAYS_ALLOW"
     enforcement_mode = "ENFORCED_BLOCK_AND_AUDIT_LOG"
   }
+
+  admission_whitelist_patterns {
+    name_pattern = "docker.io/library/mysql:latest"
+  }
   
   cluster_admission_rules {
     cluster                 = "${var.region}.${var.dev_cluster_name}"
