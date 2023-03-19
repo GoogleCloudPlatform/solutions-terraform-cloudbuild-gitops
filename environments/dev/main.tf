@@ -166,9 +166,9 @@ resource "google_compute_security_policy" "dev_waf_security_policy" {
   project       = var.project
   #type          = "CLOUD_ARMOR"
 
-  #recaptcha_options_config {
-  #  redirect_site_key = google_recaptcha_enterprise_key.recaptcha_redirect_site_key.name
-  #}
+  recaptcha_options_config {
+    redirect_site_key = "6LcGeukhAAAAAAfjGfl0YIEtMEoUIy2uq_QjhJBQ"
+  }
 
   rule {
     action   = "allow"
@@ -214,7 +214,7 @@ resource "google_compute_security_policy" "dev_waf_security_policy" {
     }
     description = "Deny if the recaptcha session score is below threshold"
   }
-/*
+
   rule {
     action   = "redirect"
     priority = "10000"
@@ -228,5 +228,4 @@ resource "google_compute_security_policy" "dev_waf_security_policy" {
     }
     description = "Redirect if the recaptcha session score is between thresholds"
   }
-*/
 }
