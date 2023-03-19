@@ -164,7 +164,7 @@ resource "google_compute_security_policy" "dev_waf_security_policy" {
   name          = "dev-waf-security-policy"
   description   = "Cloud Armor Security Policy"
   project       = var.project
-  type          = "CLOUD_ARMOR"
+  #type          = "CLOUD_ARMOR"
 
   #recaptcha_options_config {
   #  redirect_site_key = google_recaptcha_enterprise_key.recaptcha_redirect_site_key.name
