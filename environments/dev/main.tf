@@ -15,16 +15,11 @@
 locals {
   env = "dev"
 }
-/*
+
 provider "google" {
   project = "${var.project}"
 }
 
-provider "google-beta" {
-  project   = var.project
-  region    = var.region
-}
-*/
 module "vpc" {
   source            = "../../modules/vpc"
   project           = var.project
@@ -161,10 +156,11 @@ resource "google_recaptcha_enterprise_key" "recaptcha_redirect_site_key" {
 */
 # Cloud Armor WAF Policy for Dev Backends
 resource "google_compute_security_policy" "dev_waf_security_policy" {
+  provider      = google-beta
   name          = "dev-waf-security-policy"
   description   = "Cloud Armor Security Policy"
   project       = var.project
-  #type          = "CLOUD_ARMOR"
+  type          = "CLOUD_ARMOR"
 
   recaptcha_options_config {
     redirect_site_key = "6LcGeukhAAAAAAfjGfl0YIEtMEoUIy2uq_QjhJBQ"
