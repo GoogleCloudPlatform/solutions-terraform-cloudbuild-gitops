@@ -151,7 +151,7 @@ resource "google_recaptcha_enterprise_key" "recaptcha_redirect_site_key" {
   web_settings {
     integration_type              = "INVISIBLE"
     allow_all_domains             = false
-    allowed_domains               = [agarsand.demo.altostrat.com]
+    allowed_domains               = ["agarsand.demo.altostrat.com"]
     challenge_security_preference = "USABILITY"
   }
 }
