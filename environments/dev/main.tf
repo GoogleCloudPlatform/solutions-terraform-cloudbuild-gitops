@@ -155,99 +155,72 @@ resource "google_recaptcha_enterprise_key" "recaptcha_redirect_site_key" {
 }
 
 # Cloud Armor WAF Policy for Dev Backends
-module "security_policy" {
-  source = "GoogleCloudPlatform/cloud-armor/google"
-  version = "~> 0.2"
-
+resource "google_compute_security_policy" "policy" {
   project_id                           = var.project
   name                                 = "dev-waf-security-policy"
   description                          = "Cloud Armor Security Policy"
-  recaptcha_redirect_site_key          = google_recaptcha_enterprise_key.recaptcha_redirect_site_key.name
-  default_rule_action                  = "allow"
-  type                                 = "CLOUD_ARMOR"
+  type        = "CLOUD_ARMOR"
 
-  pre_configured_rules = {
-    "sqli_sensitivity_level_4_with_exclude" = {
-      action                    = "deny(403)"
-      priority                  = 3000
-      target_rule_set           = "sqli-stable"
-      exclude_target_rule_ids   = ["owasp-crs-v030001-id942251-sqli", "owasp-crs-v030001-id942420-sqli", "owasp-crs-v030001-id942431-sqli", "owasp-crs-v030001-id942460-sqli", "owasp-crs-v030001-id942421-sqli", "owasp-crs-v030001-id942432-sqli"]
-    }
+  recaptcha_options_config {
+    redirect_site_key = google_recaptcha_enterprise_key.recaptcha_redirect_site_key.name
   }
 
-  custom_rules = {
-
-    deny_specific_regions = {
-      action      = "deny(403)"
-      priority    = 7000
-      description = "Allow only Indians. Mera Bharat Mahan! :)"
-      expression  = <<-EOT
-        origin.region_code != 'IN'
-      EOT
-    }
-
-    allow_good_scores = {
-      action      = "allow"
-      priority    = 8000
-      description = "Allow if the recaptcha session score is above threshold"
-      expression  = <<-EOT
-        request.path.matches('good-score.html') && token.recaptcha_session.score > 0.4
-      EOT
-    }
-
-    deny_bad_scores = {
-      action      = "deny(403)"
-      priority    = 9000
-      description = "Deny if the recaptcha session score is below threshold"
-      expression  = <<-EOT
-        request.path.matches('bad-score.html') && token.recaptcha_session.score < 0.6
-      EOT
-    }
-
-    redirect_median_scores = {
-      action        = "redirect"
-      priority      = 10000
-      description   = "Redirect if the recaptcha session score is between thresholds"
-      expression    = <<-EOT
-        request.path.matches('median-score.html') && token.recaptcha_session.score == 0.5
-      EOT
-      redirect_type = "GOOGLE_RECAPTCHA"
-    }
-
-    throttle_specific_ip_region = {
-      action      = "throttle"
-      priority    = 11000
-      description = "Throttle traffic to recaptcha demo application"
-      expression  = <<-EOT
-        request.headers['host'].lower().contains('agarsand.demo.altostrat.com') && !request.headers['host'].lower().matches('owasp.agarsand.demo.altostrat.com')
-      EOT
-      rate_limit_options = {
-        exceed_action                        = "deny(429)"
-        rate_limit_http_request_count        = 5
-        rate_limit_http_request_interval_sec = 60
-        enforce_on_key                       = "ALL"
+  rule {
+    action   = "allow"
+    priority = "2147483647"
+    match {
+      versioned_expr = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = ["*"]
       }
     }
-
-    rate_ban_specific_ip = {
-      action     = "rate_based_ban"
-      priority   = 12000
-      description = "Ban traffic to owasp demo application"
-      preview     = true
-      expression = <<-EOT
-        request.headers['host'].lower().matches('owasp.agarsand.demo.altostrat.com')
-      EOT
-      rate_limit_options = {
-        exceed_action                        = "deny(502)"
-        rate_limit_http_request_count        = 10
-        rate_limit_http_request_interval_sec = 60
-        ban_duration_sec                     = 120
-        ban_http_request_count               = 10
-        ban_http_request_interval_sec        = 60
-        enforce_on_key                       = "ALL"
-      }
-    }
-
+    description = "default rule"
   }
 
+  rule {
+    action   = "deny(403)"
+    priority = "7000"
+    match {
+      expr {
+        expression = "origin.region_code != 'IN'"
+      }
+    }
+    description = "Allow only Indians. Mera Bharat Mahan! :)"
+  }
+
+  rule {
+    action   = "allow"
+    priority = "8000"
+    match {
+      expr {
+        expression = "request.path.matches('good-score.html') && token.recaptcha_session.score > 0.4"
+      }
+    }
+    description = "Allow if the recaptcha session score is above threshold"
+  }
+
+  rule {
+    action   = "deny(403)"
+    priority = "9000"
+    match {
+      expr {
+        expression = "request.path.matches('bad-score.html') && token.recaptcha_session.score < 0.6"
+      }
+    }
+    description = "Deny if the recaptcha session score is below threshold"
+  }
+
+  rule {
+    action   = "redirect"
+    priority = "10000"
+    match {
+      expr {
+        expression = "request.path.matches('median-score.html') && token.recaptcha_session.score == 0.5"
+      }
+    }
+    redirect_options {
+      type = "GOOGLE_RECAPTCHA"
+    }
+    description = "Redirect if the recaptcha session score is between thresholds"
+  }
 }
