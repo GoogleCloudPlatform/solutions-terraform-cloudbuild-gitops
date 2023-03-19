@@ -125,8 +125,9 @@ resource "google_compute_address" "lb_ip_address" {
   address_type  = "EXTERNAL"
   description   = "static ip address for the dev loadbalancer"
 }
-/*
+
 resource "google_recaptcha_enterprise_key" "recaptcha_test_site_key" {
+  provider      = google-beta
   display_name  = "recaptcha-test-site-key"
   project       = var.demo_project
 
@@ -143,6 +144,7 @@ resource "google_recaptcha_enterprise_key" "recaptcha_test_site_key" {
 }
 
 resource "google_recaptcha_enterprise_key" "recaptcha_redirect_site_key" {
+  provider      = google-beta
   display_name  = "recaptcha-redirect-site-key"
   project       = var.demo_project
 
@@ -153,7 +155,7 @@ resource "google_recaptcha_enterprise_key" "recaptcha_redirect_site_key" {
     challenge_security_preference = "USABILITY"
   }
 }
-*/
+
 # Cloud Armor WAF Policy for Dev Backends
 resource "google_compute_security_policy" "dev_waf_security_policy" {
   provider      = google-beta
