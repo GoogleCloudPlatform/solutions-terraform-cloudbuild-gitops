@@ -160,10 +160,10 @@ resource "google_recaptcha_enterprise_key" "recaptcha_redirect_site_key" {
 }
 */
 # Cloud Armor WAF Policy for Dev Backends
-resource "google_compute_security_policy" "policy" {
-  project       = var.project
+resource "google_compute_security_policy" "dev_waf_security_policy" {
   name          = "dev-waf-security-policy"
   description   = "Cloud Armor Security Policy"
+  project       = var.project
   type          = "CLOUD_ARMOR"
 
   #recaptcha_options_config {
@@ -214,7 +214,7 @@ resource "google_compute_security_policy" "policy" {
     }
     description = "Deny if the recaptcha session score is below threshold"
   }
-
+/*
   rule {
     action   = "redirect"
     priority = "10000"
@@ -228,4 +228,5 @@ resource "google_compute_security_policy" "policy" {
     }
     description = "Redirect if the recaptcha session score is between thresholds"
   }
+*/
 }
