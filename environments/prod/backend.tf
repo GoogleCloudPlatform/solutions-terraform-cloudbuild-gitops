@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "rapid-notch-379320-tfstate"
     prefix = "env/prod"
   }
 }
