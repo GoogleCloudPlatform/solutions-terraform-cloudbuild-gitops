@@ -118,12 +118,9 @@ resource "google_artifact_registry_repository" "binauthz-demo-repo" {
   format        = "DOCKER"
 }
 
-resource "google_compute_address" "lb_ip_address" {
+resource "google_compute_global_address" "lb_ip_address" {
   name          = "dev-lb-static-ip"
   project       = var.project
-  region        = var.region 
-  address_type  = "EXTERNAL"
-  description   = "static ip address for the dev loadbalancer"
 }
 /*
 resource "google_recaptcha_enterprise_key" "recaptcha_test_site_key" {
