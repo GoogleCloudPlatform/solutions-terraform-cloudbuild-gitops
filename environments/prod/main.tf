@@ -337,6 +337,10 @@ resource "google_binary_authorization_policy" "prod_binauthz_policy" {
   admission_whitelist_patterns {
     name_pattern = "docker.io/library/mysql:latest"
   }
+
+  admission_whitelist_patterns {
+    name_pattern = "docker.io/bkimminich/juice-shop:latest"
+  }
   
   cluster_admission_rules {
     cluster                 = "${var.region}.${var.dev_cluster_name}"
