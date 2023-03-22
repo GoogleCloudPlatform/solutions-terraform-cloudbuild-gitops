@@ -301,3 +301,45 @@ resource "google_compute_security_policy" "gke_waf_security_policy" {
     preview     = true
   }
 }
+
+############################
+## Website Storage Bucket ##
+############################
+
+resource "google_storage_bucket" "www" {
+ project       = var.project
+ name          = "www.agarsand.demo.altostrat.com"
+ location      = "US"
+ storage_class = "STANDARD"
+
+ uniform_bucket_level_access = true
+
+ website {
+    main_page_suffix = "index.html"
+    not_found_page   = "denied.html"
+  }
+}
+
+# Upload html and image files as an object
+# to the storage bucket
+
+resource "google_storage_bucket_object" "index_html" {
+ name         = "index.html"
+ source       = "../../www/index.html"
+ content_type = "text/html"
+ bucket       = google_storage_bucket.www.id
+}
+
+resource "google_storage_bucket_object" "denied_html" {
+ name         = "denied.html"
+ source       = "../../www/denied.html"
+ content_type = "text/html"
+ bucket       = google_storage_bucket.www.id
+}
+
+resource "google_storage_bucket_object" "denied_png" {
+ name         = "denied.png"
+ source       = "../../www/denied.png"
+ content_type = "image/jpeg"
+ bucket       = google_storage_bucket.www.id
+}
