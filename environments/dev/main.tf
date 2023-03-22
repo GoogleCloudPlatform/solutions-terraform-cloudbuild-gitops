@@ -154,9 +154,9 @@ resource "google_recaptcha_enterprise_key" "recaptcha_redirect_site_key" {
 }
 */
 # Cloud Armor WAF Policy for Dev Backends
-resource "google_compute_security_policy" "dev_waf_security_policy" {
+resource "google_compute_security_policy" "gke_waf_security_policy" {
   provider      = google-beta
-  name          = "dev-waf-security-policy"
+  name          = "gke-waf-security-policy"
   description   = "Cloud Armor Security Policy"
   project       = var.project
   type          = "CLOUD_ARMOR"
@@ -179,13 +179,43 @@ resource "google_compute_security_policy" "dev_waf_security_policy" {
 
   rule {
     action   = "deny(403)"
-    priority = "7000"
+    priority = "3000"
+    match {
+      expr {
+        expression = "evaluatePreconfiguredExpr('sqli-stable', ['owasp-crs-v030001-id942251-sqli', 'owasp-crs-v030001-id942420-sqli', 'owasp-crs-v030001-id942431-sqli', 'owasp-crs-v030001-id942460-sqli', 'owasp-crs-v030001-id942421-sqli', 'owasp-crs-v030001-id942432-sqli'])"
+      }
+    }
+    description = "Allow only Indians. Mera Bharat Mahan! :)"
+  }
+
+  rule {
+    action   = "deny(403)"
+    priority = "6000"
     match {
       expr {
         expression = "origin.region_code != 'IN'"
       }
     }
-    description = "Allow only Indians. Mera Bharat Mahan! :)"
+    description = "Allow only users from India. Mera Bharat Mahan! :)"
+  }
+
+  rule {
+    action   = "redirect"
+    priority = "7000"
+    
+    match {
+      versioned_expr = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = ["104.132.232.68/32"]
+      }
+    }
+
+    redirect_options {
+        type = "EXTERNAL_302"
+        target = "https://www.agarsand.demo.altostrat.com/denied.html"
+    }
+
+    description = "Deny access to IPs"
   }
 
   rule {
@@ -221,6 +251,53 @@ resource "google_compute_security_policy" "dev_waf_security_policy" {
     redirect_options {
       type = "GOOGLE_RECAPTCHA"
     }
-    description = "Redirect if the recaptcha session score is between thresholds"
+    description = "Redirect to challenge page if the recaptcha session score is between thresholds"
+  }
+
+  rule {
+    action   = "throttle"
+    priority = "11000"
+    match {
+      expr {
+        expression = "request.headers['host'].lower().contains('gke.agarsand.demo.altostrat.com')"
+      }
+    }
+    rate_limit_options {
+        conform_action  = "allow"
+        exceed_action   = "deny(429)"
+
+        enforce_on_key  = "ALL"
+
+        rate_limit_threshold {
+            count           = 5
+            interval_sec    = 60
+        }
+    }
+    description = "Rate-based Throttle"
+  }
+
+  rule {
+    action      = "rate_based_ban"
+    priority    = "12000"
+    match {
+      expr {
+        expression = "request.headers['host'].lower().matches('owasp.agarsand.demo.altostrat.com')"
+      }
+    }
+    rate_limit_options {
+        conform_action  = "allow"
+        exceed_action   = "deny(429)"
+
+        enforce_on_key  = "ALL"
+
+        rate_limit_threshold {
+            count           = 10
+            interval_sec    = 60
+        }
+
+        ban_duration_sec    = 300
+    }
+    description = "Rate-based Throttle"
+    preview     = true
   }
 }
