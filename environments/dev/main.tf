@@ -320,9 +320,14 @@ resource "google_storage_bucket" "www" {
   }
 }
 
-# Upload html and image files as an object
-# to the storage bucket
+# IAM entry for the bucket to make it publicly readable
+resource "google_storage_bucket_iam_member" "member" {
+  bucket    = google_storage_bucket.www.id
+  role      = "roles/storage.objectViewer"
+  member    = "allUsers"
+} 
 
+# Upload html and image files as objects to the bucket
 resource "google_storage_bucket_object" "index_html" {
  name         = "index.html"
  source       = "../../www/index.html"
