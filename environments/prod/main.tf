@@ -911,3 +911,72 @@ resource "google_project_iam_member" "project" {
   role    = "roles/datastore.user"
   member  = "serviceAccount:${module.scc-jira-notification-cloud-function.sa-email}"
 }
+
+######################################
+## Admin Login Alerts to Slack Demo ##
+######################################
+
+resource "google_logging_organization_sink" "cloud_identity_logs_sink" {
+  org_id        = var.organization
+  name          = "cloud-identity-logs-sink"
+  description   = "writes high-risk event logs from cloud identity to pub/sub"
+  
+  destination   = "pubsub.googleapis.com/${google_pubsub_topic.identity_notification_topic.id}"
+
+  # Report all activity logs relating to the admin console
+  filter        = "protoPayload.serviceName=\"admin.googleapis.com\""
+}
+
+resource "google_pubsub_topic_iam_member" "cloud_identity_logs_writer" {
+  project   = google_pubsub_topic.identity_notification_topic.project
+  topic     = google_pubsub_topic.identity_notification_topic.name
+  role      = "roles/pubsub.publisher"
+  member    = google_logging_organization_sink.cloud_identity_logs_sink.writer_identity
+}
+
+resource "google_pubsub_topic" "identity_notification_topic" {
+  name = "identity-notification-topic"
+  message_retention_duration = "86400s"
+}
+
+module "identity-notification-cloud-function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "identity-notification"
+    function-desc   = "triggered by identity-notification-topic, communicates admin console activities"
+    entry-point     = "identity_notification"
+    env-vars        = {
+        SLACK_CHANNEL = var.slack_secops_channel,
+    }
+    secrets         = [
+        {
+            key = "SLACK_ACCESS_TOKEN"
+            id  = google_secret_manager_secret.slack_identity_bot_token.secret_id
+        }
+    ]
+    triggers        = [
+        {
+            event_type  = "google.pubsub.topic.publish"
+            resource    = google_pubsub_topic.identity_notification_topic.id
+        }
+    ]
+}
+
+resource "google_secret_manager_secret" "slack_identity_bot_token" {
+  project   = var.project
+  secret_id = "slack-identity-bot-token"
+
+  replication {
+    automatic = true
+  }
+}
+
+# IAM entry for service account of identity-notification function to use the slack bot token
+resource "google_secret_manager_secret_iam_binding" "identity_bot_token_binding" {
+  project   = google_secret_manager_secret.slack_identity_bot_token.project
+  secret_id = google_secret_manager_secret.slack_identity_bot_token.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  members    = [
+      "serviceAccount:${module.identity-notification-cloud-function.sa-email}",
+  ]
+}
