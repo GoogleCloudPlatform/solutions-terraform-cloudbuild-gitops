@@ -19,3 +19,9 @@ resource "google_project_service" "scc" {
   service = "securitycenter.googleapis.com"
   disable_on_destroy = false
 }
+
+resource "google_project_service" "bq_connection" {
+  project = var.project
+  service = "bigqueryconnection.googleapis.com"
+  disable_on_destroy = false
+}

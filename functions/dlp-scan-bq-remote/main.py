@@ -10,7 +10,8 @@ def dlp_scan_bq_remote(request):
     'PHONE_NUMBER', 'EMAIL_ADDRESS', 'US_SOCIAL_SECURITY_NUMBER'
   ]
   dlp_client = dlp.DlpServiceClient()
-  parent = f"projects/{os.environ.get('PROJECT_NAME')}"
+  PROJECT_NAME = os.environ.get('PROJECT_NAME')
+  parent = f"projects/{PROJECT_NAME}"
   inspect_config = {"info_types": [{"name": info_type} for info_type in INFO_TYPES]}
   deidentify_config = {
     "info_type_transformations": {

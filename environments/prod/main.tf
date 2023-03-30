@@ -544,6 +544,9 @@ module "dlp-scan-bq-remote-cloud-function" {
   function-name     = "dlp-scan-bq-remote"
   function-desc     = "scans data provided in bq queries and returns redacted values"
   entry-point       = "dlp_scan_bq_remote"
+  env-vars          = {
+      PROJECT_NAME  = var.project
+    }
 }
 
 # This creates a cloud resource connection.
