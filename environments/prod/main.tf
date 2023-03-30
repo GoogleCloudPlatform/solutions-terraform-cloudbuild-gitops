@@ -460,9 +460,9 @@ resource "google_secret_manager_secret_iam_binding" "signing_secret_binding" {
   ]
 }
 
-#############################
-## Cloud DLP API Scan Demo ##
-#############################
+#####################################
+## Cloud DLP API Storage Scan Demo ##
+#####################################
 
 # GCS bucket to store raw files to be scanned by DLP
 resource "google_storage_bucket" "raw_bucket" {
@@ -478,12 +478,12 @@ resource "google_storage_bucket" "redacted_bucket" {
   uniform_bucket_level_access   = true
 }
 
-module "dlp-scan-cloud-function" {
+module "dlp-scan-storage-cloud-function" {
     source          = "../../modules/cloud_function"
     project         = var.project
-    function-name   = "dlp-scan"
+    function-name   = "dlp-scan-storage"
     function-desc   = "scans new files in a bucket and stores redacted versions in another bucket"
-    entry-point     = "dlp_scan"
+    entry-point     = "dlp_scan_storage"
     env-vars        = {
         PROJECT_NAME            = var.project,
         REDACTED_BUCKET_NAME    = google_storage_bucket.redacted_bucket.name
@@ -496,33 +496,93 @@ module "dlp-scan-cloud-function" {
     ]
 }
 
-# Create a custom IAM role for the dlp-scan function over storage buckets
-resource "google_project_iam_custom_role" "dlp-scan-custom-role" {
-  role_id     = "dlp_scan_custom_role"
-  title       = "Custom Role for the dlp-scan function to read/write from storage buckets"
-  description = "This role is used by the dlp-scan function's SA in ${var.project}"
+# Create a custom IAM role for the dlp-scan-storage function over storage buckets
+resource "google_project_iam_custom_role" "dlp-scan-storage-custom-role" {
+  role_id     = "dlp_scan_storage_custom_role"
+  title       = "Custom Role for the dlp-scan-storage function to read/write from storage buckets"
+  description = "This role is used by the dlp-scan-storage function's SA in ${var.project}"
   permissions = ["storage.buckets.get","storage.objects.create","storage.objects.delete","storage.objects.get"]
 }
 
-# IAM entry for service account of dlp-scan function over raw bucket
+# IAM entry for service account of dlp-scan-storage function over raw bucket
 resource "google_storage_bucket_iam_member" "raw_bucket_read" {
   bucket = google_storage_bucket.raw_bucket.name
-  role = google_project_iam_custom_role.dlp-scan-custom-role.name
-  member = "serviceAccount:${module.dlp-scan-cloud-function.sa-email}"
+  role = google_project_iam_custom_role.dlp-scan-storage-custom-role.name
+  member = "serviceAccount:${module.dlp-scan-storage-cloud-function.sa-email}"
 }
 
-# IAM entry for service account of dlp-scan function over redacted bucket
+# IAM entry for service account of dlp-scan-storage function over redacted bucket
 resource "google_storage_bucket_iam_member" "redacted_bucket_write" {
   bucket = google_storage_bucket.redacted_bucket.name
-  role = google_project_iam_custom_role.dlp-scan-custom-role.name
-  member = "serviceAccount:${module.dlp-scan-cloud-function.sa-email}"
+  role = google_project_iam_custom_role.dlp-scan-storage-custom-role.name
+  member = "serviceAccount:${module.dlp-scan-storage-cloud-function.sa-email}"
 }
 
-# IAM entry for service account of dlp-scan function to use the DLP service
+# IAM entry for service account of dlp-scan-storage function to use the DLP service
 resource "google_project_iam_member" "project_dlp_user" {
   project = var.project
   role    = "roles/dlp.user"
-  member  = "serviceAccount:${module.dlp-scan-cloud-function.sa-email}"
+  member  = "serviceAccount:${module.dlp-scan-storage-cloud-function.sa-email}"
+}
+
+###################################
+## Cloud DLP BQ Remote Scan Demo ##
+###################################
+
+# BQ dataset to store raw files to be scanned by DLP
+resource "google_storage_bucket" "raw_bucket" {
+  name                          = "${var.project}-raw-bucket"
+  location                      = var.region
+  uniform_bucket_level_access   = true
+}
+
+module "dlp-scan-bq-remote-cloud-function" {
+  source            = "../../modules/cloud_function"
+  project           = var.project
+  function-name     = "dlp-scan-bq-remote"
+  function-desc     = "scans data provided in bq queries and returns redacted values"
+  entry-point       = "dlp_scan_bq_remote"
+}
+
+resource "google_bigquery_dataset" "dlp_scan_dataset" {
+  dataset_id                  = "dlp-scan-dataset"
+  friendly_name               = "dlp-scan-dataset"
+  description                 = "demo of dlp scans using bq remote functions"
+  location                    = var.region
+  default_table_expiration_ms = 3600000
+}
+
+ ## This creates a cloud resource connection.
+ ## Note: The cloud resource nested object has only one output only field - serviceAccountId.
+resource "google_bigquery_connection" "connection" {
+  connection_id   = "dlp-scan-bq-remote-connection"
+  project         = var.project
+  location        = var.region
+  cloud_resource {}
+}
+
+## This grants permissions to the service account of the connection created in the last step.
+resource "google_project_iam_member" "connectionPermissionGrant" {
+        project = "PROJECT_ID"
+        role = "roles/storage.objectViewer"
+        member = format("serviceAccount:%s", google_bigquery_connection.connection.cloud_resource[0].service_account_id)
+    }
+
+# IAM entry for service account of dlp_scan_dataset to invoke the mute-finding function
+resource "google_cloudfunctions_function_iam_member" "mute-finding-invoker" {
+  project        = var.project
+  region         = var.region
+  cloud_function = module.dlp-scan-bq-remote-cloud-function.function_name
+
+  role   = "roles/cloudfunctions.invoker"
+  member = "serviceAccount:${module.scc-remediation-cloud-function.sa-email}"
+}
+
+# IAM entry for service account of dlp-scan-bq-remote function to use the DLP service
+resource "google_project_iam_member" "project_dlp_user" {
+  project = var.project
+  role    = "roles/dlp.user"
+  member  = "serviceAccount:${module.dlp-scan-bq-remote-cloud-function.sa-email}"
 }
 
 ###############################

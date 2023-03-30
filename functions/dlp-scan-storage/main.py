@@ -18,7 +18,7 @@ INFO_TYPES = [
     'PHONE_NUMBER', 'EMAIL_ADDRESS', 'US_SOCIAL_SECURITY_NUMBER'
 ]
 
-def dlp_scan(event, context):
+def dlp_scan_storage(event, context):
     """Triggered by a change to a Cloud Storage bucket.
     Args:
          event (dict): Event payload.
