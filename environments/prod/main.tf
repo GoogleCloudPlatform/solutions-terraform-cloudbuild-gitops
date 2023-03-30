@@ -531,9 +531,8 @@ resource "google_project_iam_member" "project_dlp_user_storage" {
 
 # BQ dataset to store raw files to be scanned by DLP
 resource "google_bigquery_dataset" "dlp_scan_dataset" {
-  dataset_id                  = "dlp-scan-dataset"
-  friendly_name               = "dlp-scan-dataset"
-  description                 = "demo of dlp scans using bq remote functions"
+  dataset_id                  = "dlp_scan_dataset"
+  description                 = "demo of dlp scan using bq remote functions"
   location                    = var.region
   default_table_expiration_ms = 3600000
 }
