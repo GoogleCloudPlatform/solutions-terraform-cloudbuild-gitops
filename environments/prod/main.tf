@@ -519,7 +519,7 @@ resource "google_storage_bucket_iam_member" "redacted_bucket_write" {
 }
 
 # IAM entry for service account of dlp-scan-storage function to use the DLP service
-resource "google_project_iam_member" "project_dlp_user" {
+resource "google_project_iam_member" "project_dlp_user_storage" {
   project = var.project
   role    = "roles/dlp.user"
   member  = "serviceAccount:${module.dlp-scan-storage-cloud-function.sa-email}"
@@ -530,10 +530,12 @@ resource "google_project_iam_member" "project_dlp_user" {
 ###################################
 
 # BQ dataset to store raw files to be scanned by DLP
-resource "google_storage_bucket" "raw_bucket" {
-  name                          = "${var.project}-raw-bucket"
-  location                      = var.region
-  uniform_bucket_level_access   = true
+resource "google_bigquery_dataset" "dlp_scan_dataset" {
+  dataset_id                  = "dlp-scan-dataset"
+  friendly_name               = "dlp-scan-dataset"
+  description                 = "demo of dlp scans using bq remote functions"
+  location                    = var.region
+  default_table_expiration_ms = 3600000
 }
 
 module "dlp-scan-bq-remote-cloud-function" {
@@ -544,16 +546,8 @@ module "dlp-scan-bq-remote-cloud-function" {
   entry-point       = "dlp_scan_bq_remote"
 }
 
-resource "google_bigquery_dataset" "dlp_scan_dataset" {
-  dataset_id                  = "dlp-scan-dataset"
-  friendly_name               = "dlp-scan-dataset"
-  description                 = "demo of dlp scans using bq remote functions"
-  location                    = var.region
-  default_table_expiration_ms = 3600000
-}
-
- ## This creates a cloud resource connection.
- ## Note: The cloud resource nested object has only one output only field - serviceAccountId.
+# This creates a cloud resource connection.
+# The cloud resource nested object has only one output only field - serviceAccountId.
 resource "google_bigquery_connection" "connection" {
   connection_id   = "dlp-scan-bq-remote-connection"
   project         = var.project
@@ -561,25 +555,18 @@ resource "google_bigquery_connection" "connection" {
   cloud_resource {}
 }
 
-## This grants permissions to the service account of the connection created in the last step.
-resource "google_project_iam_member" "connectionPermissionGrant" {
-        project = "PROJECT_ID"
-        role = "roles/storage.objectViewer"
-        member = format("serviceAccount:%s", google_bigquery_connection.connection.cloud_resource[0].service_account_id)
-    }
-
-# IAM entry for service account of dlp_scan_dataset to invoke the mute-finding function
-resource "google_cloudfunctions_function_iam_member" "mute-finding-invoker" {
+# IAM entry for service account of the connection created in the last step to invoke the dlp-scan-bq-remote function
+resource "google_cloudfunctions_function_iam_member" "dlp-scan-bq-remote-invoker" {
   project        = var.project
   region         = var.region
   cloud_function = module.dlp-scan-bq-remote-cloud-function.function_name
 
   role   = "roles/cloudfunctions.invoker"
-  member = "serviceAccount:${module.scc-remediation-cloud-function.sa-email}"
+  member = format("serviceAccount:%s", google_bigquery_connection.connection.cloud_resource[0].service_account_id)
 }
 
 # IAM entry for service account of dlp-scan-bq-remote function to use the DLP service
-resource "google_project_iam_member" "project_dlp_user" {
+resource "google_project_iam_member" "project_dlp_user_bq_remote" {
   project = var.project
   role    = "roles/dlp.user"
   member  = "serviceAccount:${module.dlp-scan-bq-remote-cloud-function.sa-email}"
