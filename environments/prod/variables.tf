@@ -66,3 +66,7 @@ variable "atlassian_domain" {
 variable "jira_project_key" {
   type      = string
 }
+
+variable "dlp_wrapped_key" {
+  type      = string
+}

@@ -545,6 +545,8 @@ module "dlp-scan-bq-remote-cloud-function" {
   entry-point       = "dlp_scan_bq_remote"
   env-vars          = {
       PROJECT_NAME  = var.project
+      WRAPPED_KEY   = var.dlp_wrapped_key
+      KMS_KEY       = google_kms_crypto_key.dlp_tokenize_key.id
     }
 }
 
@@ -573,6 +575,33 @@ resource "google_project_iam_member" "project_dlp_user_bq_remote" {
   role    = "roles/dlp.user"
   member  = "serviceAccount:${module.dlp-scan-bq-remote-cloud-function.sa-email}"
 }
+
+# KMS resources
+resource "google_kms_key_ring" "dlp_tokenize_keyring" {
+  name     = "dlp-tokenize-keyring"
+  location = "global"
+}
+
+resource "google_kms_crypto_key" "dlp_tokenize_key" {
+  name     = "dlp-tokenize-key"
+  key_ring = google_kms_key_ring.dlp_tokenize_keyring.id
+  purpose  = "ENCRYPT_DECRYPT"
+
+  version_template {
+    algorithm           = "GOOGLE_SYMMETRIC_ENCRYPTION"
+    protection_level    = "SOFTWARE"
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+data "google_kms_crypto_key_version" "dlp_tokenize_key_version" {
+  crypto_key = google_kms_crypto_key.dlp_tokenize_key.id
+}
+
+
 
 ###############################
 ## reCAPTCHA Enterprise Demo ##

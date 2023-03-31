@@ -7,8 +7,12 @@ from google.cloud import dlp
 def dlp_scan_bq_remote(request):
   # create a dlp client for this project
   dlp_client = dlp.DlpServiceClient()
-  PROJECT_NAME = os.environ.get('PROJECT_NAME')
-  parent = f"projects/{PROJECT_NAME}"
+
+  # read os environment variables
+  KMS_KEY       = os.environ.get('KMS_KEY')
+  WRAPPED_KEY   = os.environ.get('WRAPPED_KEY')
+  PROJECT_NAME  = os.environ.get('PROJECT_NAME')
+  parent        = f"projects/{PROJECT_NAME}"
   
   # The infoTypes of information to match
   INFO_TYPES = ['PHONE_NUMBER', 'EMAIL_ADDRESS', 'US_SOCIAL_SECURITY_NUMBER']
@@ -17,10 +21,18 @@ def dlp_scan_bq_remote(request):
     "info_type_transformations": {
       "transformations": [
         {
+          "info_types": [{"name": info_type} for info_type in INFO_TYPES],
           "primitive_transformation": {
-            "character_mask_config": {
-            "masking_character": '#',
-            "number_to_mask": 0,
+            "cryptoDeterministicConfig": {
+              "cryptoKey": {
+                "kmsWrapped": {
+                  "cryptoKeyName": KMS_KEY,
+                  "wrappedKey": WRAPPED_KEY
+                }
+              },
+              "surrogateInfoType": {
+                "name": "TOKENIZED_VALUE"
+              }
             }
           }
         }
