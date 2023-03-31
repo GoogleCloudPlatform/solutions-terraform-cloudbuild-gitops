@@ -23,14 +23,14 @@ def dlp_scan_bq_remote(request):
         {
           "info_types": [{"name": info_type} for info_type in INFO_TYPES],
           "primitive_transformation": {
-            "cryptoDeterministicConfig": {
-              "cryptoKey": {
-                "kmsWrapped": {
-                  "cryptoKeyName": KMS_KEY,
-                  "wrappedKey": WRAPPED_KEY
+            "crypto_deterministic_config": {
+              "crypto_key": {
+                "kms_wrapped": {
+                  "crypto_key_name": KMS_KEY,
+                  "wrapped_key": WRAPPED_KEY
                 }
               },
-              "surrogateInfoType": {
+              "surrogate_info_type": {
                 "name": "TOKENIZED_VALUE"
               }
             }
