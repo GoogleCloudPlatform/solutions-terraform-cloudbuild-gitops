@@ -31,6 +31,7 @@ resource "google_compute_instance" "http_server" {
     }
   }
   shielded_instance_config {
+    enable_vtpm = false
     
   }
   network_interface {
