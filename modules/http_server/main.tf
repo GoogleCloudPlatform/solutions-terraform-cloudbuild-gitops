@@ -30,7 +30,9 @@ resource "google_compute_instance" "http_server" {
       image = "debian-cloud/debian-11"
     }
   }
-
+  shielded_instance_config {
+    
+  }
   network_interface {
     subnetwork = "${var.subnet}"
   
