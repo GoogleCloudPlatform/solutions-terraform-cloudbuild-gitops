@@ -28,3 +28,4 @@ output "firewall_rule" {
 output "instance_name" {
   value = "${module.http_server.instance_name}"
 }
+
