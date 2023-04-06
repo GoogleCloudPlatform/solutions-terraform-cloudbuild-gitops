@@ -10,7 +10,7 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
-# limitations under the License.
+# limitations dunder the License.
 
 
 steps:
@@ -23,27 +23,10 @@ steps:
  
 - id: 'tf init'
   name: 'hashicorp/terraform:1.0.0'
+  env:
+  - 'BRANCH_NAME=$BRANCH_NAME'
   entrypoint: 'sh'
-  args: 
-  - '-c'
-  - |
-      if [ -d "environments/$BRANCH_NAME/" ]; then
-        cd environments/$BRANCH_NAME
-        terraform init
-      else
-        for dir in environments/*/
-        do 
-          cd ${dir}   
-          env=${dir%*/}
-          env=${env#*/}
-          echo ""
-          echo "*************** TERRAFORM INIT ******************"
-          echo "******* At environment: ${env} ********"
-          echo "*************************************************"
-          terraform init || exit 1
-          cd ../../
-        done
-      fi 
+  args: ['./scripts/tf_init.sh']
 
 # [START tf-plan]
 - id: 'tf plan'
