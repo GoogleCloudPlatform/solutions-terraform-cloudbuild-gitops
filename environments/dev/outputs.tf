@@ -25,7 +25,7 @@ output "firewall_rule" {
   value = "${module.firewall.firewall_rule}"
 }
 
-output "instance_name" {
-  value = "${module.http_server.instance_name}"
-}
+#output "instance_name" {
+#  value = "${module.http_server.instance_name}"
+#}
 
