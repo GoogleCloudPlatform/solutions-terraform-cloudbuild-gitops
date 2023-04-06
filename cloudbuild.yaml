@@ -16,8 +16,10 @@
 steps:
 - id: 'branch name script'
   name: 'alpine'
+  env:
+  - 'BRANCH_NAME=$BRANCH_NAME'
   entrypoint: 'sh'  
-  args: ['./scripts/branch_name.sh', BRANCH_NAME=$BRANCH_NAME ]
+  args: ['./scripts/branch_name.sh']
  
 - id: 'tf init'
   name: 'hashicorp/terraform:1.0.0'
