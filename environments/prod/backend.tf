@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "gothic-calling-383013-tfstate"
     prefix = "env/prod"
   }
 }
