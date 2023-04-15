@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "genial-runway-383808-tfstate"
     prefix = "env/dev"
   }
 }
