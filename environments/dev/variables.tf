@@ -14,3 +14,15 @@
 
 
 variable "project" {}
+
+variable "billing_account" {
+  description = "The ID of the billing account to associate projects with"
+  type        = string
+  default     = "0139AE-CB7F6A-807A7D"
+}
+
+variable "org_id" {
+  description = "The organization id for the associated resources"
+  type        = string
+  default     = "69636982042"
+}
