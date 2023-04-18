@@ -348,3 +348,16 @@ resource "google_storage_bucket_object" "denied_png" {
  content_type = "image/jpeg"
  bucket       = google_storage_bucket.www.id
 }
+
+##############################
+## Pulumi Related Resources ##
+##############################
+
+resource "google_secret_manager_secret" "pulumi_access_token" {
+  project   = var.project
+  secret_id = "pulumi-access-token"
+
+  replication {
+    automatic = true
+  }
+}
