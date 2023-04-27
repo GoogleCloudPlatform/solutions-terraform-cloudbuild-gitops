@@ -942,6 +942,7 @@ module "scc-jira-notification-cloud-function" {
         JIRA_PROJECT_KEY    =   var.jira_project_key,
         ISSUE_TYPE          =   "Task",
         STATUS_OPEN         =   "To Do",
+        STATUS_WIP          =   "In Progress",
         STATUS_DONE         =   "Done",
     }
     secrets         = [

@@ -16,6 +16,7 @@ PREFIX = "https://console.cloud.google.com/security/command-center/findings"
 # the `STATUS_DONE` column. If the existing issue is in any other column, this script
 # will do nothing.
 STATUS_OPEN = os.environ["STATUS_OPEN"]
+STATUS_WIP  = os.environ["STATUS_WIP"]
 STATUS_DONE = os.environ["STATUS_DONE"]
 
 def get_finding_detail_page_link(finding_name):
@@ -147,7 +148,7 @@ def process_resolved_finding(finding):
         # Jira issue exists - close it.
         jira_key = doc["jira_key"]
         issue = get_jira_issue(jira_key)
-        if issue is not None and issue["fields"]["status"]["name"] == STATUS_OPEN:
+        if issue is not None and issue["fields"]["status"]["name"] in (STATUS_OPEN, STATUS_WIP):
             transition_jira_issue(jira_key, STATUS_DONE)
             print(f"Closed Jira issue: {jira_key} - {finding['name']}")
 
