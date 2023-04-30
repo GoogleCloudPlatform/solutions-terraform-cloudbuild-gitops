@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="proj-bsc-net-mgmt-381107"
