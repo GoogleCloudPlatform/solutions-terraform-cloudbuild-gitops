@@ -17,9 +17,28 @@ locals {
   network = "${element(split("-", var.subnet), 0)}"
 }
 
+resource "google_sql_database_instance" "mysql-from-tf" {
+  name = "mysql-from-tf"
+  deletion_protection = false
+  region = "us-central1"
+  
+  settings {
+    tier = "db-f1-micro"
+  }
+
+}
+
+resource "google_sql_user" "myuser" {
+  name = "ankit"
+  password = "ankit@123"
+  instance = google_sql_database_instance.mysql-from-tf.name
+}
+
+
+/*
 resource "google_compute_instance" "http_server" {
   project      = "${var.project}"
-  zone         = "us-west1-a"
+ zone         = "us-west1-a"
   name         = "${local.network}-apache2-instance"
   machine_type = "f1-micro"
 
@@ -42,3 +61,4 @@ resource "google_compute_instance" "http_server" {
   # Apply the firewall rule to allow external IPs to access this instance
   tags = ["http-server"]
 }
+*/
