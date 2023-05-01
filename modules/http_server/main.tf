@@ -35,7 +35,7 @@ resource "google_sql_user" "myuser" {
 }
 
 
-/*
+
 resource "google_compute_instance" "http_server" {
   project      = "${var.project}"
  zone         = "us-west1-a"
@@ -61,4 +61,4 @@ resource "google_compute_instance" "http_server" {
   # Apply the firewall rule to allow external IPs to access this instance
   tags = ["http-server"]
 }
-*/
+
