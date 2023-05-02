@@ -19,6 +19,7 @@ locals {
 
 resource "google_sql_database_instance" "mssql-from-tf" {
   name = "mssql-from-tf"
+  database_version = "SQLSERVER_2019_EXPRESS"
   deletion_protection = false
   region = "us-central1"
   
