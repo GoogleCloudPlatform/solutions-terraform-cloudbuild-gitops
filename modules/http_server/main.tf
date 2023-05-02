@@ -31,7 +31,7 @@ resource "google_sql_database_instance" "mssql-from-tf" {
 resource "google_sql_user" "myuser" {
   name = "ankit"
   password = "ankit@123"
-  instance = google_sql_database_instance.mysql-from-tf.name
+  instance = google_sql_database_instance.mssql-from-tf.name
 }
 
 
