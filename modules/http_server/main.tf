@@ -28,11 +28,11 @@ resource "google_sql_database_instance" "mssql-from-tf" {
 
 }
 
-resource "google_sql_user" "myuser" {
-  name = "ankit"
-  password = "ankit@123"
-  instance = google_sql_database_instance.mssql-from-tf.name
-}
+# resource "google_sql_user" "myuser" {
+#  name = "ankit"
+#  password = "ankit@123"
+#  instance = google_sql_database_instance.mssql-from-tf.name
+ # }
 
 
 
