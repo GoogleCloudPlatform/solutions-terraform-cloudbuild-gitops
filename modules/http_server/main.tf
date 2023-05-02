@@ -17,8 +17,8 @@ locals {
   network = "${element(split("-", var.subnet), 0)}"
 }
 
-resource "google_sql_database_instance" "mysql-from-tf" {
-  name = "mysql-from-tf"
+resource "google_sql_database_instance" "mssql-from-tf" {
+  name = "mssql-from-tf"
   deletion_protection = false
   region = "us-central1"
   
