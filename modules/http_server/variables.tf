@@ -15,4 +15,4 @@
 
 variable "project" {}
 variable "subnet" {}
-
+variable "region" {}
