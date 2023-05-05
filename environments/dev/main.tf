@@ -32,6 +32,7 @@ module "vpc" {
   source  = "../../modules/http_server"
   project = "${var.project}"
   subnet  = "${module.vpc.subnet}"
+  region = "${var.region}"
 }
 
 module "firewall" {
