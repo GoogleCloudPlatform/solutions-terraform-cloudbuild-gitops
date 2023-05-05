@@ -25,13 +25,14 @@ module "vpc" {
   source  = "../../modules/vpc"
   project = "${var.project}"
   env     = "${local.env}"
+  region = "${var.region}"
 }
 
-# module "http_server" {
-#  source  = "../../modules/http_server"
-#  project = "${var.project}"
-#  subnet  = "${module.vpc.subnet}"
-#}
+ module "http_server" {
+  source  = "../../modules/http_server"
+  project = "${var.project}"
+  subnet  = "${module.vpc.subnet}"
+}
 
 module "firewall" {
   source  = "../../modules/firewall"
