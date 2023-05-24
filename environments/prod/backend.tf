@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "fit-aleph-374606-tfstate"
     prefix = "env/prod"
   }
 }
