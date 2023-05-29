@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "fsa-shipyard-tfstate"
     prefix = "env/dev"
   }
 }
