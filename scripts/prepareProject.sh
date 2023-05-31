@@ -44,8 +44,9 @@ echo $kmsKey
 
 # The files we have to substitute in are:
 # backend.tf  clearwaiters.sh  copyBootstrapArtifacts.sh  getDomainPassword.sh  main.tf
-sed -i '' "s/{common-backend-bucket}/$bucketName/g;s/{windows-domain}/$domainName/g;s/{cloud-project-id}/$project/g;s/{cloud-project-region}/$region/g;s/{cloud-project-zone}/$zone/g;s/{cloud-project-hazone}/$hazone/g;s/{cloud-project-drregion}/$drregion/g;s/{cloud-project-drzone}/$drzone/g;s/{deployment-name}/$prefix/g" "$tf_path/backend.tf" "$tf_path/main.tf" "$scripts_path/clearwaiters.sh" "$scripts_path/copyBootstrapArtifacts.sh" "$scripts_path/getDomainPassword.sh"
- 
+sed -i '' "s/{common-backend-bucket}/$bucketName/g;s/{windows-domain}/$domainName/g;s/{cloud-project-id}/$project/g;s/{cloud-project-region}/$region/g;s/{cloud-project-zone}/$zone/g;s/{cloud-project-hazone}/$hazone/g;s/{cloud-project-drregion}/$drregion/g;s/{cloud-project-drzone}/$drzone/g;s/{deployment-name}/$prefix/g" "$tf_path/backend.tf" "$tf_path/locals.tf" "$scripts_path/clearwaiters.sh" "$scripts_path/copyBootstrapArtifacts.sh" "$scripts_path/getDomainPassword.sh"
+#sed -i '' "s/{common-backend-bucket}/$bucketName/g;s/{windows-domain}/$domainName/g;s/{cloud-project-id}/$project/g;s/{cloud-project-region}/$region/g;s/{cloud-project-zone}/$zone/g;s/{cloud-project-hazone}/$hazone/g;s/{cloud-project-drregion}/$drregion/g;s/{cloud-project-drzone}/$drzone/g;s/{deployment-name}/$prefix/g" "$tf_path/backend.tf" "$tf_path/main.tf" "$scripts_path/clearwaiters.sh" "$scripts_path/copyBootstrapArtifacts.sh" "$scripts_path/getDomainPassword.sh"
+
 #########################################
 #enable the services that we depend upon
 ##########################################
