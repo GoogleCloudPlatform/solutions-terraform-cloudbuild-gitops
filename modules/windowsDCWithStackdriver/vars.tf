@@ -15,23 +15,12 @@
 #
 
 variable "project" {
-  type        = string
-  description = "project_id"
-}
-
-variable "alwayson-vip" {
-  type        = string
-  description = "address where alwayson will listen"
-}
-
-variable "wsfc-vip" {
-  type        = string
-  description = "address where wsfc will listen"
+  type    = string
 }
 
 variable "machinetype" {
   type    = string
-  default = "n1-standard-4"
+  default = "n1-standard-8"
 }
 
 variable "osimage" {
@@ -49,7 +38,7 @@ variable "instancerole" {
 
 variable "function" {
   type    = string
-  default = "sql"
+  default = "pdc"
 }
 
 variable "instancenumber" {
@@ -98,6 +87,10 @@ variable "subnet-name" {
   type = string
 }
 
+variable "secondary-subnet-name" {
+  type = string
+}
+
 variable "netbios-name" {
   type = string
 }
@@ -114,10 +107,6 @@ variable "wait-on" {
   type = string
 }
 
-variable "domain-controller-address" {
-  type = string
-}
-
 variable "status-variable-path" {
   type = string
 }
@@ -128,15 +117,11 @@ variable "network-tag" {
   description = "network tags"
 }
 
-variable "post-join-script-url" {
-  type        = string
-  default     = ""
-  description = "after joining to the domain"
+variable "network-ip" {
+  type    = string
+  default = ""
 }
 
-variable "sql_nodes" {
-  type        = string
-  default     = ""
-  description = "list of sql nodes in cluster"
-}
-
+#variable "project-id" {
+#    type=string
+#}

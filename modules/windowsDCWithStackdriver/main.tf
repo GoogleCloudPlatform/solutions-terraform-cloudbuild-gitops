@@ -13,6 +13,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+data "google_project" "project" {
+}
 
 #Setup a template for the windows startup bat file.  The bat files calls a powershell script so that is can get permissios to install stackdriver
 data "template_file" "windowsstartup" {
@@ -20,7 +22,7 @@ data "template_file" "windowsstartup" {
 
   vars = {
     environment  = var.environment
-    projectname  = "${var.project}"
+    projectname  = lower(data.google_project.project.name)
     computername = "${var.deployment-name}-${var.function}-${var.instancenumber}"
   }
 }
@@ -36,10 +38,16 @@ resource "google_compute_disk" "datadisk" {
   size = "200"
 }
 
-resource "google_compute_instance" "sqlserver" {
+resource "google_runtimeconfig_config" "ad-runtime-config" {
+  name        = var.runtime-config
+  description = "Runtime configuration values for my service"
+}
+
+resource "google_compute_instance" "domain-controller" {
   name         = local.computername
   machine_type = var.machinetype
   zone         = var.regionandzone
+
   boot_disk {
     initialize_params {
       image = var.osimage
@@ -50,14 +58,8 @@ resource "google_compute_instance" "sqlserver" {
 
   network_interface {
     subnetwork = var.subnet-name
-    alias_ip_range {
-      ip_cidr_range = var.alwayson-vip
-    }
-    alias_ip_range {
-      ip_cidr_range = var.wsfc-vip
-    }
+    network_ip = var.network-ip
     access_config {
-      // Ephemeral IP
     }
   }
 
@@ -73,28 +75,25 @@ resource "google_compute_instance" "sqlserver" {
   metadata = {
     environment                = var.environment
     domain-name                = var.domain-name
-    domain-controller-address  = var.domain-controller-address
-    instancerole               = var.instancerole
     function                   = var.function
     region                     = var.region
     keyring                    = var.keyring
-    keyring-region             = var.kms-region
     runtime-config             = var.runtime-config
+    deployment-name            = var.deployment-name
     kms-key                    = var.kms-key
+    keyring-region             = var.kms-region
     gcs-prefix                 = var.gcs-prefix
     netbios-name               = var.netbios-name
-    application                = "SQLServer AlwaysOn"
+    application                = "primary domain controller"
     windows-startup-script-ps1 = data.template_file.windowsstartup.rendered
     role                       = var.instancerole
-    wait-on                    = var.wait-on
+    status-variable-path       = var.status-variable-path
     project-id                 = var.project
-    post-join-script-url       = var.post-join-script-url
-    sql_nodes                  = var.sql_nodes
   }
 
   service_account {
     //scopes = ["storage-ro","monitoring-write","logging-write","trace-append"]
-    scopes = ["cloud-platform", "https://www.googleapis.com/auth/cloudruntimeconfig", "storage-rw"]
+    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   }
 }
 

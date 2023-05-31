@@ -70,7 +70,7 @@ locals {
 }
 
 module "create-network"{
-  source = "../modules/network"
+  source = "../../modules/network"
   network-name    = "${local.deployment-name}-${local.environment}-net"
   primary-cidr    = "${local.primary-cidr}"
   second-cidr     = "${local.second-cidr}"
@@ -83,7 +83,8 @@ module "create-network"{
 
 //windows domain controller
 module "windows-domain-controller" {
-  source          = "../modules/windowsDCWithStackdriver"
+  source          = "../../modules/windowsDCWithStackdriver"
+  project = "${var.project}"
   subnet-name     = "${module.create-network.subnet-name}"
   secondary-subnet-name = "${module.create-network.subnet-name}"
   instancerole    = "p"
@@ -108,7 +109,8 @@ module "windows-domain-controller" {
 }
 
 module "sql-server-alwayson-primary" {
-  source = "../modules/SQLServerWithStackdriver"
+  source = "../../modules/SQLServerWithStackdriver"
+  project = "${var.project}"
   subnet-name = "${module.create-network.second-subnet-name}"
   alwayson-vip = "${local.second-cidr-alwayson}"
   wsfc-vip = "${local.second-cidr-wsfc}"
@@ -137,7 +139,8 @@ module "sql-server-alwayson-primary" {
 }
 
  module "sql-server-alwayson-secondary" {
-  source = "../modules/SQLServerWithStackdriver"
+  source = "../../modules/SQLServerWithStackdriver"
+  project = "${var.project}"
   subnet-name = "${module.create-network.third-subnet-name}"
   instancerole = "s"
   instancenumber = "02"
@@ -165,7 +168,8 @@ module "sql-server-alwayson-primary" {
 }
 
  module "sql-server-alwayson-secondary-2" {
-  source = "../modules/SQLServerWithStackdriver"
+  source = "../../modules/SQLServerWithStackdriver"
+   project = "${var.project}"
   subnet-name = "${module.create-network.fourth-subnet-name}"
   instancerole = "s"
   instancenumber = "03"
