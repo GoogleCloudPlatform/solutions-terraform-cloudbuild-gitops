@@ -20,7 +20,7 @@ data "template_file" "windowsstartup" {
 
   vars = {
     environment  = var.environment
-    projectname  = lower(data.google_project.project.name)
+    projectname  = var.project
     computername = "${var.deployment-name}-${var.function}-${var.instancenumber}"
   }
 }
