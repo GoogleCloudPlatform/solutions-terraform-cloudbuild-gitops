@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "-tfstate"
+    bucket = "sky-sada-ml-tfstate"
     prefix = "env/prod"
   }
 }
