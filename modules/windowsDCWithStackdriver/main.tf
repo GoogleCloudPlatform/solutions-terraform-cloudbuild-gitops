@@ -13,8 +13,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-data "google_project" "project" {
-}
 
 #Setup a template for the windows startup bat file.  The bat files calls a powershell script so that is can get permissios to install stackdriver
 data "template_file" "windowsstartup" {
