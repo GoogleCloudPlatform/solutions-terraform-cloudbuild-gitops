@@ -1,0 +1,9 @@
+{
+  "bindings": [{
+    "role": "roles/cloudkms.cryptoKeyDecrypter",
+    "members": ["serviceAccount:{SvcAccount}", "user:{Usr}"]
+  }, {
+    "role": "roles/cloudkms.cryptoKeyEncrypter",
+    "members": ["serviceAccount:{SvcAccount}", "user:{Usr}"]
+  }]
+}

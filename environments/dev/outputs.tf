@@ -32,3 +32,7 @@ output "firewall_rule" {
 #output "external_ip" {
 #  value = "${module.http_server.external_ip}"
 #}
+
+output domain-controller-address {
+  value = "${module.windows-domain-controller.dc-address}"
+}

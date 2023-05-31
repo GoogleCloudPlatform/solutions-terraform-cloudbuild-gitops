@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# TODO DELETE
 
 locals {
   network = "${element(split("-", var.subnet), 0)}"
