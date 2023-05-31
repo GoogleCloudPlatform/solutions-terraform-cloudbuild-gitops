@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "sky-sada-ml-tfstate"
     prefix = "env/dev"
   }
 }
