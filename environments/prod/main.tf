@@ -929,7 +929,7 @@ resource "google_cloudfunctions_function_iam_member" "remediate-bucket-invoker" 
 }
 
 # IAM entry for service account of remediate-bucket function
-resource "google_organization_iam_member" "remediate_instance_org_scc_remediation" {
+resource "google_organization_iam_member" "remediate_bucket_org_scc_remediation" {
   org_id    = var.organization
   role      = google_organization_iam_custom_role.scc-remediation-custom-role.name
   member    = "serviceAccount:${module.remediate-bucket-cloud-function.sa-email}"
