@@ -857,7 +857,7 @@ resource "google_organization_iam_custom_role" "scc-remediation-custom-role" {
   org_id      = var.organization
   title       = "Custom Role for SCC Remediation Cloud Functions"
   description = "This role is used by various remediate-* function SAs to remediate SCC findings"
-  permissions = ["compute.firewalls.delete","compute.instances.delete","compute.networks.updatePolicy","compute.globalOperations.get","compute.zoneOperations.get"]
+  permissions = ["compute.firewalls.delete","compute.instances.delete","compute.networks.updatePolicy","compute.globalOperations.get","compute.zoneOperations.get","storage.buckets.getIamPolicy","storage.buckets.setIamPolicy"]
 }
 
 module "remediate-firewall-cloud-function" {

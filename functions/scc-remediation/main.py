@@ -32,6 +32,9 @@ def scc_remediation(request):
             elif resource_type == "google.compute.Instance" and decision == "Remediate":
                 cloud_function = "remediate-instance"
                 http_endpoint = "https://us-central1-secops-project-348011.cloudfunctions.net/remediate-instance"
+            elif resource_type == "google.cloud.storage.Bucket" and decision == "Remediate":
+                cloud_function = "remediate-bucket"
+                http_endpoint = "https://us-central1-secops-project-348011.cloudfunctions.net/remediate-bucket"
             elif decision == "Deactivate":
                 cloud_function = "deactivate-finding"
                 http_endpoint = "https://us-central1-secops-project-348011.cloudfunctions.net/deactivate-finding"
