@@ -910,6 +910,31 @@ resource "google_organization_iam_member" "remediate_instance_org_scc_remediatio
   member    = "serviceAccount:${module.remediate-instance-cloud-function.sa-email}"
 }
 
+module "remediate-bucket-cloud-function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "remediate-bucket"
+    function-desc   = "remediates scc findings related to misconfigured buckets"
+    entry-point     = "remediate_bucket"
+}
+
+# IAM entry for service account of scc-remediation function to invoke the remediate-bucket function
+resource "google_cloudfunctions_function_iam_member" "remediate-bucket-invoker" {
+  project        = var.project
+  region         = var.region
+  cloud_function = module.remediate-bucket-cloud-function.function_name
+
+  role   = "roles/cloudfunctions.invoker"
+  member = "serviceAccount:${module.scc-remediation-cloud-function.sa-email}"
+}
+
+# IAM entry for service account of remediate-bucket function
+resource "google_organization_iam_member" "remediate_instance_org_scc_remediation" {
+  org_id    = var.organization
+  role      = google_organization_iam_custom_role.scc-remediation-custom-role.name
+  member    = "serviceAccount:${module.remediate-bucket-cloud-function.sa-email}"
+}
+
 ##########################################
 ## SCC JIRA Automatic Notification Demo ##
 ##########################################
