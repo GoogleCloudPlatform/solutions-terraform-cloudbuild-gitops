@@ -14,7 +14,7 @@
 
 
 locals {
-  env = "prod"
+  env = "prod-maehata"
 }
 
 provider "google" {
