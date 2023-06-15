@@ -55,7 +55,7 @@ module "vpc" {
     ]
   }
 }
-/*
+
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
@@ -84,7 +84,7 @@ resource "google_project_iam_member" "compute_container_admin" {
   role     = "roles/container.admin"
   member   = "serviceAccount:${module.gke_cluster.service-account}"
 }
-*/
+
 resource "google_pubsub_topic" "operations-pubsub" {
   name                          = "clouddeploy-operations"
   message_retention_duration    = "86400s"
@@ -234,7 +234,7 @@ resource "google_clouddeploy_target" "dev-cluster-target" {
     google_project_iam_member.clouddeploy_service_agent_role
   ]
 }
-/*
+
 resource "google_clouddeploy_target" "prod-cluster-target" {
   name              = "prod-cluster"
   description       = "Target for prod environment"
@@ -255,7 +255,7 @@ resource "google_clouddeploy_target" "prod-cluster-target" {
     google_project_iam_member.clouddeploy_service_agent_role
   ]
 }
-*/
+
 resource "google_clouddeploy_delivery_pipeline" "pipeline" {
   name        = "binauthz-demo-pipeline"
   description = "Pipeline for binauthz application" #TODO parameterize
@@ -267,9 +267,9 @@ resource "google_clouddeploy_delivery_pipeline" "pipeline" {
         target_id = google_clouddeploy_target.dev-cluster-target.name
     }
 
-    #stages {
-    #  target_id = google_clouddeploy_target.prod-cluster-target.name
-    #}
+    stages {
+      target_id = google_clouddeploy_target.prod-cluster-target.name
+    }
   }
 }
 
@@ -349,12 +349,12 @@ resource "google_binary_authorization_policy" "prod_binauthz_policy" {
     require_attestations_by = ["projects/${var.project}/attestors/built-by-cloud-build"]
   }
 
-  #cluster_admission_rules {
-  #  cluster                 = "${var.region}.${module.gke_cluster.name}"
-  #  evaluation_mode         = "REQUIRE_ATTESTATION"
-  #  enforcement_mode        = "ENFORCED_BLOCK_AND_AUDIT_LOG"
-  #  require_attestations_by = ["projects/${var.project}/attestors/built-by-cloud-build","${google_binary_authorization_attestor.attestor.id}"]
-  #}
+  cluster_admission_rules {
+    cluster                 = "${var.region}.${module.gke_cluster.name}"
+    evaluation_mode         = "REQUIRE_ATTESTATION"
+    enforcement_mode        = "ENFORCED_BLOCK_AND_AUDIT_LOG"
+    require_attestations_by = ["projects/${var.project}/attestors/built-by-cloud-build","${google_binary_authorization_attestor.attestor.id}"]
+  }
 }
 
 ###########################################
