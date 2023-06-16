@@ -24,7 +24,7 @@ provider "google" {
 module "vpc" {
   source  = "../../modules/vpc"
   project = "${var.project}"
-  env     = "${local.env}"
+  env     = "${local.env}-maehata"
 }
 
 module "http_server" {
