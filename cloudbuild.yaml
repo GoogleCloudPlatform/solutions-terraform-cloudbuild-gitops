@@ -22,7 +22,7 @@ steps:
   args: ['./scripts/branch_name.sh']
  
 - id: 'tf init'
-  name: 'hashicorp/terraform:1.0.0'
+  name: 'hashicorp/terraform:1.5.0'
   env:
   - 'BRANCH_NAME=$BRANCH_NAME'
   entrypoint: 'sh'
@@ -30,7 +30,7 @@ steps:
 
 # [START tf-plan]
 - id: 'tf plan'
-  name: 'hashicorp/terraform:1.0.0'
+  name: 'hashicorp/terraform:1.5.0'
   env:
   - 'BRANCH_NAME=$BRANCH_NAME'
   entrypoint: 'sh'
@@ -40,7 +40,7 @@ steps:
 
 # [START tf-apply]
 - id: 'tf apply'
-  name: 'hashicorp/terraform:1.0.0'
+  name: 'hashicorp/terraform:1.5.0'
   env:
   - 'BRANCH_NAME=$BRANCH_NAME'
   entrypoint: 'sh'
