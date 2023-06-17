@@ -361,3 +361,39 @@ resource "google_secret_manager_secret" "pulumi_access_token" {
     automatic = true
   }
 }
+
+####################################
+## IAP, Cloud Run, Cloud SQL Demo ##
+####################################
+
+resource "google_compute_global_address" "iap_run_ip_address" {
+  name          = "iap-run-sql-demo"
+  project       = var.project
+}
+
+# Create the Cloud Run service
+resource "google_cloud_run_service" "iap_run_service" {
+  name = "iap-run-sql-demo"
+  location = "us-central1"
+
+  template {
+    spec {
+      containers {
+        image = "gcr.io/google-samples/hello-app:1.0"
+      }
+    }
+  }
+
+  traffic {
+    percent         = 100
+    latest_revision = true
+  }
+}
+
+# Allow unauthenticated users to invoke the service
+resource "google_cloud_run_service_iam_member" "run_all_users" {
+  service  = google_cloud_run_service.iap_run_service.name
+  location = google_cloud_run_service.iap_run_service.location
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}
