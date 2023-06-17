@@ -30,3 +30,7 @@ variable "demo_project" {
 variable "region" {
   type        = string
 }
+
+variable "onprem_ips" {
+  type        = list  
+}

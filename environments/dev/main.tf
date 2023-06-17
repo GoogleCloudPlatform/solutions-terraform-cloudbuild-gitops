@@ -371,10 +371,53 @@ resource "google_compute_global_address" "iap_run_ip_address" {
   project       = var.project
 }
 
+module "lb-http" {
+  source            = "GoogleCloudPlatform/lb-http/google//modules/serverless_negs"
+  version           = "~> 9.0"
+  name              = "iap-run-sql-demo"
+  project           = var.project
+  
+  ssl                               = true
+  https_redirect                    = true
+  managed_ssl_certificate_domains   = ["run.agarsand.demo.altostrat.com"]
+  address                           = google_compute_global_address.iap_run_ip_address.address
+
+  backends = {
+    default = {
+      description = null
+      enable_cdn = false
+      groups = [
+        {
+          group = google_compute_region_network_endpoint_group.iap_run_sql_demo_neg.id
+        }
+      ]
+      
+      iap_config = {
+        enable                  = false
+        oauth2_client_id        = null
+        oauth2_client_secret    = null
+      }
+      log_config = {
+        enable                  = true
+        sample_rate             = 1.0
+      }
+    }
+  }
+}
+
+resource "google_compute_region_network_endpoint_group" "iap_run_sql_demo_neg" {
+  name                  = "iap-run-sql-demo-neg"
+  network_endpoint_type = "SERVERLESS"
+  region                = var.region
+  cloud_run {
+    service = google_cloud_run_service.iap_run_service.name
+  }
+}
+
 # Create the Cloud Run service
 resource "google_cloud_run_service" "iap_run_service" {
-  name = "iap-run-sql-demo"
-  location = "us-central1"
+  name      = "iap-run-sql-demo"
+  location  = var.region
 
   template {
     spec {
@@ -383,6 +426,14 @@ resource "google_cloud_run_service" "iap_run_service" {
       }
     }
   }
+
+  metadata {
+      annotations = {
+        "autoscaling.knative.dev/maxScale"      = "2"
+        "run.googleapis.com/cloudsql-instances" = google_sql_database_instance.iap_run_sql_demo_db_instance.connection_name
+        "run.googleapis.com/client-name"        = "terraform"
+      }
+    }
 
   traffic {
     percent         = 100
@@ -396,4 +447,35 @@ resource "google_cloud_run_service_iam_member" "run_all_users" {
   location = google_cloud_run_service.iap_run_service.location
   role     = "roles/run.invoker"
   member   = "allUsers"
+}
+
+resource "google_sql_database" "iap_run_sql_demo_database" {
+  name     = "iap-run-sql-demo-db"
+  instance = google_sql_database_instance.instance.name
+}
+
+resource "google_sql_database_instance" "iap_run_sql_demo_db_instance" {
+  name             = "iap-run-sql-demo-db-instance"
+  region           = var.region
+  database_version = "POSTGRES_14"
+  settings {
+    tier = "db-f1-micro"
+
+    ip_configuration {
+      ipv4_enabled  = true
+      require_ssl   = true
+
+      dynamic "authorized_networks" {
+        for_each    = var.onprem_ips
+        iterator    = onprem_ip
+
+        content {
+          name      = "onprem_ip-${onprem_ip.key}"
+          value     = onprem_ip.value
+        }
+      }
+    }
+  }
+
+  deletion_protection  = "false"
 }
