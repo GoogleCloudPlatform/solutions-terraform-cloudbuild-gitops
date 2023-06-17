@@ -366,46 +366,79 @@ resource "google_secret_manager_secret" "pulumi_access_token" {
 ## IAP, Cloud Run, Cloud SQL Demo ##
 ####################################
 
-resource "google_compute_global_address" "iap_run_ip_address" {
+# reserved IP address
+resource "google_compute_global_address" "iap_run_sql_demo" {
   name          = "iap-run-sql-demo"
   project       = var.project
 }
 
-module "lb-http" {
-  experiments       = [module_variable_optional_attrs]
-  source            = "GoogleCloudPlatform/lb-http/google//modules/serverless_negs"
-  version           = "~> 9.0"
-  name              = "iap-run-sql-demo"
-  project           = var.project
-  
-  ssl                               = true
-  https_redirect                    = true
-  managed_ssl_certificate_domains   = ["run.agarsand.demo.altostrat.com"]
-  address                           = google_compute_global_address.iap_run_ip_address.address
+resource "google_compute_managed_ssl_certificate" "iap_run_sql_demo" {
+  name = "iap-run-sql-demo-cert"
 
-  backends = {
-    default = {
-      description = null
-      enable_cdn = false
-      groups = [
-        {
-          group = google_compute_region_network_endpoint_group.iap_run_sql_demo_neg.id
-        }
-      ]
-      
-      iap_config = {
-        enable                  = false
-        oauth2_client_id        = null
-        oauth2_client_secret    = null
-      }
-      log_config = {
-        enable                  = true
-        sample_rate             = 1.0
-      }
+  managed {
+    domains = ["run.agarsand.demo.altostrat.com."]
+  }
+}
+
+# forwarding rule
+resource "google_compute_global_forwarding_rule" "https" {
+  project               = var.project
+  name                  = "iap-run-sql-demo-https-fw-rule"
+  ip_protocol           = "TCP"
+  load_balancing_scheme = "EXTERNAL"
+  port_range            = "443"
+  target                = google_compute_target_https_proxy.iap_run_sql_demo.id
+  ip_address            = google_compute_global_address.iap_run_sql_demo.id
+}
+
+# http proxy
+resource "google_compute_target_https_proxy" "iap_run_sql_demo" {
+  name        = "iap-run-sql-demo"
+  url_map     = google_compute_url_map.iap_run_sql_demo.id
+  ssl_certificates = [google_compute_managed_ssl_certificate.iap_run_sql_demo.id]
+}
+
+# url map
+resource "google_compute_url_map" "iap_run_sql_demo" {
+  name            = "iap-run-sql-demo-url-map"
+  description     = "a description"
+  default_service = google_compute_backend_service.iap_run_sql_demo_backend.id
+
+  host_rule {
+    hosts        = ["run.agarsand.demo.altostrat.com"]
+    path_matcher = "allpaths"
+  }
+
+  path_matcher {
+    name            = "allpaths"
+    default_service = google_compute_backend_service.iap_run_sql_demo_backend.id
+
+    path_rule {
+      paths   = ["/*"]
+      service = google_compute_backend_service.iap_run_sql_demo_backend.id
     }
   }
 }
 
+# backend service
+resource "google_compute_backend_service" "iap_run_sql_demo_backend" {
+  name                  = "iap-run-sql-demo-serverless-backend"
+  port_name             = "http"
+  protocol              = "HTTP"
+  timeout_sec           = 10
+  backend {
+    group                        = google_compute_region_network_endpoint_group.iap_run_sql_demo_neg.id
+    balancing_mode               = "RATE"
+    max_rate_per_endpoint = 10
+  }
+
+  #iap {
+  #  oauth2_client_id     = null
+  #  oauth2_client_secret = null
+  #}
+}
+
+# network endpoint group
 resource "google_compute_region_network_endpoint_group" "iap_run_sql_demo_neg" {
   name                  = "iap-run-sql-demo-neg"
   network_endpoint_type = "SERVERLESS"
