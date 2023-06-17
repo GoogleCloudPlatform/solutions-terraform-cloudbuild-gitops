@@ -485,7 +485,7 @@ resource "google_cloud_run_service_iam_member" "run_all_users" {
 
 resource "google_sql_database" "iap_run_sql_demo_database" {
   name     = "iap-run-sql-demo-db"
-  instance = google_sql_database_instance.instance.name
+  instance = google_sql_database_instance.iap_run_sql_demo_db_instance.name
 }
 
 resource "google_sql_database_instance" "iap_run_sql_demo_db_instance" {
