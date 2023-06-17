@@ -372,6 +372,7 @@ resource "google_compute_global_address" "iap_run_ip_address" {
 }
 
 module "lb-http" {
+  experiments       = [module_variable_optional_attrs]
   source            = "GoogleCloudPlatform/lb-http/google//modules/serverless_negs"
   version           = "~> 9.0"
   name              = "iap-run-sql-demo"
