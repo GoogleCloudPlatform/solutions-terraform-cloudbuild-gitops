@@ -467,7 +467,7 @@ resource "google_cloud_run_service" "iap_run_service" {
 
   metadata {
     annotations = {
-      "autoscaling.knative.dev/maxScale"      = "2"
+      #"autoscaling.knative.dev/maxScale"      = "2"
       "run.googleapis.com/cloudsql-instances" = google_sql_database_instance.iap_run_sql_demo_db_instance.connection_name
       "run.googleapis.com/client-name"        = "terraform"
       "run.googleapis.com/ingress"            = "internal-and-cloud-load-balancing"
