@@ -546,10 +546,18 @@ resource "google_iap_client" "iap_run_sql_demo_client" {
   brand         =  "projects/${var.project}/brands/${data.google_project.project.number}"
 }
 
-# iap permissions to access the iap-run-sql-demo app
+# Allow users secure access to the iap-run-sql-demo app
 resource "google_iap_web_backend_service_iam_member" "iap_run_sql_demo_member" {
   project               = var.project
   web_backend_service   = google_compute_backend_service.iap_run_sql_demo_backend.name
   role                  = "roles/iap.httpsResourceAccessor"
   member                = "user:${var.iap_user}"
+}
+
+# Allow IAP to invoke the cloud run service
+resource "google_cloud_run_service_iam_member" "run_all_users" {
+  service  = google_cloud_run_service.iap_run_service.name
+  location = google_cloud_run_service.iap_run_service.location
+  role     = "roles/run.invoker"
+  member   = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-iap.iam.gserviceaccount.com"
 }
