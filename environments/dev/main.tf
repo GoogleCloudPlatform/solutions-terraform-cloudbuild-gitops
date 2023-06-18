@@ -422,14 +422,20 @@ resource "google_compute_url_map" "iap_run_sql_demo" {
 
 # backend service
 resource "google_compute_backend_service" "iap_run_sql_demo_backend" {
+  project               = var.project            
   name                  = "iap-run-sql-demo-serverless-backend"
   port_name             = "http"
   protocol              = "HTTP"
-  timeout_sec           = 10
+  enable_cdn            = false
+
   backend {
-    group                        = google_compute_region_network_endpoint_group.iap_run_sql_demo_neg.id
-    balancing_mode               = "RATE"
-    max_rate_per_endpoint = 10
+    group                   = google_compute_region_network_endpoint_group.iap_run_sql_demo_neg.id
+    balancing_mode          = "RATE"
+    max_rate_per_endpoint   = 10
+  }
+
+  log_config {
+    enable              = false
   }
 
   #iap {
@@ -518,4 +524,22 @@ resource "google_sql_database_instance" "iap_run_sql_demo_db_instance" {
   }
 
   deletion_protection  = "false"
+}
+
+resource "google_sql_user" "db_user" {
+  name     = "pensande@agarsand.altostrat.com"
+  instance = google_sql_database_instance.iap_run_sql_demo_db_instance.name
+  type     = "CLOUD_IAM_USER"
+}
+
+resource "google_project_iam_member" "user" {  
+ member  = "pensande@agarsand.altostrat.com"  
+ project = var.project
+ role   = "roles/cloudsql.instanceUser"  
+}
+
+resource "google_project_iam_member" "client" {  
+ member  = "pensande@agarsand.altostrat.com"  
+ project = var.project
+ role   = "roles/cloudsql.client"  
 }
