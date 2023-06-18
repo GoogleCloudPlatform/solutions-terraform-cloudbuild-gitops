@@ -555,9 +555,14 @@ resource "google_iap_web_backend_service_iam_member" "iap_run_sql_demo_member" {
 }
 
 # Allow IAP to invoke the cloud run service
+resource "google_project_service_identity" "iap_sa" {
+  project   = var.project
+  service   = "iap.googleapis.com"
+}
+
 resource "google_cloud_run_service_iam_member" "run_all_users" {
-  service  = google_cloud_run_service.iap_run_service.name
-  location = google_cloud_run_service.iap_run_service.location
-  role     = "roles/run.invoker"
-  member   = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-iap.iam.gserviceaccount.com"
+  service   = google_cloud_run_service.iap_run_service.name
+  location  = google_cloud_run_service.iap_run_service.location
+  role      = "roles/run.invoker"
+  member    = "serviceAccount:${google_project_service_identity.iap_sa.email}"
 }
