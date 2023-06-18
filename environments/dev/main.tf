@@ -431,10 +431,10 @@ resource "google_compute_backend_service" "iap_run_sql_demo_backend" {
     enable              = false
   }
 
-  #iap {
-  #  oauth2_client_id     = null
-  #  oauth2_client_secret = null
-  #}
+  iap {
+    oauth2_client_id     = google_iap_client.iap_run_sql_demo_client.client_id
+    oauth2_client_secret = google_iap_client.iap_run_sql_demo_client.secret
+  }
 }
 
 # network endpoint group
@@ -465,6 +465,7 @@ resource "google_cloud_run_service" "iap_run_service" {
         "autoscaling.knative.dev/maxScale"      = "2"
         "run.googleapis.com/cloudsql-instances" = google_sql_database_instance.iap_run_sql_demo_db_instance.connection_name
         "run.googleapis.com/client-name"        = "terraform"
+        "run.googleapis.com/ingress"            = "internal-and-cloud-load-balancing"
       }
     }
 
@@ -541,4 +542,16 @@ resource "google_project_iam_member" "sql_client_policy" {
   project   = var.project
   role      = "roles/cloudsql.client"
   member    = "serviceAccount:${google_service_account.run_sql_service_account.email}"
+}
+
+#oauth2 client
+resource "google_iap_brand" "iap_run_sql_demo_brand" {
+  project           = var.project
+  support_email     = "pensande@agarsand.altostrat.com"
+  application_title = "IAP Run SQL Demo"
+}
+
+resource "google_iap_client" "iap_run_sql_demo_client" {
+  display_name = "IAP Run SQL Demo Client"
+  brand        =  google_iap_brand.iap_run_sql_demo_brand.name
 }
