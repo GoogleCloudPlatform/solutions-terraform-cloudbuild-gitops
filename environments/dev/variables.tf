@@ -31,11 +31,6 @@ variable "region" {
   type          = string
 }
 
-variable "onprem_ips" {
-  type          = list
-  description   = "Source IPs to allow access to Cloud SQL instances"
-}
-
 variable "iap_user" {
   type          = string
   description   = "Users to allow access to IAP protected resources"
