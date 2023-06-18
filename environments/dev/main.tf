@@ -544,14 +544,12 @@ resource "google_project_iam_member" "sql_client_policy" {
   member    = "serviceAccount:${google_service_account.run_sql_service_account.email}"
 }
 
-#oauth2 client
-resource "google_iap_brand" "iap_run_sql_demo_brand" {
-  project           = var.project
-  support_email     = "pensande@agarsand.altostrat.com"
-  application_title = "IAP Run SQL Demo"
+data "google_project" "project" {
+  project_id = var.project  
 }
 
+#oauth2 client
 resource "google_iap_client" "iap_run_sql_demo_client" {
   display_name = "IAP Run SQL Demo Client"
-  brand        =  google_iap_brand.iap_run_sql_demo_brand.name
+  brand        =  "projects/${var.project}/brands/${data.google_project.project.number}"
 }
