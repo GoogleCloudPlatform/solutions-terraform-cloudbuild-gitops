@@ -463,13 +463,17 @@ resource "google_cloud_run_service" "iap_run_service" {
       }
       service_account_name = google_service_account.run_sql_service_account.email
     }
+    metadata {
+      annotations = {
+        "autoscaling.knative.dev/maxScale"      = "2"
+        "run.googleapis.com/cloudsql-instances" = google_sql_database_instance.iap_run_sql_demo_db_instance.connection_name
+        "run.googleapis.com/client-name"        = "terraform"
+      }
+    }
   }
 
   metadata {
     annotations = {
-      #"autoscaling.knative.dev/maxScale"      = "2"
-      "run.googleapis.com/cloudsql-instances" = google_sql_database_instance.iap_run_sql_demo_db_instance.connection_name
-      "run.googleapis.com/client-name"        = "terraform"
       "run.googleapis.com/ingress"            = "internal-and-cloud-load-balancing"
     }
   }
