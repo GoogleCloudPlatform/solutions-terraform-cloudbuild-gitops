@@ -473,6 +473,12 @@ resource "google_cloud_run_service" "iap_run_service" {
     percent         = 100
     latest_revision = true
   }
+
+  lifecycle {
+    ignore_changes = [
+      metadata.0.annotations,
+    ]
+  }
 }
 
 # Allow unauthenticated users to invoke the service
