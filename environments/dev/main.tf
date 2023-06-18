@@ -530,14 +530,14 @@ resource "google_sql_user" "db_user" {
   type     = "CLOUD_IAM_USER"
 }
 
-resource "google_project_iam_member" "user" {  
-  project = var.project
-  role   = "roles/cloudsql.instanceUser"
-  member  = "user:pensande@agarsand.altostrat.com"
- 
+resource "google_project_iam_member" "sql_user_policy" {  
+  project   = var.project
+  role      = "roles/cloudsql.instanceUser"
+  member    = "user:pensande@agarsand.altostrat.com"
+} 
 
-resource "google_project_iam_member" "client" {  
-  project = var.project
-  role   = "roles/cloudsql.client"
-  member  = "user:pensande@agarsand.altostrat.com"
+resource "google_project_iam_member" "sql_client_policy" {  
+  project   = var.project
+  role      = "roles/cloudsql.client"
+  member    = "user:pensande@agarsand.altostrat.com"
 }
