@@ -556,6 +556,7 @@ resource "google_iap_web_backend_service_iam_member" "iap_run_sql_demo_member" {
 
 # Allow IAP to invoke the cloud run service
 resource "google_project_service_identity" "iap_sa" {
+  provider = google-beta
   project   = var.project
   service   = "iap.googleapis.com"
 }
