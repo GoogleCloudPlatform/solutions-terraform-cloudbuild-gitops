@@ -526,7 +526,7 @@ resource "google_service_account" "run_sql_service_account" {
 resource "google_sql_user" "db_user" {
   name          = trimsuffix(google_service_account.run_sql_service_account.email, ".gserviceaccount.com")
   instance      = google_sql_database_instance.iap_run_sql_demo_db_instance.name
-  type          = "CLOUD_IAM_USER"
+  type          = "CLOUD_IAM_SERVICE_ACCOUNT"
 }
 
 resource "google_project_iam_member" "sql_user_policy" {  
