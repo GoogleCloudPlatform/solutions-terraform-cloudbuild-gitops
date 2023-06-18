@@ -366,12 +366,13 @@ resource "google_secret_manager_secret" "pulumi_access_token" {
 ## IAP, Cloud Run, Cloud SQL Demo ##
 ####################################
 
-# reserved IP address
+# reserved public ip address
 resource "google_compute_global_address" "iap_run_sql_demo" {
   name          = "iap-run-sql-demo"
   project       = var.project
 }
 
+# ssl certificate
 resource "google_compute_managed_ssl_certificate" "iap_run_sql_demo" {
   name = "iap-run-sql-demo-cert"
 
@@ -447,7 +448,7 @@ resource "google_compute_region_network_endpoint_group" "iap_run_sql_demo_neg" {
   }
 }
 
-# Create the Cloud Run service
+# cloud run service
 resource "google_cloud_run_service" "iap_run_service" {
   name      = "iap-run-sql-demo"
   location  = var.region
@@ -455,8 +456,13 @@ resource "google_cloud_run_service" "iap_run_service" {
   template {
     spec {
       containers {
-        image = "gcr.io/google-samples/hello-app:1.0"
+        name    = "iap-run-sql-demo"
+        image   = "us-central1-docker.pkg.dev/secops-project-348011/binauthz-demo-repo/iap-run-sql-demo@sha256:a8262f6664180df514b62965b1bda1767d29144de2391ee04bbe24f44d3af54c"
+        ports {
+          container_port = 8080
+        }
       }
+      service_account_name = google_service_account.run_sql_service_account.email
     }
   }
 
