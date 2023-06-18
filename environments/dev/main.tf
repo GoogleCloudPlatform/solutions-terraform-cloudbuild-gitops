@@ -401,7 +401,7 @@ resource "google_compute_target_https_proxy" "iap_run_sql_demo" {
 # url map
 resource "google_compute_url_map" "iap_run_sql_demo" {
   name            = "iap-run-sql-demo-url-map"
-  description     = "a description"
+  description     = "iap-enabled gclb for the iap-run-sql-demo"
   default_service = google_compute_backend_service.iap_run_sql_demo_backend.id
 
   host_rule {
@@ -412,11 +412,6 @@ resource "google_compute_url_map" "iap_run_sql_demo" {
   path_matcher {
     name            = "allpaths"
     default_service = google_compute_backend_service.iap_run_sql_demo_backend.id
-
-    path_rule {
-      paths   = ["/*"]
-      service = google_compute_backend_service.iap_run_sql_demo_backend.id
-    }
   }
 }
 
@@ -524,8 +519,14 @@ resource "google_sql_database_instance" "iap_run_sql_demo_db_instance" {
   deletion_protection  = "false"
 }
 
+# service account for cloud run
+resource "google_service_account" "run_sql_service_account" {
+  account_id   = "sa-iap-run-sql-demo"
+  display_name = "sa-iap-run-sql-demo"
+}
+
 resource "google_sql_user" "db_user" {
-  name     = "pensande@agarsand.altostrat.com"
+  name     = google_service_account.run_sql_service_account.email
   instance = google_sql_database_instance.iap_run_sql_demo_db_instance.name
   type     = "CLOUD_IAM_USER"
 }
@@ -533,11 +534,11 @@ resource "google_sql_user" "db_user" {
 resource "google_project_iam_member" "sql_user_policy" {  
   project   = var.project
   role      = "roles/cloudsql.instanceUser"
-  member    = "user:pensande@agarsand.altostrat.com"
+  member    = "serviceAccount:${google_service_account.run_sql_service_account.email}"
 } 
 
 resource "google_project_iam_member" "sql_client_policy" {  
   project   = var.project
   role      = "roles/cloudsql.client"
-  member    = "user:pensande@agarsand.altostrat.com"
+  member    = "serviceAccount:${google_service_account.run_sql_service_account.email}"
 }
