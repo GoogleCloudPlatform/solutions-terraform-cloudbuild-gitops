@@ -456,7 +456,7 @@ resource "google_cloud_run_service" "iap_run_service" {
   template {
     spec {
       containers {
-        image   = "us-central1-docker.pkg.dev/secops-project-348011/binauthz-demo-repo/iap-run-sql-demo@sha256:a8262f6664180df514b62965b1bda1767d29144de2391ee04bbe24f44d3af54c"
+        image   = "gcr.io/google-samples/hello-app:1.0"
         ports {
           container_port = 8080
         }
