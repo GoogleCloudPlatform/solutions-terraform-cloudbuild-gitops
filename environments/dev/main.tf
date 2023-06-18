@@ -424,7 +424,7 @@ resource "google_compute_backend_service" "iap_run_sql_demo_backend" {
   enable_cdn            = false
 
   backend {
-    group                   = google_compute_region_network_endpoint_group.iap_run_sql_demo_neg.id
+    group               = google_compute_region_network_endpoint_group.iap_run_sql_demo_neg.id
   }
 
   log_config {
@@ -481,25 +481,17 @@ resource "google_cloud_run_service" "iap_run_service" {
   }
 }
 
-# Allow unauthenticated users to invoke the service
-resource "google_cloud_run_service_iam_member" "run_all_users" {
-  service  = google_cloud_run_service.iap_run_service.name
-  location = google_cloud_run_service.iap_run_service.location
-  role     = "roles/run.invoker"
-  member   = "allUsers"
-}
-
 resource "google_sql_database" "iap_run_sql_demo_database" {
   name     = "iap-run-sql-demo-db"
   instance = google_sql_database_instance.iap_run_sql_demo_db_instance.name
 }
 
 resource "google_sql_database_instance" "iap_run_sql_demo_db_instance" {
-  name             = "iap-run-sql-demo-db-instance"
-  region           = var.region
-  database_version = "POSTGRES_14"
+  name              = "iap-run-sql-demo-db-instance"
+  region            = var.region
+  database_version  = "POSTGRES_14"
   settings {
-    tier = "db-f1-micro"
+    tier            = "db-f1-micro"
 
     ip_configuration {
       ipv4_enabled  = true
@@ -522,34 +514,42 @@ resource "google_sql_database_instance" "iap_run_sql_demo_db_instance" {
 
 # service account for cloud run
 resource "google_service_account" "run_sql_service_account" {
-  account_id   = "sa-iap-run-sql-demo"
-  display_name = "sa-iap-run-sql-demo"
+  account_id    = "sa-iap-run-sql-demo"
+  display_name  = "sa-iap-run-sql-demo"
 }
 
 resource "google_sql_user" "db_user" {
-  name     = trimsuffix(google_service_account.run_sql_service_account.email, ".gserviceaccount.com")
-  instance = google_sql_database_instance.iap_run_sql_demo_db_instance.name
-  type     = "CLOUD_IAM_USER"
+  name          = trimsuffix(google_service_account.run_sql_service_account.email, ".gserviceaccount.com")
+  instance      = google_sql_database_instance.iap_run_sql_demo_db_instance.name
+  type          = "CLOUD_IAM_USER"
 }
 
 resource "google_project_iam_member" "sql_user_policy" {  
-  project   = var.project
-  role      = "roles/cloudsql.instanceUser"
-  member    = "serviceAccount:${google_service_account.run_sql_service_account.email}"
+  project       = var.project
+  role          = "roles/cloudsql.instanceUser"
+  member        = "serviceAccount:${google_service_account.run_sql_service_account.email}"
 } 
 
 resource "google_project_iam_member" "sql_client_policy" {  
-  project   = var.project
-  role      = "roles/cloudsql.client"
-  member    = "serviceAccount:${google_service_account.run_sql_service_account.email}"
+  project       = var.project
+  role          = "roles/cloudsql.client"
+  member        = "serviceAccount:${google_service_account.run_sql_service_account.email}"
 }
 
 data "google_project" "project" {
-  project_id = var.project  
+  project_id    = var.project  
 }
 
 #oauth2 client
 resource "google_iap_client" "iap_run_sql_demo_client" {
-  display_name = "IAP Run SQL Demo Client"
-  brand        =  "projects/${var.project}/brands/${data.google_project.project.number}"
+  display_name  = "IAP Run SQL Demo Client"
+  brand         =  "projects/${var.project}/brands/${data.google_project.project.number}"
+}
+
+# iap permissions to access the iap-run-sql-demo app
+resource "google_iap_web_backend_service_iam_member" "iap_run_sql_demo_member" {
+  project               = var.project
+  web_backend_service   = google_compute_backend_service.iap_run_sql_demo_backend.name
+  role                  = "roles/iap.httpsResourceAccessor"
+  member                = "user:${var.iap_user}"
 }
