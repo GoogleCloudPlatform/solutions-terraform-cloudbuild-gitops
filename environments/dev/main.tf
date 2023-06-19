@@ -380,7 +380,7 @@ resource "google_compute_managed_ssl_certificate" "iap_run_sql_demo" {
     domains = ["run.agarsand.demo.altostrat.com."]
   }
 }
-
+/*
 # forwarding rule
 resource "google_compute_global_forwarding_rule" "https" {
   project               = var.project
@@ -571,3 +571,4 @@ resource "google_cloud_run_service_iam_member" "run_all_users" {
   role      = "roles/run.invoker"
   member    = "serviceAccount:${google_project_service_identity.iap_sa.email}"
 }
+*/
