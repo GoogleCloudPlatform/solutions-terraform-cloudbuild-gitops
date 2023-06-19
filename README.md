@@ -29,4 +29,4 @@ terraform plan
 terraform apply
 terraform destroy
 ```
-05
+06
