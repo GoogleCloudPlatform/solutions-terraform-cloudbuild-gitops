@@ -45,7 +45,7 @@ module "cloud_nat" {
   network = module.vpc.name
   region  = var.region
 }
-
+/*
 module "gke_cluster" {
     source          = "../../modules/gke_cluster"
     cluster_name    = "${local.env}-binauthz"
@@ -74,7 +74,7 @@ resource "google_project_iam_member" "compute_container_admin" {
   role     = "roles/container.admin"
   member   = "serviceAccount:${module.gke_cluster.service-account}"
 }
-
+*/
 # Workload Identity for the Kubernetes Cluster
 resource "google_service_account" "k8s_app_service_account" {
   account_id   = "sa-k8s-app"
@@ -152,7 +152,7 @@ resource "google_recaptcha_enterprise_key" "recaptcha_redirect_site_key" {
     challenge_security_preference = "USABILITY"
   }
 }
-*/
+
 # Cloud Armor WAF Policy for Dev Backends
 resource "google_compute_security_policy" "gke_waf_security_policy" {
   provider      = google-beta
@@ -301,7 +301,7 @@ resource "google_compute_security_policy" "gke_waf_security_policy" {
     preview     = true
   }
 }
-
+*/
 ############################
 ## Website Storage Bucket ##
 ############################
