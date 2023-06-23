@@ -454,7 +454,7 @@ resource "google_compute_region_network_endpoint_group" "iap_run_sql_demo_neg" {
   network_endpoint_type = "SERVERLESS"
   region                = var.region
   cloud_run {
-    service = google_cloud_run_service.iap_run_service.name
+    service = google_cloud_run_service.iap_run_service[0].name
   }
 }
 
@@ -587,8 +587,8 @@ resource "google_project_service_identity" "iap_sa" {
 
 resource "google_cloud_run_service_iam_member" "run_all_users" {
   count     = var.create_iap_run_sql_demo ? 1 : 0
-  service   = google_cloud_run_service.iap_run_service.name
-  location  = google_cloud_run_service.iap_run_service.location
+  service   = google_cloud_run_service.iap_run_service[0].name
+  location  = google_cloud_run_service.iap_run_service[0].location
   role      = "roles/run.invoker"
   member    = "serviceAccount:${google_project_service_identity.iap_sa[0].email}"
 }
