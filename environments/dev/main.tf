@@ -62,21 +62,21 @@ resource "google_project_iam_member" "compute_registry_reader" {
   count     = var.create_dev_gke_cluster ? 1 : 0
   project   = var.project
   role      = "roles/artifactregistry.reader"
-  member    = "serviceAccount:${module.gke_cluster.service-account}"
+  member    = "serviceAccount:${module.gke_cluster[0].service-account}"
 }
 
 resource "google_project_iam_member" "compute_deploy_jobrunner" {
   count     = var.create_dev_gke_cluster ? 1 : 0
   project  = var.project
   role     = "roles/clouddeploy.jobRunner"
-  member   = "serviceAccount:${module.gke_cluster.service-account}"
+  member   = "serviceAccount:${module.gke_cluster[0].service-account}"
 }
 
 resource "google_project_iam_member" "compute_container_admin" {
   count     = var.create_dev_gke_cluster ? 1 : 0
   project   = var.project
   role      = "roles/container.admin"
-  member    = "serviceAccount:${module.gke_cluster.service-account}"
+  member    = "serviceAccount:${module.gke_cluster[0].service-account}"
 }
 
 # Workload Identity for the Kubernetes Cluster
@@ -394,7 +394,7 @@ resource "google_compute_global_forwarding_rule" "https" {
   ip_protocol           = "TCP"
   load_balancing_scheme = "EXTERNAL"
   port_range            = "443"
-  target                = google_compute_target_https_proxy.iap_run_sql_demo.id
+  target                = google_compute_target_https_proxy.iap_run_sql_demo[0].id
   ip_address            = google_compute_global_address.iap_run_sql_demo.id
 }
 
@@ -402,7 +402,7 @@ resource "google_compute_global_forwarding_rule" "https" {
 resource "google_compute_target_https_proxy" "iap_run_sql_demo" {
   count       = var.create_iap_run_sql_demo ? 1 : 0
   name        = "iap-run-sql-demo"
-  url_map     = google_compute_url_map.iap_run_sql_demo.id
+  url_map     = google_compute_url_map.iap_run_sql_demo[0].id
   ssl_certificates = [google_compute_managed_ssl_certificate.iap_run_sql_demo.id]
 }
 
@@ -411,7 +411,7 @@ resource "google_compute_url_map" "iap_run_sql_demo" {
   count             = var.create_iap_run_sql_demo ? 1 : 0
   name              = "iap-run-sql-demo-url-map"
   description       = "iap-enabled gclb for the iap-run-sql-demo"
-  default_service   = google_compute_backend_service.iap_run_sql_demo_backend.id
+  default_service   = google_compute_backend_service.iap_run_sql_demo_backend[0].id
 
   host_rule {
     hosts        = ["run.agarsand.demo.altostrat.com"]
@@ -420,7 +420,7 @@ resource "google_compute_url_map" "iap_run_sql_demo" {
 
   path_matcher {
     name            = "allpaths"
-    default_service = google_compute_backend_service.iap_run_sql_demo_backend.id
+    default_service = google_compute_backend_service.iap_run_sql_demo_backend[0].id
   }
 }
 
@@ -434,7 +434,7 @@ resource "google_compute_backend_service" "iap_run_sql_demo_backend" {
   enable_cdn            = false
 
   backend {
-    group               = google_compute_region_network_endpoint_group.iap_run_sql_demo_neg.id
+    group               = google_compute_region_network_endpoint_group.iap_run_sql_demo_neg[0].id
   }
 
   log_config {
@@ -472,12 +472,12 @@ resource "google_cloud_run_service" "iap_run_service" {
           container_port = 8080
         }
       }
-      service_account_name = google_service_account.run_sql_service_account.email
+      service_account_name = google_service_account.run_sql_service_account[0].email
     }
     metadata {
       annotations = {
         "autoscaling.knative.dev/maxScale"      = "2"
-        "run.googleapis.com/cloudsql-instances" = google_sql_database_instance.iap_run_sql_demo_db_instance.connection_name
+        "run.googleapis.com/cloudsql-instances" = google_sql_database_instance.iap_run_sql_demo_db_instance[0].connection_name
         "run.googleapis.com/client-name"        = "terraform"
       }
     }
@@ -504,7 +504,7 @@ resource "google_cloud_run_service" "iap_run_service" {
 resource "google_sql_database" "iap_run_sql_demo_database" {
   count     = var.create_iap_run_sql_demo ? 1 : 0
   name      = "iap-run-sql-demo-db"
-  instance  = google_sql_database_instance.iap_run_sql_demo_db_instance.name
+  instance  = google_sql_database_instance.iap_run_sql_demo_db_instance[0].name
 }
 
 resource "google_sql_database_instance" "iap_run_sql_demo_db_instance" {
@@ -538,8 +538,8 @@ resource "google_service_account" "run_sql_service_account" {
 
 resource "google_sql_user" "db_user" {
   count         = var.create_iap_run_sql_demo ? 1 : 0
-  name          = trimsuffix(google_service_account.run_sql_service_account.email, ".gserviceaccount.com")
-  instance      = google_sql_database_instance.iap_run_sql_demo_db_instance.name
+  name          = trimsuffix(google_service_account.run_sql_service_account[0].email, ".gserviceaccount.com")
+  instance      = google_sql_database_instance.iap_run_sql_demo_db_instance[0].name
   type          = "CLOUD_IAM_SERVICE_ACCOUNT"
 }
 
@@ -547,18 +547,17 @@ resource "google_project_iam_member" "sql_user_policy" {
   count         = var.create_iap_run_sql_demo ? 1 : 0
   project       = var.project
   role          = "roles/cloudsql.instanceUser"
-  member        = "serviceAccount:${google_service_account.run_sql_service_account.email}"
+  member        = "serviceAccount:${google_service_account.run_sql_service_account[0].email}"
 } 
 
 resource "google_project_iam_member" "sql_client_policy" {
   count         = var.create_iap_run_sql_demo ? 1 : 0
   project       = var.project
   role          = "roles/cloudsql.client"
-  member        = "serviceAccount:${google_service_account.run_sql_service_account.email}"
+  member        = "serviceAccount:${google_service_account.run_sql_service_account[0].email}"
 }
 
 data "google_project" "project" {
-  count         = var.create_iap_run_sql_demo ? 1 : 0
   project_id    = var.project  
 }
 
@@ -573,7 +572,7 @@ resource "google_iap_client" "iap_run_sql_demo_client" {
 resource "google_iap_web_backend_service_iam_member" "iap_run_sql_demo_member" {
   count                 = var.create_iap_run_sql_demo ? 1 : 0
   project               = var.project
-  web_backend_service   = google_compute_backend_service.iap_run_sql_demo_backend.name
+  web_backend_service   = google_compute_backend_service.iap_run_sql_demo_backend[0].name
   role                  = "roles/iap.httpsResourceAccessor"
   member                = "user:${var.iap_user}"
 }
@@ -591,5 +590,5 @@ resource "google_cloud_run_service_iam_member" "run_all_users" {
   service   = google_cloud_run_service.iap_run_service.name
   location  = google_cloud_run_service.iap_run_service.location
   role      = "roles/run.invoker"
-  member    = "serviceAccount:${google_project_service_identity.iap_sa.email}"
+  member    = "serviceAccount:${google_project_service_identity.iap_sa[0].email}"
 }
