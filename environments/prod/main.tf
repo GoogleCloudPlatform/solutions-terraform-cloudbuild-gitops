@@ -69,7 +69,7 @@ module "vpc" {
 module "gke_cluster" {
     count           = var.create_prod_gke_cluster ? 1 : 0
     source          = "../../modules/gke_cluster"
-    cluster_name    = local.deployment_clusters[1].cluster_name
+    cluster_name    = local.deployment_clusters[local.env].cluster_name
     project         = var.project
     region          = var.region
     network         = module.vpc.id
