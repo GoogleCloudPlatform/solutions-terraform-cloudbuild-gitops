@@ -13,7 +13,8 @@
 # limitations under the License.
 
 locals {
-  env   = "prod"
+  env                           = "prod"
+  attestor_name                 = "build-attestor"
   deployment_clusters = [
     {
       env             = "dev"
