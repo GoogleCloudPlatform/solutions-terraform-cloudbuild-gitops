@@ -57,28 +57,6 @@ module "gke_cluster" {
     master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.1.16/28"
 }
 
-# IAM Roles for the node pool service account
-resource "google_project_iam_member" "compute_registry_reader" {
-  count     = var.create_dev_gke_cluster ? 1 : 0
-  project   = var.project
-  role      = "roles/artifactregistry.reader"
-  member    = "serviceAccount:${module.gke_cluster[0].service-account}"
-}
-
-resource "google_project_iam_member" "compute_deploy_jobrunner" {
-  count     = var.create_dev_gke_cluster ? 1 : 0
-  project  = var.project
-  role     = "roles/clouddeploy.jobRunner"
-  member   = "serviceAccount:${module.gke_cluster[0].service-account}"
-}
-
-resource "google_project_iam_member" "compute_container_admin" {
-  count     = var.create_dev_gke_cluster ? 1 : 0
-  project   = var.project
-  role      = "roles/container.admin"
-  member    = "serviceAccount:${module.gke_cluster[0].service-account}"
-}
-
 # Workload Identity for the Kubernetes Cluster
 resource "google_service_account" "k8s_app_service_account" {
   account_id   = "sa-k8s-app"
