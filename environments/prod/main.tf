@@ -15,18 +15,16 @@
 locals {
   env                           = "prod"
   attestor_name                 = "build-attestor"
-  deployment_clusters = [
-    {
-      env             = "dev"
+  deployment_clusters = {
+    dev : {
       cluster_name    = "dev-binauthz"   
       attestor_list   = ["projects/${var.project}/attestors/built-by-cloud-build"]
     },
-    {
-      env             = "prod"
+    prod : {
       cluster_name    = "prod-binauthz"   
       attestor_list   = ["projects/${var.project}/attestors/built-by-cloud-build","${google_binary_authorization_attestor.attestor.id}"]
     }
-  ]
+  }
 }
 
 provider "google" {
@@ -233,10 +231,10 @@ resource "google_secret_manager_secret_iam_binding" "cicd_signing_secret_binding
 resource "google_clouddeploy_target" "deploy_target" {
   for_each          = local.deployment_clusters
   name              = each.value.cluster_name
-  description       = "Target for ${each.value.env} environment"
+  description       = "Target for ${each.key} environment"
   project           = var.project
   location          = var.region
-  require_approval  = each.value.env == "prod" ? true : false
+  require_approval  = each.key == "prod" ? true : false
 
   gke {
     cluster = "projects/${var.project}/locations/${var.region}/clusters/${each.value.cluster_name}"
