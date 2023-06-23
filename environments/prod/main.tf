@@ -16,15 +16,16 @@ locals {
   env   = "prod"
   deployment_clusters = [
     {
-        env             = "dev"
-        cluster_name    = "dev-binauthz"   
-        attestor_list   = ["projects/${var.project}/attestors/built-by-cloud-build"]
+      env             = "dev"
+      cluster_name    = "dev-binauthz"   
+      attestor_list   = ["projects/${var.project}/attestors/built-by-cloud-build"]
     },
     {
-        env             = "prod"
-        cluster_name    = "prod-binauthz"   
-        attestor_list   = ["projects/${var.project}/attestors/built-by-cloud-build","${google_binary_authorization_attestor.attestor.id}"]
+      env             = "prod"
+      cluster_name    = "prod-binauthz"   
+      attestor_list   = ["projects/${var.project}/attestors/built-by-cloud-build","${google_binary_authorization_attestor.attestor.id}"]
     }
+  ]
 }
 
 provider "google" {
