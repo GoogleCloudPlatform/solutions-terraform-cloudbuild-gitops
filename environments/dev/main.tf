@@ -442,8 +442,8 @@ resource "google_compute_backend_service" "iap_run_sql_demo_backend" {
   }
 
   iap {
-    oauth2_client_id     = google_iap_client.iap_run_sql_demo_client.client_id
-    oauth2_client_secret = google_iap_client.iap_run_sql_demo_client.secret
+    oauth2_client_id     = google_iap_client.iap_run_sql_demo_client[0].client_id
+    oauth2_client_secret = google_iap_client.iap_run_sql_demo_client[0].secret
   }
 }
 

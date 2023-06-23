@@ -83,21 +83,21 @@ resource "google_project_iam_member" "compute_registry_reader" {
   count     = var.create_prod_gke_cluster ? 1 : 0
   project   = var.project
   role      = "roles/artifactregistry.reader"
-  member    = "serviceAccount:${module.gke_cluster.service-account}"
+  member    = "serviceAccount:${module.gke_cluster[0].service-account}"
 }
 
 resource "google_project_iam_member" "compute_deploy_jobrunner" {
   count     = var.create_prod_gke_cluster ? 1 : 0
   project   = var.project
   role      = "roles/clouddeploy.jobRunner"
-  member    = "serviceAccount:${module.gke_cluster.service-account}"
+  member    = "serviceAccount:${module.gke_cluster[0].service-account}"
 }
 
 resource "google_project_iam_member" "compute_container_admin" {
   count     = var.create_prod_gke_cluster ? 1 : 0
   project   = var.project
   role      = "roles/container.admin"
-  member    = "serviceAccount:${module.gke_cluster.service-account}"
+  member    = "serviceAccount:${module.gke_cluster[0].service-account}"
 }
 
 resource "google_pubsub_topic" "operations-pubsub" {
