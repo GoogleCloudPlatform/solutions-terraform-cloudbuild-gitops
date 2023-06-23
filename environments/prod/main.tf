@@ -381,10 +381,10 @@ resource "google_binary_authorization_policy" "prod_binauthz_policy" {
   dynamic "cluster_admission_rules" {
     for_each    = local.deployment_clusters
     content {
-      cluster                 = "${var.region}.${each.value.cluster_name}"
+      cluster                 = "${var.region}.${cluster_admission_rules.value.cluster_name}"
       evaluation_mode         = "REQUIRE_ATTESTATION"
       enforcement_mode        = "ENFORCED_BLOCK_AND_AUDIT_LOG"
-      require_attestations_by = each.value.attestor_list
+      require_attestations_by = cluster_admission_rules.value.attestor_list
     }
   }
 
