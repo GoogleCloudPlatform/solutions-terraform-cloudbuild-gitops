@@ -35,3 +35,15 @@ variable "iap_user" {
   type          = string
   description   = "Users to allow access to IAP protected resources"
 }
+
+variable "create_dev_gke_cluster" {
+  description   = "If set to true, it will create the dev gke cluster"
+  type          = bool
+  default       = false
+}
+
+variable "create_iap_run_sql_demo" {
+  description   = "If set to true, it will create the iap_run_sql_demo"
+  type          = bool
+  default       = false
+}

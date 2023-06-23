@@ -51,10 +51,6 @@ variable "slack_devops_channel" {
   type      = string
 }
 
-variable "dev_cluster_name" {
-  type      = string
-}
-
 variable "atlassian_email" {
   type      = string
 }
@@ -69,4 +65,10 @@ variable "jira_project_key" {
 
 variable "dlp_wrapped_key" {
   type      = string
+}
+
+variable "create_prod_gke_cluster" {
+  description   = "If set to true, it will create the prod gke cluster"
+  type          = bool
+  default       = false
 }

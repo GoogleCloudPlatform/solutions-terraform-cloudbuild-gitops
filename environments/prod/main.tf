@@ -13,8 +13,18 @@
 # limitations under the License.
 
 locals {
-  env                           = "prod"
-  attestor_name                 = "build-attestor"
+  env   = "prod"
+  deployment_clusters = [
+    {
+        env             = "dev"
+        cluster_name    = "dev-binauthz"   
+        attestor_list   = ["projects/${var.project}/attestors/built-by-cloud-build"]
+    },
+    {
+        env             = "prod"
+        cluster_name    = "prod-binauthz"   
+        attestor_list   = ["projects/${var.project}/attestors/built-by-cloud-build","${google_binary_authorization_attestor.attestor.id}"]
+    }
 }
 
 provider "google" {
@@ -55,10 +65,11 @@ module "vpc" {
     ]
   }
 }
-/*
+
 module "gke_cluster" {
+    count           = var.create_prod_gke_cluster ? 1 : 0
     source          = "../../modules/gke_cluster"
-    cluster_name    = "${local.env}-binauthz"
+    cluster_name    = local.deployment_clusters[1].cluster_name
     project         = var.project
     region          = var.region
     network         = module.vpc.id
@@ -68,23 +79,26 @@ module "gke_cluster" {
 
 # IAM Roles for the node pool service account
 resource "google_project_iam_member" "compute_registry_reader" {
-  project  = var.project
-  role     = "roles/artifactregistry.reader"
-  member   = "serviceAccount:${module.gke_cluster.service-account}"
+  count     = var.create_prod_gke_cluster ? 1 : 0
+  project   = var.project
+  role      = "roles/artifactregistry.reader"
+  member    = "serviceAccount:${module.gke_cluster.service-account}"
 }
 
 resource "google_project_iam_member" "compute_deploy_jobrunner" {
-  project  = var.project
-  role     = "roles/clouddeploy.jobRunner"
-  member   = "serviceAccount:${module.gke_cluster.service-account}"
+  count     = var.create_prod_gke_cluster ? 1 : 0
+  project   = var.project
+  role      = "roles/clouddeploy.jobRunner"
+  member    = "serviceAccount:${module.gke_cluster.service-account}"
 }
 
 resource "google_project_iam_member" "compute_container_admin" {
-  project  = var.project
-  role     = "roles/container.admin"
-  member   = "serviceAccount:${module.gke_cluster.service-account}"
+  count     = var.create_prod_gke_cluster ? 1 : 0
+  project   = var.project
+  role      = "roles/container.admin"
+  member    = "serviceAccount:${module.gke_cluster.service-account}"
 }
-*/
+
 resource "google_pubsub_topic" "operations-pubsub" {
   name                          = "clouddeploy-operations"
   message_retention_duration    = "86400s"
@@ -214,6 +228,28 @@ resource "google_secret_manager_secret_iam_binding" "cicd_signing_secret_binding
   ]
 }
 
+resource "google_clouddeploy_target" "deploy_target" {
+  for_each          = local.deployment_clusters
+  name              = each.value.cluster_name
+  description       = "Target for ${each.value.env} environment"
+  project           = var.project
+  location          = var.region
+  require_approval  = each.value.env == "prod" ? true : false
+
+  gke {
+    cluster = "projects/${var.project}/locations/${var.region}/clusters/${each.value.cluster_name}"
+  }
+
+  execution_configs {
+    usages          = ["RENDER", "DEPLOY"]
+    service_account = google_service_account.clouddeploy_execution_sa.email
+  }
+
+  depends_on = [
+    google_project_iam_member.clouddeploy_service_agent_role
+  ]
+}
+/*
 resource "google_clouddeploy_target" "dev-cluster-target" {
   name              = "dev-cluster"
   description       = "Target for dev environment"
@@ -234,8 +270,9 @@ resource "google_clouddeploy_target" "dev-cluster-target" {
     google_project_iam_member.clouddeploy_service_agent_role
   ]
 }
-/*
+
 resource "google_clouddeploy_target" "prod-cluster-target" {
+  count             = var.create_prod_gke_cluster ? 1 : 0
   name              = "prod-cluster"
   description       = "Target for prod environment"
   project           = var.project
@@ -263,13 +300,12 @@ resource "google_clouddeploy_delivery_pipeline" "pipeline" {
   location    = var.region
 
   serial_pipeline {
-    stages {
-        target_id = google_clouddeploy_target.dev-cluster-target.name
+    dynamic "stages" {
+      for_each = local.deployment_clusters
+      content {
+        target_id = google_clouddeploy_target.deploy_target[stages.key].name
+      }
     }
-
-    #stages {
-    #  target_id = google_clouddeploy_target.prod-cluster-target.name
-    #}
   }
 }
 
@@ -342,6 +378,17 @@ resource "google_binary_authorization_policy" "prod_binauthz_policy" {
     name_pattern = "docker.io/bkimminich/juice-shop:latest"
   }
   
+  dynamic "cluster_admission_rules" {
+    for_each    = local.deployment_clusters
+    content {
+      cluster                 = "${var.region}.${each.value.cluster_name}"
+      evaluation_mode         = "REQUIRE_ATTESTATION"
+      enforcement_mode        = "ENFORCED_BLOCK_AND_AUDIT_LOG"
+      require_attestations_by = each.value.attestor_list
+    }
+  }
+
+  /*
   cluster_admission_rules {
     cluster                 = "${var.region}.${var.dev_cluster_name}"
     evaluation_mode         = "REQUIRE_ATTESTATION"
@@ -355,6 +402,7 @@ resource "google_binary_authorization_policy" "prod_binauthz_policy" {
   #  enforcement_mode        = "ENFORCED_BLOCK_AND_AUDIT_LOG"
   #  require_attestations_by = ["projects/${var.project}/attestors/built-by-cloud-build","${google_binary_authorization_attestor.attestor.id}"]
   #}
+  */
 }
 
 ###########################################
