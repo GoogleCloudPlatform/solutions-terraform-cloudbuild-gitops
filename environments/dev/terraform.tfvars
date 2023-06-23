@@ -3,5 +3,5 @@ project="secops-project-348011"
 demo_project="solution-demos-332013"
 region="us-central1"
 iap_user="pensande@agarsand.altostrat.com"
-create_dev_gke_cluster = true
+create_dev_gke_cluster = false
 create_iap_run_sql_demo = false
