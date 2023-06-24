@@ -149,7 +149,7 @@ resource "google_compute_security_policy" "armor_waf_security_policy" {
   type          = "CLOUD_ARMOR"
 
   recaptcha_options_config {
-    redirect_site_key = "6LcGeukhAAAAAAfjGfl0YIEtMEoUIy2uq_QjhJBQ"
+    redirect_site_key = var.recaptcha_site_key
   }
 
   rule {
@@ -169,7 +169,7 @@ resource "google_compute_security_policy" "armor_waf_security_policy" {
     priority = "3000"
     match {
       expr {
-        expression = "evaluatePreconfiguredExpr('sqli-stable', ['owasp-crs-v030001-id942251-sqli', 'owasp-crs-v030001-id942420-sqli', 'owasp-crs-v030001-id942431-sqli', 'owasp-crs-v030001-id942460-sqli', 'owasp-crs-v030001-id942421-sqli', 'owasp-crs-v030001-id942432-sqli'])"
+        expression = "evaluatePreconfiguredWaf('sqli-v33-stable', {'sensitivity': 1})"
       }
     }
     description = "Allow only Indians. Mera Bharat Mahan! :)"
@@ -540,10 +540,6 @@ resource "google_project_iam_member" "sql_client_policy" {
   member        = "serviceAccount:${google_service_account.run_sql_service_account[0].email}"
 }
 
-data "google_project" "project" {
-  project_id    = var.project  
-}
-
 #oauth2 client
 resource "google_iap_client" "iap_run_sql_demo_client" {
   count         = var.create_iap_run_sql_demo ? 1 : 0
@@ -558,6 +554,11 @@ resource "google_iap_web_backend_service_iam_member" "iap_run_sql_demo_member" {
   web_backend_service   = google_compute_backend_service.iap_run_sql_demo_backend[0].name
   role                  = "roles/iap.httpsResourceAccessor"
   member                = "user:${var.iap_user}"
+  condition {
+    expression          = "'${google_access_context_manager_access_policy.access_policy.name}/accessLevels/chromeos_lock_encrypted' in request.auth.access_levels"
+    title               = "beyondcorp_access_level"    
+    description         = "enforce beyondcorp access level chromeos_lock_encrypted"
+  } 
 }
 
 # Allow IAP to invoke the cloud run service
@@ -574,4 +575,35 @@ resource "google_cloud_run_service_iam_member" "run_all_users" {
   location  = google_cloud_run_service.iap_run_service[0].location
   role      = "roles/run.invoker"
   member    = "serviceAccount:${google_project_service_identity.iap_sa[0].email}"
+}
+
+######################################
+## BeyondCorp with IAP-RUN_SQL Demo ##
+######################################
+
+data "google_project" "project" {
+  project_id    = var.project  
+}
+
+resource "google_access_context_manager_access_policy" "access_policy" {
+  parent = "organizations/${var.organization}"
+  title  = "Access Policy for IAP Demo"
+  scopes = ["projects/${data.google_project.project.number}"]
+}
+
+resource "google_access_context_manager_access_level" "access-level" {
+  parent = "accessPolicies/${google_access_context_manager_access_policy.access_policy.name}"
+  name   = "accessPolicies/${google_access_context_manager_access_policy.access_policy.name}/accessLevels/chromeos_lock_encrypted"
+  title  = "chromeos_lock_encrypted"
+  basic {
+    conditions {
+      device_policy {
+        require_screen_lock         = true
+        allowed_encryption_statuses = "ENCRYPTED"
+        os_constraints {
+          os_type                   = "DESKTOP_CHROME_OS"
+        }
+      }
+    }
+  }
 }

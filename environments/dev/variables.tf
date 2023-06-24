@@ -47,3 +47,8 @@ variable "create_iap_run_sql_demo" {
   type          = bool
   default       = false
 }
+
+variable "recaptcha_site_key" {
+  type          = string
+  description   = "reCAPTCHA site key for Armor WAF Policy"
+}
