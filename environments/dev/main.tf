@@ -55,6 +55,10 @@ module "gke_cluster" {
     network         = module.vpc.id
     subnetwork      = module.vpc.subnet
     master_ipv4_cidr= "10.${local.env == "dev" ? 10 : 20}.1.16/28"
+    
+    depends_on = [
+      google_compute_security_policy.armor_waf_security_policy
+    ]
 }
 
 # Workload Identity for the Kubernetes Cluster
@@ -136,10 +140,10 @@ resource "google_recaptcha_enterprise_key" "recaptcha_redirect_site_key" {
 }
 */
 # Cloud Armor WAF Policy for Dev Backends
-resource "google_compute_security_policy" "gke_waf_security_policy" {
-  count         = var.create_dev_gke_cluster ? 1 : 0
+resource "google_compute_security_policy" "armor_waf_security_policy" {
+  count         = var.create_dev_gke_cluster || var.create_iap_run_sql_demo ? 1 : 0
   provider      = google-beta
-  name          = "gke-waf-security-policy"
+  name          = "armor-waf-security-policy"
   description   = "Cloud Armor Security Policy"
   project       = var.project
   type          = "CLOUD_ARMOR"
@@ -410,13 +414,14 @@ resource "google_compute_backend_service" "iap_run_sql_demo_backend" {
   port_name             = "http"
   protocol              = "HTTP"
   enable_cdn            = false
+  security_policy       = google_compute_security_policy.armor_waf_security_policy[0].id
 
   backend {
     group               = google_compute_region_network_endpoint_group.iap_run_sql_demo_neg[0].id
   }
 
   log_config {
-    enable              = false
+    enable              = true
   }
 
   iap {
