@@ -588,7 +588,6 @@ data "google_project" "project" {
 resource "google_access_context_manager_access_policy" "access_policy" {
   parent = "organizations/${var.organization}"
   title  = "Access Policy for IAP Demo"
-  scopes = ["projects/${data.google_project.project.number}"]
 }
 
 resource "google_access_context_manager_access_level" "access-level" {
