@@ -598,7 +598,7 @@ resource "google_access_context_manager_access_level" "access-level" {
     conditions {
       device_policy {
         require_screen_lock         = true
-        allowed_encryption_statuses = "ENCRYPTED"
+        allowed_encryption_statuses = ["ENCRYPTED"]
         os_constraints {
           os_type                   = "DESKTOP_CHROME_OS"
         }
