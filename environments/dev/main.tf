@@ -555,7 +555,7 @@ resource "google_iap_web_backend_service_iam_member" "iap_run_sql_demo_member" {
   role                  = "roles/iap.httpsResourceAccessor"
   member                = "user:${var.iap_user}"
   condition {
-    expression          = "'${google_access_context_manager_access_policy.access_policy.name}/accessLevels/windows_encrypted' in request.auth.access_levels"
+    expression          = "\"accessPolicies/${google_access_context_manager_access_policy.access_policy.name}/accessLevels/windows_encrypted\" in request.auth.access_levels"
     title               = "beyondcorp_access_level"    
     description         = "enforce beyondcorp access level windows_encrypted"
   } 
