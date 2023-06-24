@@ -555,9 +555,9 @@ resource "google_iap_web_backend_service_iam_member" "iap_run_sql_demo_member" {
   role                  = "roles/iap.httpsResourceAccessor"
   member                = "user:${var.iap_user}"
   condition {
-    expression          = "'${google_access_context_manager_access_policy.access_policy.name}/accessLevels/chromeos_lock_encrypted' in request.auth.access_levels"
+    expression          = "'${google_access_context_manager_access_policy.access_policy.name}/accessLevels/windows_encrypted' in request.auth.access_levels"
     title               = "beyondcorp_access_level"    
-    description         = "enforce beyondcorp access level chromeos_lock_encrypted"
+    description         = "enforce beyondcorp access level windows_encrypted"
   } 
 }
 
@@ -592,15 +592,14 @@ resource "google_access_context_manager_access_policy" "access_policy" {
 
 resource "google_access_context_manager_access_level" "access-level" {
   parent = "accessPolicies/${google_access_context_manager_access_policy.access_policy.name}"
-  name   = "accessPolicies/${google_access_context_manager_access_policy.access_policy.name}/accessLevels/chromeos_lock_encrypted"
-  title  = "chromeos_lock_encrypted"
+  name   = "accessPolicies/${google_access_context_manager_access_policy.access_policy.name}/accessLevels/windows_encrypted"
+  title  = "windows_encrypted"
   basic {
     conditions {
       device_policy {
-        require_screen_lock         = true
         allowed_encryption_statuses = ["ENCRYPTED"]
         os_constraints {
-          os_type                   = "DESKTOP_CHROME_OS"
+          os_type                   = "DESKTOP_WINDOWS"
         }
       }
     }
