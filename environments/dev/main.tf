@@ -631,7 +631,7 @@ resource "google_logging_project_sink" "gke_security_posture_sink" {
 
 # Write access for the sink's identity to write logs to the bq dataset
 resource "google_bigquery_dataset_iam_member" "dataset_iam_member" {
-  dataset_id = google_bigquery_dataset.gke_security_posture_dataset.id
+  dataset_id = google_bigquery_dataset.gke_security_posture_dataset.dataset_id
   role       = "roles/bigquery.dataEditor"
-  member     = "serviceAccount:${google_logging_project_sink.gke_security_posture_sink.writer_identity}"
+  member     = "${google_logging_project_sink.gke_security_posture_sink.writer_identity}"
 }
