@@ -604,3 +604,34 @@ resource "google_access_context_manager_access_level" "access-level" {
     }
   }
 }
+
+#################################################
+## GKE Security Posture Dashboard with BQ Demo ##
+#################################################
+
+# A BigQuery dataset to store logs in
+resource "google_bigquery_dataset" "gke_security_posture_dataset" {
+  project           = var.project
+  location          = var.region
+  dataset_id        = "gke_security_posture_dataset"
+  friendly_name     = "gke_security_posture_dataset"
+  description       = "Logging and tracking vulnerability findings reported by GKE Security Posture"
+}
+
+# Sink to send logs related to gke security posture vulnerability findings
+resource "google_logging_project_sink" "gke_security_posture_sink" {
+  project       = var.project
+  name          = "gke-security-posture-sink"
+  description   = "log sink to send vulnerabilities identified by gke_security_posture"
+  destination   = "bigquery.googleapis.com/${google_bigquery_dataset.gke_security_posture_dataset.id}"
+  filter        = "resource.type=\"k8s_cluster\" jsonPayload.@type=\"type.googleapis.com/cloud.kubernetes.security.containersecurity_logging.Finding\" jsonPayload.type=\"FINDING_TYPE_VULNERABILITY\""
+
+  unique_writer_identity = true
+}
+
+# Write access for the sink's identity to write logs to the bq dataset
+resource "google_bigquery_dataset_iam_member" "dataset_iam_member" {
+  dataset_id = google_bigquery_dataset.gke_security_posture_dataset.id
+  role       = "roles/bigquery.dataEditor"
+  member     = "serviceAccount:${google_logging_project_sink.gke_security_posture_sink.writer_identity}"
+}
