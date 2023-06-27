@@ -627,6 +627,10 @@ resource "google_logging_project_sink" "gke_security_posture_sink" {
   filter        = "resource.type=\"k8s_cluster\" jsonPayload.@type=\"type.googleapis.com/cloud.kubernetes.security.containersecurity_logging.Finding\" jsonPayload.type=\"FINDING_TYPE_VULNERABILITY\""
 
   unique_writer_identity = true
+
+  bigquery_options {
+    use_partitioned_tables = true
+  }
 }
 
 # Write access for the sink's identity to write logs to the bq dataset
