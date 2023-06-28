@@ -84,7 +84,6 @@ resource "google_service_networking_connection" "private_vpc_connection" {
 
 #Creating the IDS Endpoint
 resource "google_cloud_ids_endpoint" "ids_endpoint" {
-  provider = google-beta
   name     = "cloud-ids-endpoint"
   location = "${var.subnetwork_region}-b"
   network  = var.vpc_network
