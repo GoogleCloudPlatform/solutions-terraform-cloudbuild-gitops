@@ -50,7 +50,7 @@ resource "google_compute_subnetwork" "ids_subnetwork" {
   ip_cidr_range = "192.168.10.0/24"
   region        = var.subnetwork_region
   project       = var.demo_project_id
-  network       = google_compute_network.ids_network.self_link
+  network       = var.vpc_network
   # Enabling VPC flow logs
   log_config {
     aggregation_interval = "INTERVAL_10_MIN"
@@ -58,9 +58,6 @@ resource "google_compute_subnetwork" "ids_subnetwork" {
     metadata             = "INCLUDE_ALL_METADATA"
   }
   private_ip_google_access = true
-  depends_on = [
-    google_compute_network.ids_network,
-  ]
 }
 
 # Setup Private IP access
