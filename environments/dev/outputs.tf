@@ -20,3 +20,19 @@ output "dev_cluster_name" {
   value = "${module.gke_cluster.name}"
 }
 */
+
+output "_1_ids_victim_server_ip" {
+  value = module.cloud_ids._1_ids_victim_server_ip
+}
+
+output "_2_ids_attacker_server" {
+  value = module.cloud_ids._2_ids_attacker_server
+}
+
+output "_3_ids_iap_ssh_attacker_server" {
+  value = module.cloud_ids._3_ids_iap_ssh_attacker_server
+}
+
+output "_4_ids_sample_attack_command" {
+  value = module.cloud_ids._4_ids_sample_attack_command
+}
