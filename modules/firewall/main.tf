@@ -1,5 +1,5 @@
 # Copyright 2019 Google LLC
-#
+# c
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -27,6 +27,6 @@ resource "google_compute_firewall" "allow-http" {
     ports    = ["80"]
   }
 
-  target_tags   = ["http-server2"]
+  target_tags   = ["http-server"]
   source_ranges = ["0.0.0.0/0"]
 }
