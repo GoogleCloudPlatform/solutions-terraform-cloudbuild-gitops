@@ -643,10 +643,11 @@ resource "google_bigquery_dataset_iam_member" "dataset_iam_member" {
 ####################
 ## Cloud IDS Demo ##
 ####################
-
+/*
 module "cloud_ids" {
   source            = "../../modules/cloud_ids"
   demo_project_id   = var.project
   vpc_network       = module.vpc.id
   subnetwork_region = var.region
 }
+*/

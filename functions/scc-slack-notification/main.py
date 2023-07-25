@@ -13,26 +13,27 @@ def scc_slack_notification(event, context):
     """
     pubsub_message = base64.b64decode(event['data']).decode('utf-8')
     message_json = json.loads(pubsub_message)
-    send_slack_chat_notification(message_json['finding'], message_json['resource'])
+    if 'finding' in message_json and 'resource' in message_json:
+        send_slack_chat_notification(message_json.get('finding'), message_json.get('resource'))
+    else:
+        print(message_json)
+        send_slack_chat_notification(message_json.get('finding'), json.loads('{}'))
 
 def send_slack_chat_notification(finding_json, resource_json):
     event_timestamp = datetime.fromisoformat(finding_json['eventTime'][0:19]).astimezone(timezone('Asia/Kolkata')).strftime('%Y-%m-%d %H:%M:%S')
     
-    if 'severity' in finding_json: 
-        severity = finding_json['severity']
-    else:
-        severity = "Unspecified"
     if 'description' in finding_json:
-        description = finding_json['description']
+        description = finding_json.get('description', 'Unspecified')
     else:
-        description = f"Source: {finding_json['parentDisplayName']}"
+        description = f"Source: {finding_json.get('parentDisplayName', 'Unspecified')}"
     
-    slack_message = [ 
+
+    slack_message = [
             {
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": f"{severity} severity finding {finding_json['category']} detected!"
+                    "text": f"{finding_json.get('severity', 'Unspecified')} severity finding {finding_json.get('category', 'Unspecified')} detected!"
                 }
             },
             {
@@ -50,7 +51,7 @@ def send_slack_chat_notification(finding_json, resource_json):
                 "fields": [
                     {
                         "type": "mrkdwn",
-                        "text": f"*Project:*\n{resource_json['projectDisplayName']}"
+                        "text": f"*Project:*\n{resource_json.get('projectDisplayName', 'Unspecified')}"
                     },
                     {
                         "type": "mrkdwn",
@@ -58,11 +59,11 @@ def send_slack_chat_notification(finding_json, resource_json):
                     },
                     {
                         "type": "mrkdwn",
-                        "text": f"*Resource Type:*\n{resource_json['type']}"
+                        "text": f"*Resource Type:*\n{resource_json.get('type', 'Unspecified')}"
                     },
                     {
                         "type": "mrkdwn",
-                        "text": f"*Resource Name:*\n{resource_json['displayName']}"
+                        "text": f"*Resource Name:*\n{resource_json.get('displayName', 'Unspecified')}"
                     }
                 ]
             },
@@ -81,7 +82,7 @@ def send_slack_chat_notification(finding_json, resource_json):
                             "text": "Remediate"
                         },
                         "style": "primary",
-                        "value": f"project_name={resource_json['projectDisplayName']}+resource_name={resource_json['displayName']}+resource_type={resource_json['type']}+resource_id={resource_json['name']}+decision=Remediate",
+                        "value": f"project_name={resource_json.get('projectDisplayName', 'Unspecified')}+resource_name={resource_json.get('displayName', 'Unspecified')}+resource_type={resource_json.get('type', 'Unspecified')}+resource_id={finding_json.get('resourceName', 'Unspecified')}+decision=Remediate",
                         "confirm": {
                             "title": {
                                 "type": "plain_text",
@@ -89,7 +90,7 @@ def send_slack_chat_notification(finding_json, resource_json):
                             },
                             "text": {
                                 "type": "mrkdwn",
-                                "text": f"Do you want to fix the finding *{finding_json['category']}*?"
+                                "text": f"Do you want to fix the finding *{finding_json.get('category', 'Unspecified')}*?"
                             },
                             "confirm": {
                                 "type": "plain_text",
@@ -110,7 +111,7 @@ def send_slack_chat_notification(finding_json, resource_json):
                             "text": "Deactivate"
                         },
                         "style": "primary",
-                        "value": f"project_name={resource_json['projectDisplayName']}+resource_name={resource_json['displayName']}+resource_type={resource_json['type']}+finding_path={finding_json['name']}+decision=Deactivate",
+                        "value": f"project_name={resource_json.get('projectDisplayName', 'Unspecified')}+resource_name={resource_json.get('displayName', 'Unspecified')}+resource_type={resource_json.get('type', 'Unspecified')}+finding_path={finding_json.get('name', 'Unspecified')}+decision=Deactivate",
                         "confirm": {
                             "title": {
                                 "type": "plain_text",
@@ -118,7 +119,7 @@ def send_slack_chat_notification(finding_json, resource_json):
                             },
                             "text": {
                                 "type": "mrkdwn",
-                                "text": f"Do you want to deactivate the finding *{finding_json['category']}*?"
+                                "text": f"Do you want to deactivate the finding *{finding_json.get('category', 'Unspecified')}*?"
                             },
                             "confirm": {
                                 "type": "plain_text",
@@ -139,7 +140,7 @@ def send_slack_chat_notification(finding_json, resource_json):
                             "text": "Mute Finding"
                         },
                         "style": "danger",
-                        "value": f"project_name={resource_json['projectDisplayName']}+resource_name={resource_json['displayName']}+resource_type={resource_json['type']}+finding_path={finding_json['name']}+decision=Mute",
+                        "value": f"project_name={resource_json.get('projectDisplayName', 'Unspecified')}+resource_name={resource_json.get('displayName', 'Unspecified')}+resource_type={resource_json.get('type', 'Unspecified')}+finding_path={finding_json.get('name', 'Unspecified')}+decision=Mute",
                         "confirm": {
                             "title": {
                                 "type": "plain_text",
@@ -147,7 +148,7 @@ def send_slack_chat_notification(finding_json, resource_json):
                             },
                             "text": {
                                 "type": "mrkdwn",
-                                "text": f"Do you want to mute the finding *{finding_json['category']}*?"
+                                "text": f"Do you want to mute the finding *{finding_json.get('category', 'Unspecified')}*?"
                             },
                             "confirm": {
                                 "type": "plain_text",
@@ -166,7 +167,7 @@ def send_slack_chat_notification(finding_json, resource_json):
         response = requests.post("https://slack.com/api/chat.postMessage", data={
             "token": slack_token,
             "channel": slack_channel,
-            "text": f"{severity} severity finding {finding_json['category']} detected!",
+            "text": f"{finding_json.get('severity', 'Unspecified')} severity finding {finding_json.get('category', 'Unspecified')} detected!",
             "blocks": json.dumps(slack_message)
         })
         print(f"Slack responded with Status Code: {response.status_code}")
