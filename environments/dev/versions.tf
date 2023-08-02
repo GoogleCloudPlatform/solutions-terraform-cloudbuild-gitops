@@ -13,13 +13,15 @@
 # limitations under the License.
 
 terraform {
-  //required_version = "~> 1.0.0"
-
   required_version = ">= 0.13"
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "4.76.0"
+      version = ">= 3.53, < 5.0"
     }
+  }
+
+  provider_meta "google" {
+    module_name = "blueprints/terraform/cloud-ids/v0.1.0"
   }
 }
