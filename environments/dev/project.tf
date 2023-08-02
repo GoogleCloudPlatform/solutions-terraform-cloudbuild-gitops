@@ -63,3 +63,13 @@ resource "google_project_service" "iap" {
   project = var.project
   service = "iap.googleapis.com"
 }
+
+resource "google_project_service" "cloud_ids" {
+  project = var.project
+  service = "ids.googleapis.com"
+}
+
+resource "google_project_service" "service_networking" {
+  project = var.project
+  service = "servicenetworking.googleapis.com"
+}

@@ -651,3 +651,95 @@ module "cloud_ids" {
   subnetwork_region = var.region
 }
 */
+
+module cloud_ids {
+  source = "GoogleCloudPlatform/terraform-google-cloud-ids"
+
+  project_id                          = var.project
+  vpc_network_name                    = module.vpc.id
+  network_region                      = var.region
+  network_zone                        = "${var.region}-b"
+  subnet_list = [
+    module.vpc.subnet,
+  ]
+  ids_private_ip_range_name           = "ids-private-address"
+  ids_private_ip_address              = "10.10.10.0"
+  ids_private_ip_prefix_length        = 24
+  ids_private_ip_description          = "Cloud IDS reserved IP Range"
+  ids_name                            = "cloud-ids"
+  severity                            = "INFORMATIONAL"
+  packet_mirroring_policy_name        = "cloud-ids-packet-mirroring"
+  packet_mirroring_policy_description = "Packet mirroring policy for Cloud IDS"
+}
+
+resource "google_service_account" "ids_demo_service_account" {
+  project      = var.demo_project_id
+  account_id   = "ids-demo-service-account"
+  display_name = "Service Account"
+}
+
+# Create Server Instance
+resource "google_compute_instance" "ids_victim_server" {
+  project      = var.project
+  name         = "ids-victim-server"
+  machine_type = "e2-standard-2"
+  zone         = "${var.region}-b"
+  shielded_instance_config {
+    enable_secure_boot = true
+  }
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-10"
+    }
+  }
+
+  network_interface {
+    network    = module.vpc.id
+    subnetwork = module.vpc.subnet
+  }
+
+  service_account {
+    email  = google_service_account.ids_demo_service_account.email
+    scopes = ["cloud-platform"]
+  }
+  metadata_startup_script = "apt-get update -y;apt-get install -y nginx;cd /var/www/html/;sudo touch eicar.file"
+  labels = {
+    asset_type = "victim-machine"
+  }
+}
+
+# Enable SSH through IAP
+resource "google_compute_firewall" "ids_allow_iap_proxy" {
+  name      = "ids-allow-iap-proxy"
+  network   = module.vpc.id
+  project   = var.project
+  direction = "INGRESS"
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+  source_ranges = ["35.235.240.0/20"]
+  target_service_accounts = [
+    google_service_account.ids_demo_service_account.email
+  ]
+}
+
+# Firewall rule to allow icmp & http
+resource "google_compute_firewall" "ids_allow_http_icmp" {
+  name      = "ids-allow-http-icmp"
+  network   = module.vpc.id
+  project   = var.project
+  direction = "INGRESS"
+  allow {
+    protocol = "tcp"
+    ports    = ["80"]
+  }
+  source_ranges = ["10.10.0.0/24"]
+  target_service_accounts = [
+    google_service_account.ids_demo_service_account.email
+  ]
+  allow {
+    protocol = "icmp"
+  }
+}
