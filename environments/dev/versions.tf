@@ -20,4 +20,7 @@ terraform {
       version = ">= 3.53, < 5.0"
     }
   }
+  provider_meta "google" {
+    module_name = "blueprints/terraform/cloud-ids/v0.1.0"
+  }
 }
