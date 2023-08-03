@@ -39,7 +39,7 @@ module cloud_ids {
 */
 
 resource "google_compute_global_address" "producer_ip_range" {
-    project       = var.project
+    project       = var.demo_project_id
     network       = var.vpc_network
     name          = "producer-ip-range"
     purpose       = "VPC_PEERING"
