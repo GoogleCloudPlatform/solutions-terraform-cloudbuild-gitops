@@ -16,7 +16,7 @@
 ##  This code creates PoC demo environment for Cloud IDS
 ##  This demo code is not built for production workload ##
 
-
+/*
 module cloud_ids {
   source = "GoogleCloudPlatform/terraform-google-cloud-ids"
 
@@ -42,7 +42,7 @@ resource "google_service_account" "ids_demo_service_account" {
   account_id   = "ids-demo-service-account"
   display_name = "Service Account"
 }
-
+*/
 # Create Server Instance
 resource "google_compute_instance" "ids_victim_server" {
   project      = var.demo_project_id
