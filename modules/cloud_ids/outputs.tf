@@ -26,7 +26,7 @@ output "_2_ids_attacker_server" {
 }
 
 output "_3_ids_iap_ssh_attacker_server" {
-  value = "gcloud compute ssh --zone ${var.network_zone} ${google_compute_instance.ids_attacker_machine.name}  --tunnel-through-iap --project ${var.demo_project_id}"
+  value = "gcloud compute ssh --zone ${var.subnetwork_region}-b ${google_compute_instance.ids_attacker_machine.name}  --tunnel-through-iap --project ${var.demo_project_id}"
 }
 
 output "_4_ids_sample_attack_command" {
