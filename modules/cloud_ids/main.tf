@@ -84,11 +84,11 @@ resource "google_compute_instance" "ids_attacker_machine" {
   shielded_instance_config {
     enable_secure_boot = true
   }
-  depends_on = [
-    time_sleep.wait_enable_service_api_ids,
-    google_compute_instance.ids_victim_server,
-    google_compute_packet_mirroring.cloud_ids_packet_mirroring,
-  ]
+  #depends_on = [
+  #  time_sleep.wait_enable_service_api_ids,
+  #  google_compute_instance.ids_victim_server,
+  #  google_compute_packet_mirroring.cloud_ids_packet_mirroring,
+  #]
 
   boot_disk {
     initialize_params {
@@ -98,12 +98,11 @@ resource "google_compute_instance" "ids_attacker_machine" {
 
   network_interface {
     network    = var.vpc_network
-    subnetwork = google_compute_subnetwork.ids_subnetwork.id
+    subnetwork = var.vpc_subnet
   }
 
   service_account {
-    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    email  = data.google_compute_default_service_account.default.email
+    email  = google_service_account.ids_demo_service_account.email
     scopes = ["cloud-platform"]
   }
 
