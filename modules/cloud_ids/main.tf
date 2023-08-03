@@ -36,13 +36,13 @@ module cloud_ids {
   packet_mirroring_policy_name        = "cloud-ids-packet-mirroring"
   packet_mirroring_policy_description = "Packet mirroring policy for Cloud IDS"
 }
-
+*/
 resource "google_service_account" "ids_demo_service_account" {
   project      = var.demo_project_id
   account_id   = "ids-demo-service-account"
   display_name = "Service Account"
 }
-*/
+
 # Create Server Instance
 resource "google_compute_instance" "ids_victim_server" {
   project      = var.demo_project_id
