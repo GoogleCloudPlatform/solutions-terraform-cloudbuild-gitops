@@ -38,6 +38,14 @@ module cloud_ids {
 }
 */
 
+resource "google_cloud_ids_endpoint" "demo_ids_endpoint" {
+    name     = "demo-ids-endpoint"
+    location = "${var.subnetwork_region}-b"
+    network  = var.vpc_network
+    severity = "INFORMATIONAL"
+    depends_on = [google_service_networking_connection.private_service_access]
+}
+
 resource "google_compute_global_address" "producer_ip_range" {
     project       = var.demo_project_id
     network       = var.vpc_network
