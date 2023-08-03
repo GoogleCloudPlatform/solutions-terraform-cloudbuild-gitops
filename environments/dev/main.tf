@@ -650,4 +650,5 @@ module "cloud_ids" {
   subnetwork_region = var.region
   vpc_network       = module.vpc.id
   vpc_subnet        = module.vpc.subnet
+  vpc_subnet_ip     = module.vpc.subnet_ip
 }

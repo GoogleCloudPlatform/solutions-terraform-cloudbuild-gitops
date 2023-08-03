@@ -36,3 +36,8 @@ variable "vpc_subnet" {
   type        = string
   description = "Subnet for deploying instances"
 }
+
+variable "vpc_subnet_ip" {
+  type        = string
+  description = "Subnet IP range"
+}

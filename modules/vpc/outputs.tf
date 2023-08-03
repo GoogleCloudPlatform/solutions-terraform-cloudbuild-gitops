@@ -23,3 +23,7 @@ output "name" {
 output "subnet" {
   value = "${element(module.vpc.subnets_ids, 0)}"
 }
+
+output "subnet_ip" {
+  value = "10.${var.env == "dev" ? 10 : 20}.0.0/24"
+}

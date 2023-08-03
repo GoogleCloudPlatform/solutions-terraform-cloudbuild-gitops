@@ -37,6 +37,22 @@ module cloud_ids {
   packet_mirroring_policy_description = "Packet mirroring policy for Cloud IDS"
 }
 */
+
+resource "google_compute_global_address" "producer_ip_range" {
+    project       = var.project
+    network       = var.vpc_network
+    name          = "producer-ip-range"
+    purpose       = "VPC_PEERING"
+    address_type  = "INTERNAL"
+    prefix_length = 16
+}
+
+resource "google_service_networking_connection" "private_service_access" {
+    network                 = var.vpc_network
+    service                 = "servicenetworking.googleapis.com"
+    reserved_peering_ranges = [google_compute_global_address.producer_ip_range.name]
+}
+
 resource "google_service_account" "ids_demo_service_account" {
   project      = var.demo_project_id
   account_id   = "ids-demo-service-account"
@@ -73,7 +89,6 @@ resource "google_compute_instance" "ids_victim_server" {
     asset_type = "victim-machine"
   }
 }
-
 
 # Create Attacker Instance
 resource "google_compute_instance" "ids_attacker_machine" {
@@ -141,7 +156,7 @@ resource "google_compute_firewall" "ids_allow_http_icmp" {
     protocol = "tcp"
     ports    = ["80"]
   }
-  source_ranges = ["192.168.0.0/24"]
+  source_ranges = var.vpc_subnet_ip
   target_service_accounts = [
     google_service_account.ids_demo_service_account.email
   ]
