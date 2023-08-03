@@ -156,7 +156,7 @@ resource "google_compute_firewall" "ids_allow_http_icmp" {
     protocol = "tcp"
     ports    = ["80"]
   }
-  source_ranges = var.vpc_subnet_ip
+  source_ranges = [var.vpc_subnet_ip]
   target_service_accounts = [
     google_service_account.ids_demo_service_account.email
   ]
