@@ -48,6 +48,12 @@ variable "create_iap_run_sql_demo" {
   default       = false
 }
 
+variable "create_ids_demo" {
+  description   = "If set to true, it will create the cloud_ids"
+  type          = bool
+  default       = false
+}
+
 variable "recaptcha_site_key" {
   type          = string
   description   = "reCAPTCHA site key for Armor WAF Policy"

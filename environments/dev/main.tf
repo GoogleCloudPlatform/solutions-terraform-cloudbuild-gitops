@@ -643,8 +643,9 @@ resource "google_bigquery_dataset_iam_member" "dataset_iam_member" {
 ####################
 ## Cloud IDS Demo ##
 ####################
-/*
+
 module "cloud_ids" {
+  count             = var.create_ids_demo ? 1 : 0
   source            = "../../modules/cloud_ids"
   demo_project_id   = var.project
   subnetwork_region = var.region
@@ -652,4 +653,3 @@ module "cloud_ids" {
   vpc_subnet        = module.vpc.subnet
   vpc_subnet_ip     = module.vpc.subnet_ip
 }
-*/
