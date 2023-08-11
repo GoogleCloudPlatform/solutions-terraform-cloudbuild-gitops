@@ -307,7 +307,7 @@ resource "aws_vpc_endpoint" "paloma-dv-vpc-endpoint-ssm" {
 module "paloma-dv-vpc-endpoint-ssm" {
   count = var.is_create_aws_instance
 
-  source = "../../../modules/aws_ssm_vpce"
+  source = "../../modules/aws_ssm_vpce"
 
   vpc_id               = aws_vpc.paloma-dv-vpc01.id
   subnet_id            = aws_subnet.paloma-dv-vpc01-pri-subnet01.id
