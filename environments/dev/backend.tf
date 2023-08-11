@@ -1,11 +1,12 @@
 terraform {
-  /*
-    backend "gcs" {
-        bucket = "kh-paloma-m01-01-bucket-tfstate"
-        prefix = "terraform/state/common"
-    }
-    */
+
+  backend "gcs" {
+    bucket = "paloma-cicd-tfstate"
+    prefix = "env/dev"
+  }
+  /*  
   backend "local" {
     path = "terraform.tfstate"
   }
+  */
 }
