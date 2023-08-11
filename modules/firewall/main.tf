@@ -27,6 +27,7 @@ resource "google_compute_firewall" "allow-http" {
     ports    = ["80"]
   }
 
-  target_tags   = ["http-server2"]
+  # bellow changed from http-server2 to http-server
+  target_tags   = ["http-server"]
   source_ranges = ["0.0.0.0/0"]
 }
