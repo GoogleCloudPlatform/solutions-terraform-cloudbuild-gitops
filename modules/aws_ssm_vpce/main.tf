@@ -1,4 +1,6 @@
-# SSM用VPC Endpointの作成（ループで作成してみる）
+# SSM用VPC Endpointの作成
+# count句とfor_each句を一度に併用できないため、for_eachを用いたmoduleを作成し、moduleを参照する形でcount句を用いる。
+
 locals {
   vpc_endpoint_services = ["ssm", "ssmmessages", "ec2messages"]
 }
