@@ -16,6 +16,6 @@
 terraform {
   backend "gcs" {
     bucket = "edhtest123"
-    prefix = "tfstate/github-learn/env/dev"
+    prefix = "tfstate/solutions-terraform-cloudbuild-gitops/env/dev"
   }
 }
