@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "calm-oxide-396007-tfstate"
     prefix = "env/dev"
   }
 }
