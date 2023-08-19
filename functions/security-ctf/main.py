@@ -162,7 +162,7 @@ def security_ctf(request):
                         ]
                     }
                 ]
-                if post_slack_message(slack_approver_channel, f"New Access Request from {requestor_name}!", slack_message):
+                if post_slack_message(slack_ctf_easy_channel, f"New Access Request from {requestor_name}!", slack_message):
                     print("Access request sent to approvers!")
                     slack_text = "Access request sent to approvers!"
                 else:
