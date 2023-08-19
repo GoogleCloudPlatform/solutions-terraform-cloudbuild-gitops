@@ -7,7 +7,7 @@ import googleapiclient.discovery
 from pytz import timezone
 from datetime import datetime, timedelta
 
-def provision_access(request):
+def security_ctf_admin(request):
     # provisioning the requested access
     event = json.loads(request.get_data().decode('UTF-8'))
 
