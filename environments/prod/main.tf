@@ -1051,3 +1051,104 @@ resource "google_secret_manager_secret_iam_binding" "identity_bot_token_binding"
       "serviceAccount:${module.identity-notification-cloud-function.sa-email}",
   ]
 }
+
+#######################
+## Security CTF Demo ##
+#######################
+
+module "security_ctf_cloud_function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "security-ctf"
+    function-desc   = "intakes requests from slack for security ctf admins and users"
+    entry-point     = "security_ctf"
+    env-vars        = {
+        SLACK_CTF_EASY_CHANNEL = var.slack_ctf_easy_channel,
+        SLACK_CTF_HARD_CHANNEL = var.slack_ctf_hard_channel,
+        DEPLOYMENT_PROJECT = var.project,
+        DEPLOYMENT_REGION = var.region
+    }
+    secrets         = [
+        {
+            key = "SLACK_ACCESS_TOKEN"
+            id  = google_secret_manager_secret.slack_security_ctf_bot_token.secret_id
+        },
+        {
+            key = "SLACK_SIGNING_SECRET"
+            id  = google_secret_manager_secret.slack_security_ctf_signing_secret.secret_id
+        }
+    ]
+}
+
+# IAM entry for all users to invoke the security-ctf function
+resource "google_cloudfunctions_function_iam_member" "security_ctf_invoker" {
+  project        = var.project
+  region         = var.region
+  cloud_function = module.security_ctf_cloud_function.function_name
+
+  role   = "roles/cloudfunctions.invoker"
+  member = "allUsers"
+}
+
+module "secuity_ctf_admin_cloud_function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "security-ctf-admin"
+    function-desc   = "processes access requests for security-ctf users"
+    entry-point     = "security_ctf_admin"
+}
+
+# IAM entry for service account of security-ctf function to invoke the security-ctf-admin function
+resource "google_cloudfunctions_function_iam_member" "security_ctf_admin_invoker" {
+  project        = var.project
+  region         = var.region
+  cloud_function = module.secuity_ctf_admin_cloud_function.function_name
+
+  role   = "roles/cloudfunctions.invoker"
+  member = "serviceAccount:${module.security_ctf_cloud_function.sa-email}"
+}
+
+# IAM entry for service account of security-ctf-admin function to manage IAM policies
+resource "google_organization_iam_member" "security_ctf_admin_org_iam_admin" {
+  org_id    = var.organization
+  role      = "roles/resourcemanager.projectIamAdmin"
+  member    = "serviceAccount:${module.secuity_ctf_admin_cloud_function.sa-email}"
+}
+
+resource "google_secret_manager_secret" "slack_security_ctf_bot_token" {
+  project   = var.project
+  secret_id = "slack-security-ctf-bot-token"
+
+  replication {
+    automatic = true
+  }
+}
+
+# IAM entry for service account of security-ctf function to use the slack bot token
+resource "google_secret_manager_secret_iam_binding" "ctf_bot_token_binding" {
+  project   = google_secret_manager_secret.slack_security_ctf_bot_token.project
+  secret_id = google_secret_manager_secret.slack_security_ctf_bot_token.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  members    = [
+      "serviceAccount:${module.security_ctf_cloud_function.sa-email}",
+  ]
+}
+
+resource "google_secret_manager_secret" "slack_security_ctf_signing_secret" {
+  project   = var.project
+  secret_id = "slack-security-ctf-signing-secret"
+
+  replication {
+    automatic = true
+  }
+}
+
+# IAM entry for service account of admin-access function to use the slack signing secret
+resource "google_secret_manager_secret_iam_binding" "ctf_signing_secret_binding" {
+  project   = google_secret_manager_secret.slack_security_ctf_signing_secret.project
+  secret_id = google_secret_manager_secret.slack_security_ctf_signing_secret.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  members    = [
+      "serviceAccount:${module.security_ctf_cloud_function.sa-email}",
+  ]
+}

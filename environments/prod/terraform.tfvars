@@ -12,3 +12,5 @@ atlassian_domain = "pensande"
 jira_project_key = "SEC"
 dlp_wrapped_key = "CiQAp+WI0g1Rfvlg9OEmHWucMNHDV5FkoHZYdlDWeyrdjq+WxT0SSQCMW50faXzPz2XJ/XzZKg/CQJsBsDZQr5lBbc0a227XZDtFSftvXULvP8vmzg5km52K1Nn2zn/3rb0RinaH2TNP6omwnqYkfpE="
 create_prod_gke_cluster = false
+slack_ctf_easy_channel = "C05NY773049"
+slack_ctf_hard_channel = "C05NY77FTDX"
