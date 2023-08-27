@@ -10,13 +10,14 @@ from datetime import datetime, timedelta
 def security_ctf_admin(request):
     # provisioning the requested access
     event = json.loads(request.get_data().decode('UTF-8'))
+    ctf_easy_project = os.environ.get('CTF_EASY_PROJECT', 'Specified environment variable is not set.')
+    ctf_hard_project = os.environ.get('CTF_HARD_PROJECT', 'Specified environment variable is not set.')
 
-    requestor_name = event['value'].split("requestor_name=")[1].split("+")[0]
-    requestor_email = requestor_name + cloud_identity_domain
-    project_id = event['value'].split("project_id=")[1].split("+")[0]
-    role_name = event['value'].split("role_name=")[1].split("+")[0]
-    duration_hours = event['value'].split("duration_hours=")[1].split("+")[0]
-    duration_mins = event['value'].split("duration_mins=")[1].split("+")[0]
+    user_email = event['user_email']
+    project_id = ctf_easy_project if event['env_name'] == 'easy' else ctf_hard_project
+    role_name = "viewer"
+    duration_hours = 2
+    duration_mins = 0
     
     expiry_timestamp = (datetime.now() + timedelta(hours=float(duration_hours), minutes=float(duration_mins))).strftime('%Y-%m-%dT%H:%M:%SZ')
     expiry_timestamp_ist = (datetime.now(timezone('Asia/Kolkata')) + timedelta(hours=float(duration_hours), minutes=float(duration_mins))).strftime('%Y-%m-%d %H:%M:%S')
@@ -29,13 +30,13 @@ def security_ctf_admin(request):
         crm_service = initialize_service()
 
         # Grants your member the requested role for the project.
-        member = f"user:{requestor_email}"
+        member = f"user:{user_email}"
         modify_policy_add_role(crm_service, project_id, role, member, expiry_timestamp)
-        print(f"{role_name} role to project {project_id} provisioned successfully for {requestor_name}!")
+        print(f"{role_name} role to project {project_id} provisioned successfully for {user_email}!")
         result = "Success"
         info = f"Expiry: {expiry_timestamp_ist}"
     except Exception as error:
-        print(f"{role_name} role to project {project_id} provisioning failed for {requestor_name}! - {error}")
+        print(f"{role_name} role to project {project_id} provisioning failed for {user_email}! - {error}")
         result = "Failure"
         info = f"Error: {error}"
     

@@ -1096,6 +1096,10 @@ module "secuity_ctf_admin_cloud_function" {
     function-name   = "security-ctf-admin"
     function-desc   = "processes access requests for security-ctf users"
     entry-point     = "security_ctf_admin"
+    env-vars        = {
+        CTF_EASY_PROJECT = var.ctf_easy_project,
+        CTF_HARD_PROJECT = var.ctf_hard_project,
+    }
 }
 
 # IAM entry for service account of security-ctf function to invoke the security-ctf-admin function

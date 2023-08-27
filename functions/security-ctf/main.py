@@ -24,19 +24,64 @@ def security_ctf(request):
         if payload.startswith("token="):
             # parse the slash command for access request
             url = urllib.parse.unquote(payload.split("response_url=")[1].split("&")[0])
+            channel_id = payload.split("channel_id=")[1].split("&")[0]
+            channel_name = payload.split("channel_name=")[1].split("&")[0]
             requestor_name = payload.split("user_name=")[1].split("&")[0]
             requestor_id = payload.split("user_id=")[1].split("&")[0]
             request_text = payload.split("text=")[1].split("&")[0]
-            print(f"New Access Request: {requestor_name}, {requestor_id}, {request_text}")
-            input_text = request_text.split("+",3)
-            if(len(input_text)<4):
-                print("Invalid user input - one or more request elements missing.")
-                return {
-                    "response_type": "ephemeral",
-                    "type": "mrkdwn",
-                    "text": "One or more request elements missing. Please include project `project_id` role `role_name` duration `hours.mins` and `reason for access`"
-                }
-            else:
+            print(f"New CTF Request: {channel_name}, {requestor_name}, {request_text}")
+            
+            input_text = request_text.split("+")
+            if input_text[0].lower() == 'admin':
+                if requestor_id == 'U011JK062NL':
+                    print("Admin action invoked")
+                    slack_ack(url, "Hey, _CTF commando_, access is being provisioned!")
+                    print(f"Provisioning access approved by Caller Name: {requestor_name}, Caller ID: {requestor_id}")
+                    http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/security-ctf-admin"
+                    access_payload = {
+                        "env_name": input_text[1],
+                        "user_email": input_text[2],
+                        "response_url": url
+                    }
+                    function_response = call_function(http_endpoint, access_payload)
+                    function_response_json = function_response.json()
+                    if function_response_json['result'] == "Success":
+                        response_subject = "This access request succeeded!"
+                    else:
+                        response_subject = "This access request failed!"
+                    
+                    # compose message to respond back to the caller
+                    slack_message = {
+                        "attachments": [
+                            {
+                                "mrkdwn_in": ["text"],
+                                "color": "#36a64f",
+                                "pretext": response_subject,
+                                "title": "Request Details",
+                                "fields": [
+                                    {
+                                        "title": "User Email",
+                                        "value": input_text[2],
+                                        "short": True
+                                    },
+                                    {
+                                        "title": "Env Name",
+                                        "value": input_text[1],
+                                        "short": True
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                    return post_slack_response(url, slack_message)
+                else:
+                    print("Unauthorized to execute admin functions")
+                    return {
+                        "response_type": "ephemeral",
+                        "type": "mrkdwn",
+                        "text": "Unauthorized to execute CTF admin functions. Please ping <@U011JK062NL>"
+                    }
+            elif input_text[0].lower() == 'user':
                 project_id = input_text[0].lower()
                 role_name = input_text[1]
                 duration = input_text[2]
@@ -204,125 +249,13 @@ def security_ctf(request):
                     ]
                 }
                 return post_slack_response(url, slack_message)
-        elif payload.startswith("payload="):
-            # handling the response action
-            response_json = json.loads(urllib.parse.unquote(payload.split("payload=")[1]))
-            value = response_json['actions'][0]['value']
-            print(value)
-            requestor_name = value.split("requestor_name=")[1].split("+")[0]
-            requestor_id = value.split("requestor_id=")[1].split("+")[0]
-            project_id = value.split("project_id=")[1].split("+")[0]
-            role_name = value.split("role_name=")[1].split("+")[0]
-            decision = value.split("decision=")[1].split("+")[0]
-            
-            # compose slack message used for response back to requestor
-            slack_message = [
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": "NEW_TEXT"
-                    }
-                },
-                {
-                    "type": "section",
-                    "fields": [
-                        {
-                            "type": "mrkdwn",
-                            "text": f"*Project:*\n{project_id}"
-                        },
-                        {
-                            "type": "mrkdwn",
-                            "text": f"*Role:*\n{role_name}"
-                        },
-                        {
-                            "type": "mrkdwn",
-                            "text": f"*Actioned by:*\n{response_json['user']['name']}"
-                        }
-                    ]
-                }
-            ]
-
-            if decision == "Approved":
-                slack_ack(response_json['response_url'], "Hey, _secops commando_, access is being provisioned!")
-                print(f"Provisioning access approved by Caller Name: {response_json['user']['name']}, Caller ID: {response_json['user']['id']}")
-                http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/provision-access"
-                response_payload = {
-                    "caller_name": response_json['user']['name'],
-                    "caller_id": response_json['user']['id'],
-                    "value": value,
-                    "response_url": response_json['response_url']
-                }
-                function_response = call_function(http_endpoint, response_payload)
-                function_response_json = function_response.json()
-                if function_response_json['result'] == "Success":
-                    response_subject = "This access request was approved and executed!"
-                else:
-                    response_subject = "This access request was approved but execution failed!"
-            
-            elif decision == "Rejected":
-                print(f"Access request rejected by Caller Name: {response_json['user']['name']}, Caller ID: {response_json['user']['id']}")
-                response_subject = "This access request was rejected!"
-            
-            # post message back to the requestor
-            slack_message[0]['text']['text'] = f"_Hey {requestor_name}!_ :wave: _{response_subject}_"
-            if decision == "Approved":
-                slack_message[1]['fields'].append({
-                    "type": "mrkdwn",
-                    "text": f"*Info:*\n{function_response_json['info']}"
-                })
-            if post_slack_message(requestor_id, response_subject, slack_message):
-                response_footer = "The access requestor has been informed about this action."
             else:
-                response_footer = "We couldn't inform the access requestor due to an error."
-            print(response_footer)
-            
-            # compose message to respond back to the caller
-            slack_message = {
-                "attachments": [
-                    {
-                        "mrkdwn_in": ["text"],
-                        "color": "#36a64f",
-                        "pretext": response_subject,
-                        "title": "Request Details",
-                        "fields": [
-                            {
-                                "title": "Requestor",
-                                "value": requestor_name,
-                                "short": True
-                            },
-                            {
-                                "title": "Project",
-                                "value": project_id,
-                                "short": True
-                            },
-                            {
-                                "title": "Role",
-                                "value": role_name,
-                                "short": True
-                            },
-                            {
-                                "title": "Actioned By",
-                                "value": response_json['user']['name'],
-                                "short": True
-                            }
-                        ],
-                        "footer": response_footer
-                    }
-                ]
-            }
-            if decision == "Approved":
-                slack_message['attachments'][0]['fields'].append({
-                    "title": "Info",
-                    "value": function_response_json['info'],
-                    "short": True
-                })
-            return post_slack_response(response_json['response_url'], slack_message)
-        else:
-            print("Not a valid payload!")
-            return {
-                'statusCode': 200
-            }
+                print("Invalid action invoked")
+                return {
+                    "response_type": "ephemeral",
+                    "type": "mrkdwn",
+                    "text": "Invalid slash command. Please use /ctf 'user' "
+                }
     else:
         print("Unauthorized request!")
         return {

@@ -80,3 +80,11 @@ variable "slack_ctf_easy_channel" {
 variable "slack_ctf_hard_channel" {
   type        = string
 }
+
+variable "ctf_easy_project" {
+  type        = string
+}
+
+variable "ctf_hard_project" {
+  type        = string
+}
