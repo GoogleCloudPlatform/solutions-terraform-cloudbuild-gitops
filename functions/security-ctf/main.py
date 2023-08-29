@@ -40,7 +40,8 @@ def security_ctf(request):
                     http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/security-ctf-admin"
                     access_payload = {
                         "env_name": input_text[1],
-                        "user_email": input_text[2]
+                        "user_email": input_text[2],
+                        "action": "grant"
                     }
                     function_response = call_function(http_endpoint, access_payload)
                     function_response_json = function_response.json()
