@@ -88,3 +88,7 @@ variable "ctf_easy_project" {
 variable "ctf_hard_project" {
   type        = string
 }
+
+variable "slack_admin" {
+  type        = string
+}

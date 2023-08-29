@@ -19,6 +19,7 @@ def security_ctf(request):
     slack_ctf_hard_channel = os.environ.get('SLACK_CTF_HARD_CHANNEL', 'Specified environment variable is not set.')
     deployment_project = os.environ.get('DEPLOYMENT_PROJECT', 'Specified environment variable is not set.')
     deployment_region = os.environ.get('DEPLOYMENT_REGION', 'Specified environment variable is not set.')
+    slack_admin = os.environ.get('SLACK_ADMIN', 'Specified environment variable is not set.')
 
     if verify_request(timestamp,payload,slack_signature,slack_signing_secret):
         if payload.startswith("token="):
@@ -28,20 +29,18 @@ def security_ctf(request):
             channel_name = payload.split("channel_name=")[1].split("&")[0]
             requestor_name = payload.split("user_name=")[1].split("&")[0]
             requestor_id = payload.split("user_id=")[1].split("&")[0]
-            request_text = payload.split("text=")[1].split("&")[0]
+            request_text = urllib.parse.unquote(payload.split("text=")[1].split("&")[0])
             print(f"New CTF Request: {channel_name}, {requestor_name}, {request_text}")
             
             input_text = request_text.split("+")
             if input_text[0].lower() == 'admin':
-                if requestor_id == 'U011JK062NL':
-                    print("Admin action invoked")
+                if requestor_id == slack_admin:
+                    print(f"Provisioning access to env: {input_text[1]} for: {input_text[2]} as requested by: {requestor_name}")
                     slack_ack(url, "Hey, _CTF commando_, access is being provisioned!")
-                    print(f"Provisioning access approved by Caller Name: {requestor_name}, Caller ID: {requestor_id}")
                     http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/security-ctf-admin"
                     access_payload = {
                         "env_name": input_text[1],
-                        "user_email": input_text[2],
-                        "response_url": url
+                        "user_email": input_text[2]
                     }
                     function_response = call_function(http_endpoint, access_payload)
                     function_response_json = function_response.json()
@@ -69,17 +68,18 @@ def security_ctf(request):
                                         "value": input_text[1],
                                         "short": True
                                     }
-                                ]
+                                ],
+                                "footer": function_response_json['info']
                             }
                         ]
                     }
                     return post_slack_response(url, slack_message)
                 else:
-                    print("Unauthorized to execute admin functions")
+                    print(f"{requestor_name} is unauthorized to execute CTF admin functions")
                     return {
                         "response_type": "ephemeral",
                         "type": "mrkdwn",
-                        "text": "Unauthorized to execute CTF admin functions. Please ping <@U011JK062NL>"
+                        "text": f"You are unauthorized to execute CTF admin functions. Please ping <@{slack_admin}>"
                     }
             elif input_text[0].lower() == 'user':
                 project_id = input_text[0].lower()
@@ -254,7 +254,7 @@ def security_ctf(request):
                 return {
                     "response_type": "ephemeral",
                     "type": "mrkdwn",
-                    "text": "Invalid slash command. Please use /ctf 'user' "
+                    "text": "Invalid slash command. Please use /ctf `user` and so on..."
                 }
     else:
         print("Unauthorized request!")

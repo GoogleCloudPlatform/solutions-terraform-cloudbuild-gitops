@@ -1066,7 +1066,8 @@ module "security_ctf_cloud_function" {
         SLACK_CTF_EASY_CHANNEL = var.slack_ctf_easy_channel,
         SLACK_CTF_HARD_CHANNEL = var.slack_ctf_hard_channel,
         DEPLOYMENT_PROJECT = var.project,
-        DEPLOYMENT_REGION = var.region
+        DEPLOYMENT_REGION = var.region,
+        SLACK_ADMIN = var.slack_admin
     }
     secrets         = [
         {

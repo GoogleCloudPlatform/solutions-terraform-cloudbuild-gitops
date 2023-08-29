@@ -15,7 +15,7 @@ def security_ctf_admin(request):
 
     user_email = event['user_email']
     project_id = ctf_easy_project if event['env_name'] == 'easy' else ctf_hard_project
-    role_name = "viewer"
+    role_names = ["securitycenter.adminViewer", "compute.viewer", "storage.legacyBucketReader", "logging.viewer"] 
     duration_hours = 2
     duration_mins = 0
     
@@ -23,16 +23,17 @@ def security_ctf_admin(request):
     expiry_timestamp_ist = (datetime.now(timezone('Asia/Kolkata')) + timedelta(hours=float(duration_hours), minutes=float(duration_mins))).strftime('%Y-%m-%d %H:%M:%S')
 
     try:
-        # Role to be granted.
-        role = f"roles/{role_name}"
-        
         # Initializes service.
         crm_service = initialize_service()
 
-        # Grants your member the requested role for the project.
+        # Grants your member the requested roles for the project.
         member = f"user:{user_email}"
-        modify_policy_add_role(crm_service, project_id, role, member, expiry_timestamp)
-        print(f"{role_name} role to project {project_id} provisioned successfully for {user_email}!")
+
+        for role_name in role_names:
+            role = f"roles/{role_name}"
+            modify_policy_add_role(crm_service, project_id, role, member, expiry_timestamp)
+            print(f"{role_name} role to project {project_id} provisioned successfully for {user_email}!")
+        
         result = "Success"
         info = f"Expiry: {expiry_timestamp_ist}"
     except Exception as error:
