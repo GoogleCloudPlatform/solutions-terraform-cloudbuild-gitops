@@ -165,7 +165,7 @@ def security_ctf(request):
         else:
             print("Not a valid payload!")
             return {
-                'statusCode': 200
+                'statusCode': 200,
                 'body': json.dumps("Not a valid payload!")
             }
     else:
