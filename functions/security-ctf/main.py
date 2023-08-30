@@ -95,7 +95,10 @@ def security_ctf(request):
                         }
                         slack_message['attachments'].append(revoke_attachment)
 
-                    return post_slack_response(url, slack_message)
+                    post_slack_response(url, slack_message)
+                    return {
+                        'statusCode': 200
+                    }
                 else:
                     print(f"{requestor_name} is unauthorized to execute CTF admin functions")
                     return {
@@ -134,38 +137,36 @@ def security_ctf(request):
     
                 # compose message to respond back to the caller
                 slack_message = {
-                    "text": "Access Revoked!",
-                    "blocks": [ 
+                    "attachments": [
                         {
-                            "type": "header",
-                            "text": {
-                                "type": "plain_text",
-                                "text": function_response_json['info']
-                            }
-                        },
-                        {
-                            "type": "divider"
-                        },
-                        {
-                            "type": "section",
+                            "mrkdwn_in": ["text"],
+                            "color": "#36a64f",
+                            "title": "Request Details",
                             "fields": [
                                 {
-                                    "type": "mrkdwn",
-                                    "text": f"*User Email:*\n{user_email}"
+                                    "title": "User Email",
+                                    "value": user_email,
+                                    "short": True
                                 },
                                 {
-                                    "type": "mrkdwn",
-                                    "text": f"*Env Name:*\n{env_name}"
+                                    "title": "Env Name",
+                                    "value": env_name,
+                                    "short": True
                                 }
-                            ]
+                            ],
+                            "footer": function_response_json['info']
                         }
                     ]
                 }
-                return post_slack_response(response_json['response_url'], slack_message)
+                post_slack_response(response_json['response_url'], slack_message)
+                return {
+                    'statusCode': 200
+                }
         else:
             print("Not a valid payload!")
             return {
                 'statusCode': 200
+                'body': json.dumps("Not a valid payload!")
             }
     else:
         print("Unauthorized request!")
