@@ -137,24 +137,30 @@ def security_ctf(request):
     
                 # compose message to respond back to the caller
                 slack_message = {
-                    "attachments": [
+                    "text": "Access Revocation!",
+                    "blocks": [ 
                         {
-                            "mrkdwn_in": ["text"],
-                            "color": "#36a64f",
-                            "title": "Request Details",
+                            "type": "header",
+                            "text": {
+                                "type": "plain_text",
+                                "text": function_response_json['info']
+                            }
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "section",
                             "fields": [
                                 {
-                                    "title": "User Email",
-                                    "value": user_email,
-                                    "short": True
+                                    "type": "mrkdwn",
+                                    "text": f"*User Email:*\n{user_email}"
                                 },
                                 {
-                                    "title": "Env Name",
-                                    "value": env_name,
-                                    "short": True
+                                    "type": "mrkdwn",
+                                    "text": f"*Env Name:*\n{env_name}"
                                 }
-                            ],
-                            "footer": function_response_json['info']
+                            ]
                         }
                     ]
                 }
