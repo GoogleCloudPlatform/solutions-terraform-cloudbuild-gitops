@@ -35,8 +35,8 @@ def security_ctf(request):
             input_text = request_text.split("+")
             if input_text[0].lower() == 'admin':
                 if requestor_id == slack_admin:
-                    print(f"Provisioning access to env: {input_text[1]} for: {input_text[2]} as requested by: {requestor_name}")
                     slack_ack(url, "Hey, _CTF commando_, access is being provisioned!")
+                    print(f"Provisioning access to env: {input_text[1]} for: {input_text[2]} as requested by: {requestor_name}")
                     http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/security-ctf-admin"
                     access_payload = {
                         "env_name": input_text[1],
@@ -138,6 +138,7 @@ def security_ctf(request):
                         {
                             "mrkdwn_in": ["text"],
                             "color": "#36a64f",
+                            "pretext": "Access Revoked!",
                             "title": "Request Details",
                             "fields": [
                                 {

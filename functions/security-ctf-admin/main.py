@@ -51,39 +51,7 @@ def initialize_service():
         "cloudresourcemanager", "v1", credentials=credentials
     )
     return crm_service
-'''
-def modify_policy_add_role(crm_service, project_id, role, member, expiry_timestamp):
-    print(f"Fetching current IAM Policy for project: {project_id}...")
-    policy = (
-        crm_service.projects()
-        .getIamPolicy(
-            resource=project_id,
-            body={"options": {"requestedPolicyVersion": 3}},
-        )
-        .execute()
-    )
-    
-    binding = {
-        "role": role, 
-        "members": [member], 
-        "condition": {
-            "title": "expirable access", 
-            "description": f"Does not grant access after {expiry_timestamp}",
-            "expression": f"request.time < timestamp(\"{expiry_timestamp}\")"
-        }
-    }
-    policy["bindings"].append(binding)
-    policy['version'] = 3
 
-    print(f"Setting new IAM Policy for project: {project_id}...")
-    policy = (
-        crm_service.projects()
-        .setIamPolicy(
-            resource=project_id, 
-            body={"policy": policy})
-        .execute()
-    )
-'''
 def add_member(policy: dict, role: str, member: str) -> dict:
     print(f"Adding {member} to role {role}...")
     binding = {
