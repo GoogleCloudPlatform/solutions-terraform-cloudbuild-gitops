@@ -8,20 +8,20 @@ import googleapiclient.discovery
 def security_ctf_admin(request):
     # provisioning the requested access
     event = json.loads(request.get_data().decode('UTF-8'))
-    org_id = os.environ.get('ORG_ID', 'Specified environment variable is not set.')
+    # org_id = os.environ.get('ORG_ID', 'Specified environment variable is not set.')
     ctf_easy_project = os.environ.get('CTF_EASY_PROJECT', 'Specified environment variable is not set.')
     ctf_hard_project = os.environ.get('CTF_HARD_PROJECT', 'Specified environment variable is not set.')
     
     user_email = event['user_email']
     project_id = ctf_easy_project if event['env_name'] == 'easy' else ctf_hard_project
-    org_roles = ["securitycenter.adminViewer", "logging.viewer"] if event['env_name'] == 'easy' else ["logging.viewer"]
-    project_roles = ["compute.viewer", "storage.objectViewer"]
+    #org_roles = ["securitycenter.adminViewer", "logging.viewer"] if event['env_name'] == 'easy' else ["logging.viewer"]
+    project_roles = ["securitycenter.adminViewer", "logging.viewer", "compute.viewer", "storage.objectViewer"]
     
     try:
         # Initialize service and fetch existing policies
         crm_service     = initialize_service()
         project_policy  = get_project_policy(crm_service, project_id)
-        org_policy      = get_org_policy(crm_service, org_id)
+        #org_policy      = get_org_policy(crm_service, org_id)
 
         # Grants your member the requested roles for the project.
         member = f"user:{user_email}"
@@ -32,13 +32,13 @@ def security_ctf_admin(request):
             project_policy = add_member(project_policy, role, member) if event['action'] == 'grant' else remove_member(project_policy, role, member)
         
         # add/remove org-related roles
-        for role_name in org_roles:
-            role = f"roles/{role_name}"
-            org_policy = add_member(org_policy, role, member) if event['action'] == 'grant' else remove_member(org_policy, role, member)
+        # for role_name in org_roles:
+        #     role = f"roles/{role_name}"
+        #     org_policy = add_member(org_policy, role, member) if event['action'] == 'grant' else remove_member(org_policy, role, member)
         
         # Update existing policies with new policies
         set_project_policy(crm_service, project_id, project_policy)
-        set_org_policy(crm_service, org_id, org_policy)
+        #set_org_policy(crm_service, org_id, org_policy)
 
         result = "Success"
         info = f"{event['action']}: Successful"
