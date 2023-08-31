@@ -97,7 +97,7 @@ def get_org_policy(crm_service, org_id) -> dict:
     policy = (
         crm_service.organizations()
         .getIamPolicy(
-            resource=org_id,
+            resource=f"organizations/{org_id}",
             body={"options": {"requestedPolicyVersion": 3}},
         )
         .execute()
@@ -120,7 +120,7 @@ def set_org_policy(crm_service, org_id, policy):
     policy = (
         crm_service.organizations()
         .setIamPolicy(
-            resource=org_id, 
+            resource=f"organizations/{org_id}", 
             body={"policy": policy}
         )
         .execute()
