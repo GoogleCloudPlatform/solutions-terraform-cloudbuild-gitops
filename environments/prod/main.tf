@@ -1117,7 +1117,7 @@ resource "google_cloudfunctions_function_iam_member" "security_ctf_admin_invoker
 # IAM entry for service account of security-ctf-admin function to manage IAM policies
 resource "google_organization_iam_member" "security_ctf_admin_org_iam_admin" {
   org_id    = var.organization
-  role      = "roles/resourcemanager.projectIamAdmin"
+  role      = "roles/iam.organizationRoleAdmin"
   member    = "serviceAccount:${module.secuity_ctf_admin_cloud_function.sa-email}"
 }
 
