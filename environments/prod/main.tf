@@ -1100,6 +1100,7 @@ module "secuity_ctf_admin_cloud_function" {
     env-vars        = {
         CTF_EASY_PROJECT = var.ctf_easy_project,
         CTF_HARD_PROJECT = var.ctf_hard_project,
+        ORG_ID = var.organization
     }
 }
 

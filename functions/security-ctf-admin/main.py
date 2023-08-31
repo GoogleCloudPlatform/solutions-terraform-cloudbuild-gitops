@@ -8,27 +8,38 @@ import googleapiclient.discovery
 def security_ctf_admin(request):
     # provisioning the requested access
     event = json.loads(request.get_data().decode('UTF-8'))
+    org_id = os.environ.get('ORG_ID', 'Specified environment variable is not set.')
     ctf_easy_project = os.environ.get('CTF_EASY_PROJECT', 'Specified environment variable is not set.')
     ctf_hard_project = os.environ.get('CTF_HARD_PROJECT', 'Specified environment variable is not set.')
-
+    
     user_email = event['user_email']
     project_id = ctf_easy_project if event['env_name'] == 'easy' else ctf_hard_project
-    role_names = ["securitycenter.adminViewer", "logging.viewer", "compute.viewer", "storage.objectViewer"] 
+    org_roles = ["securitycenter.adminViewer", "logging.viewer"] if event['env_name'] == 'easy' else ["logging.viewer"]
+    project_roles = ["compute.viewer", "storage.objectViewer"]
     
     try:
-        # Initialize service and fetch existing policy.
-        crm_service = initialize_service()
-        policy = get_policy(crm_service, project_id)
+        # Initialize service and fetch existing policies
+        crm_service     = initialize_service()
+        project_policy  = get_project_policy(crm_service, project_id)
+        org_policy      = get_org_policy(crm_service, org_id)
 
         # Grants your member the requested roles for the project.
         member = f"user:{user_email}"
 
-        for role_name in role_names:
+        # add/remove project-related roles
+        for role_name in project_roles:
             role = f"roles/{role_name}"
-            policy = add_member(policy, role, member) if event['action'] == 'grant' else remove_member(policy, role, member)
+            project_policy = add_member(project_policy, role, member) if event['action'] == 'grant' else remove_member(project_policy, role, member)
         
-        # Update existing policy with new policy.
-        set_policy(crm_service, project_id, policy)
+        # add/remove org-related roles
+        for role_name in org_roles:
+            role = f"roles/{role_name}"
+            org_policy = add_member(org_policy, role, member) if event['action'] == 'grant' else remove_member(org_policy, role, member)
+        
+        # Update existing policies with new policies
+        set_project_policy(crm_service, project_id, project_policy)
+        set_org_policy(crm_service, org_id, org_policy)
+
         result = "Success"
         info = f"{event['action']}: Successful"
     except Exception as error:
@@ -69,8 +80,8 @@ def remove_member(policy: dict, role: str, member: str) -> dict:
         binding["members"].remove(member)
     return policy
 
-def get_policy(crm_service, project_id) -> dict:
-    print(f"Fetching current IAM Policy for project: {project_id}...")
+def get_project_policy(crm_service, project_id) -> dict:
+    print(f"Fetching current IAM Policy for Project: {project_id}...")
     policy = (
         crm_service.projects()
         .getIamPolicy(
@@ -81,12 +92,35 @@ def get_policy(crm_service, project_id) -> dict:
     )
     return policy
 
-def set_policy(crm_service, project_id, policy):
-    print(f"Setting new IAM Policy for project: {project_id}...")    
+def get_org_policy(crm_service, org_id) -> dict:
+    print(f"Fetching current IAM Policy for Org: {org_id}...")
+    policy = (
+        crm_service.organizations()
+        .getIamPolicy(
+            resource=org_id,
+            body={"options": {"requestedPolicyVersion": 3}},
+        )
+        .execute()
+    )
+    return policy
+
+def set_project_policy(crm_service, project_id, policy):
+    print(f"Setting new IAM Policy for Project: {project_id}...")    
     policy = (
         crm_service.projects()
         .setIamPolicy(
             resource=project_id, 
+            body={"policy": policy}
+        )
+        .execute()
+    )
+
+def set_org_policy(crm_service, org_id, policy):
+    print(f"Setting new IAM Policy for Org: {org_id}...")    
+    policy = (
+        crm_service.organizations()
+        .setIamPolicy(
+            resource=org_id, 
             body={"policy": policy}
         )
         .execute()
