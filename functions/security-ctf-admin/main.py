@@ -14,14 +14,14 @@ def security_ctf_admin(request):
     
     user_email = event['user_email']
     project_id = ctf_easy_project if event['env_name'] == 'easy' else ctf_hard_project
-    #org_roles = ["securitycenter.adminViewer", "logging.viewer"] if event['env_name'] == 'easy' else ["logging.viewer"]
+    # org_roles = ["securitycenter.adminViewer", "logging.viewer"] if event['env_name'] == 'easy' else ["logging.viewer"]
     project_roles = ["securitycenter.adminViewer", "logging.viewer", "compute.viewer", "storage.objectViewer"]
     
     try:
         # Initialize service and fetch existing policies
         crm_service     = initialize_service()
         project_policy  = get_project_policy(crm_service, project_id)
-        #org_policy      = get_org_policy(crm_service, org_id)
+        # org_policy      = get_org_policy(crm_service, org_id)
 
         # Grants your member the requested roles for the project.
         member = f"user:{user_email}"
@@ -38,7 +38,7 @@ def security_ctf_admin(request):
         
         # Update existing policies with new policies
         set_project_policy(crm_service, project_id, project_policy)
-        #set_org_policy(crm_service, org_id, org_policy)
+        # set_org_policy(crm_service, org_id, org_policy)
 
         result = "Success"
         info = f"{event['action']}: Successful"
