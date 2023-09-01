@@ -95,10 +95,7 @@ def security_ctf(request):
                         }
                         slack_message['attachments'].append(revoke_attachment)
 
-                    post_slack_response(url, slack_message)
-                    return {
-                        'statusCode': 200
-                    }
+                    return post_slack_response(url, slack_message)
                 else:
                     print(f"{requestor_name} is unauthorized to execute CTF admin functions")
                     return {
@@ -124,50 +121,94 @@ def security_ctf(request):
             action = value.split("action=")[1].split("+")[0]
 
             if action_type == "admin" and action == "revoke":
-                slack_ack(response_json['response_url'], "Hey, _CTF commando_, access is being revoked!")
-                print(f"Revoking access to env: {env_name} for: {user_email} as requested by: {response_json['user']['name']}")
-                http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/security-ctf-admin"
-                access_payload = {
-                    "env_name": env_name,
-                    "user_email": user_email,
-                    "action": action
-                }
-                function_response = call_function(http_endpoint, access_payload)
-                function_response_json = function_response.json()
-    
-                # compose message to respond back to the caller
-                slack_message = {
-                    "text": "Access Revocation!",
-                    "blocks": [ 
-                        {
-                            "type": "header",
-                            "text": {
-                                "type": "plain_text",
-                                "text": function_response_json['info']
-                            }
-                        },
-                        {
-                            "type": "divider"
-                        },
-                        {
-                            "type": "section",
-                            "fields": [
-                                {
-                                    "type": "mrkdwn",
-                                    "text": f"*User Email:*\n{user_email}"
-                                },
-                                {
-                                    "type": "mrkdwn",
-                                    "text": f"*Env Name:*\n{env_name}"
+                if response_json['user']['id'] == slack_admin:
+                    slack_ack(response_json['response_url'], "Hey, _CTF commando_, access is being revoked!")
+                    print(f"Revoking access to env: {env_name} for: {user_email} as requested by: {response_json['user']['name']}")
+                    http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/security-ctf-admin"
+                    access_payload = {
+                        "env_name": env_name,
+                        "user_email": user_email,
+                        "action": action
+                    }
+                    function_response = call_function(http_endpoint, access_payload)
+                    function_response_json = function_response.json()
+        
+                    # compose message to respond back to the caller
+                    slack_message = {
+                        "text": "Access Revocation!",
+                        "blocks": [ 
+                            {
+                                "type": "header",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": function_response_json['info']
                                 }
-                            ]
-                        }
-                    ]
-                }
-                post_slack_response(response_json['response_url'], slack_message)
-                return {
-                    'statusCode': 200
-                }
+                            },
+                            {
+                                "type": "divider"
+                            },
+                            {
+                                "type": "section",
+                                "fields": [
+                                    {
+                                        "type": "mrkdwn",
+                                        "text": f"*User Email:*\n{user_email}"
+                                    },
+                                    {
+                                        "type": "mrkdwn",
+                                        "text": f"*Env Name:*\n{env_name}"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                    return post_slack_response(response_json['response_url'], slack_message)
+                else:
+                    # compose message to respond back to the caller
+                    slack_message = {
+                        "attachments": [
+                            {
+                                "mrkdwn_in": ["text"],
+                                "color": "#36a64f",
+                                "title": "Request Details",
+                                "fields": [
+                                    {
+                                        "title": "User Email",
+                                        "value": user_email,
+                                        "short": True
+                                    },
+                                    {
+                                        "title": "Env Name",
+                                        "value": env_name,
+                                        "short": True
+                                    }
+                                ]
+                            },
+                            {
+                                "text": "Use the button below to revoke this access.",
+                                "fallback": "You are unable to play the game",
+                                "callback_id": "wopr_game",
+                                "color": "#3AA3E3",
+                                "attachment_type": "default",
+                                "actions": [
+                                    {
+                                        "name": "revoke",
+                                        "type": "button",
+                                        "text": "Revoke Access",
+                                        "value": f"type=admin+env_name={env_name}+user_email={user_email}+action=revoke",
+                                        "style": "danger",
+                                        "confirm": {
+                                            "title": "Are you sure?",
+                                            "text": f"Do you want to revoke access for *{user_email}*?",
+                                            "ok_text": "Do it!",
+                                            "dismiss_text": "Stop, I've changed my mind!"
+                                        }
+                                    }
+                                ]
+                            }                            
+                        ]
+                    }
+                    return post_slack_response(response_json['response_url'], slack_message)
         else:
             print("Not a valid payload!")
             return {

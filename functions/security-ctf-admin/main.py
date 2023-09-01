@@ -15,7 +15,7 @@ def security_ctf_admin(request):
     user_email = event['user_email']
     project_id = ctf_easy_project if event['env_name'] == 'easy' else ctf_hard_project
     # org_roles = ["securitycenter.adminViewer", "logging.viewer"] if event['env_name'] == 'easy' else ["logging.viewer"]
-    project_roles = ["securitycenter.adminViewer", "logging.viewer", "compute.viewer", "storage.objectViewer"]
+    project_roles = ["securitycenter.adminViewer", "logging.viewer", "compute.viewer", "storage.objectViewer", "bigquery.dataViewer", "bigquery.jobUser"]
     
     try:
         # Initialize service and fetch existing policies
