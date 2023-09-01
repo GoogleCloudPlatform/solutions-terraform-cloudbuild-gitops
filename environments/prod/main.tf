@@ -1065,6 +1065,7 @@ module "security_ctf_cloud_function" {
     env-vars        = {
         SLACK_CTF_EASY_CHANNEL = var.slack_ctf_easy_channel,
         SLACK_CTF_HARD_CHANNEL = var.slack_ctf_hard_channel,
+        SLACK_CTF_ADMIN_CHANNEL = var.slack_ctf_admin_channel,
         DEPLOYMENT_PROJECT = var.project,
         DEPLOYMENT_REGION = var.region,
         SLACK_ADMIN = var.slack_admin

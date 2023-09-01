@@ -14,6 +14,7 @@ dlp_wrapped_key = "CiQAp+WI0g1Rfvlg9OEmHWucMNHDV5FkoHZYdlDWeyrdjq+WxT0SSQCMW50fa
 create_prod_gke_cluster = false
 slack_ctf_easy_channel = "C05NY773049"
 slack_ctf_hard_channel = "C05NY77FTDX"
+slack_ctf_admin_channel = "C05Q4F8B33R"
 ctf_easy_project = "security-ctf-easy"
 ctf_hard_project = "security-ctf-hard"
 slack_admin = "U011JK062NL"
