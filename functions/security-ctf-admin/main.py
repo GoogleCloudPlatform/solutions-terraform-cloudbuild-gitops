@@ -1,7 +1,5 @@
 import os
-import time
 import json
-import requests
 import google.auth
 import googleapiclient.discovery
 
@@ -12,43 +10,37 @@ def security_ctf_admin(request):
     ctf_easy_project = os.environ.get('CTF_EASY_PROJECT', 'Specified environment variable is not set.')
     ctf_hard_project = os.environ.get('CTF_HARD_PROJECT', 'Specified environment variable is not set.')
     
-    user_email = event['user_email']
     project_id = ctf_easy_project if event['env_name'] == 'easy' else ctf_hard_project
     # org_roles = ["securitycenter.adminViewer", "logging.viewer"] if event['env_name'] == 'easy' else ["logging.viewer"]
-    project_roles = ["iam.securityReviewer", "logging.viewer", "compute.viewer", "storage.admin", "bigquery.dataViewer", "bigquery.jobUser"]
+    project_roles = ["iam.securityReviewer", "securitycenter.adminViewer"]
     
     try:
-        # Initialize service and fetch existing policies
-        crm_service     = initialize_service()
+        # initialize service and the user principal that needs access
+        crm_service = initialize_service()
+        member      = f"user:{event['user_email']}"
+
+        # add/remove project-related roles from the Project IAM policy
         project_policy  = get_project_policy(crm_service, project_id)
-        # org_policy      = get_org_policy(crm_service, org_id)
-
-        # Grants your member the requested roles for the project.
-        member = f"user:{user_email}"
-
-        # add/remove project-related roles
         for role_name in project_roles:
             role = f"roles/{role_name}"
-            project_policy = add_member(project_policy, role, member) if event['action'] == 'grant' else remove_member(project_policy, role, member)
-        
-        # add/remove org-related roles
-        # for role_name in org_roles:
-        #     role = f"roles/{role_name}"
-        #     org_policy = add_member(org_policy, role, member) if event['action'] == 'grant' else remove_member(org_policy, role, member)
-        
-        # Update existing policies with new policies
+            project_policy = add_member(project_policy, role, member) if event['action'] == 'Grant' else remove_member(project_policy, role, member)
         set_project_policy(crm_service, project_id, project_policy)
-        # set_org_policy(crm_service, org_id, org_policy)
 
-        result = "Success"
+        '''
+        # add/remove org-related roles from the Org IAM policy
+        org_policy      = get_org_policy(crm_service, org_id)
+        for role_name in org_roles:
+            role = f"roles/{role_name}"
+            org_policy = add_member(org_policy, role, member) if event['action'] == 'Grant' else remove_member(org_policy, role, member)
+        set_org_policy(crm_service, org_id, org_policy)
+        '''
+
         info = f"{event['action']}: Successful"
     except Exception as error:
-        print(f"{role_name} role to project {project_id} {event['action']} failed for {user_email}! - {error}")
-        result = "Failure"
+        print(f"{event['action']} to {event['env_name']} failed for {event['user_email']}! - {error}")
         info = f"Error: {error}"
     
     data = {
-        "result": result,
         "info": info
     }
     return json.dumps(data), 200, {'Content-Type': 'application/json'}

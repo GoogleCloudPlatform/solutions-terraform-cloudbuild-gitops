@@ -42,12 +42,13 @@ def security_ctf(request):
                     access_payload = {
                         "env_name": input_text[1],
                         "user_email": input_text[2],
-                        "action": "grant"
+                        "action": "Grant"
                     }
                     function_response = call_function(http_endpoint, access_payload)
                     function_response_json = function_response.json()
                     
                     # compose message to respond back to the caller
+                    '''
                     slack_message = {
                         "attachments": [
                             {
@@ -70,9 +71,37 @@ def security_ctf(request):
                             }
                         ]
                     }
+                    '''
 
-                    if function_response_json['result'] == "Success":
-                        revoke_attachment = {
+                    slack_message = [
+                        {
+                            "type": "header",
+                            "text": {
+                                "type": "plain_text",
+                                "text": function_response_json['info']
+                            }
+                        },
+                        {
+                            "type": "section",
+                            "fields": [
+                                {
+                                    "type": "mrkdwn",
+                                    "text": f"*User:*\n{input_text[2]}"
+                                },
+                                {
+                                    "type": "mrkdwn",
+                                    "text": f"*Env:*\n{input_text[1]}"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "actions",
+                            "elements": []
+                        }
+                    ]
+
+                    if function_response_json['info'] == "Grant: Successful":
+                        '''revoke_attachment = {
                             "text": "Use the button below to revoke this access.",
                             "fallback": "You are unable to play the game",
                             "callback_id": "wopr_game",
@@ -93,10 +122,37 @@ def security_ctf(request):
                                     }
                                 }
                             ]
-                        }
-                        slack_message['attachments'].append(revoke_attachment)
+                        }'''
+                        slack_message[2]['elements'].append({
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "emoji": True,
+                                "text": "Revoke"
+                            },
+                            "style": "danger",
+                            "value": f"type=admin+env_name={input_text[1]}+user_email={input_text[2]}+action=revoke",
+                            "confirm": {
+                                "title": {
+                                    "type": "plain_text",
+                                    "text": "Are you sure?"
+                                },
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": f"Do you want to revoke access for {input_text[2]}?"
+                                },
+                                "confirm": {
+                                    "type": "plain_text",
+                                    "text": "Yes, revoke!"
+                                },
+                                "deny": {
+                                    "type": "plain_text",
+                                    "text": "Stop, I've changed my mind!"
+                                }
+                            }
+                        })
 
-                    return post_slack_response(url, slack_message)
+                    return post_slack_message(slack_ctf_admin_channel, function_response_json['info'], slack_message)
                 else:
                     print(f"{requestor_name} is unauthorized to execute CTF admin functions")
                     return {
@@ -215,19 +271,17 @@ def slack_ack(url, ack_text):
     print(f"Slack responded with Status Code: {response.status_code}")
 
 def post_slack_message(slack_channel, slack_text, slack_message):
-    try:
-        slack_token = os.environ.get('SLACK_ACCESS_TOKEN', 'Specified environment variable is not set.')
-        response = requests.post("https://slack.com/api/chat.postMessage", data={
-            "token": slack_token,
-            "channel": slack_channel,
-            "text": slack_text,
-            "blocks": json.dumps(slack_message)
-        })
-        print(f"Message posted - Slack responded with Status Code: {response.status_code}")
-        return True
-    except Exception as e:
-        print(e)
-        raise(e)
+    slack_token = os.environ.get('SLACK_ACCESS_TOKEN', 'Specified environment variable is not set.')
+    response = requests.post("https://slack.com/api/chat.postMessage", data={
+        "token": slack_token,
+        "channel": slack_channel,
+        "text": slack_text,
+        "blocks": json.dumps(slack_message)
+    })
+    print(f"Message posted - Slack responded with Status Code: {response.status_code}")
+    return {
+        'statusCode': response.status_code
+    }
 
 def post_slack_response(url, slack_message):
     response = requests.post(url, data=json.dumps(slack_message), headers={'Content-Type': 'application/json'})
