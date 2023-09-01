@@ -96,7 +96,16 @@ def security_ctf(request):
                         }
                         slack_message['attachments'].append(revoke_attachment)
 
-                    return post_slack_message(slack_ctf_admin_channel, function_response_json['info'], slack_message)
+                    if post_slack_message(slack_ctf_admin_channel, function_response_json['info'], slack_message):
+                        return {
+                            'statusCode': 200,
+                            'body': json.dumps("Successful!")
+                        }
+                    else:
+                        return {
+                            'statusCode': 500,
+                            'body': json.dumps("Server side error!")
+                        }   
                 else:
                     print(f"{requestor_name} is unauthorized to execute CTF admin functions")
                     return {
