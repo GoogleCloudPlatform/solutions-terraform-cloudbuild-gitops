@@ -130,7 +130,7 @@ def security_ctf(request):
             user_email = value.split("user_email=")[1].split("+")[0]
             action = value.split("action=")[1].split("+")[0]
 
-            if action_type == "admin" and action == "revoke":
+            if action_type == "admin" and action == "Revoke":
                 slack_ack(response_json['response_url'], "Hey, _CTF commando_, access is being revoked!")
                 print(f"Revoking access to env: {env_name} for: {user_email} as requested by: {response_json['user']['name']}")
                 http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/security-ctf-admin"
