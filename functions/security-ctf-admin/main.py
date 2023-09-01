@@ -12,7 +12,7 @@ def security_ctf_admin(request):
     
     project_id = ctf_easy_project if event['env_name'] == 'easy' else ctf_hard_project
     # org_roles = ["securitycenter.adminViewer", "logging.viewer"] if event['env_name'] == 'easy' else ["logging.viewer"]
-    project_roles = ["iam.securityReviewer", "securitycenter.adminViewer"]
+    project_roles = ["iam.securityReviewer", "securitycenter.adminViewer", "compute.viewer", "storage.admin", "bigquery.dataViewer", "bigquery.jobUser"]
     
     try:
         # initialize service and the user principal that needs access

@@ -48,31 +48,6 @@ def security_ctf(request):
                     function_response_json = function_response.json()
                     
                     # compose message to respond back to the caller
-                    '''
-                    slack_message = {
-                        "attachments": [
-                            {
-                                "mrkdwn_in": ["text"],
-                                "color": "#36a64f",
-                                "title": "Request Details",
-                                "fields": [
-                                    {
-                                        "title": "User Email",
-                                        "value": input_text[2],
-                                        "short": True
-                                    },
-                                    {
-                                        "title": "Env Name",
-                                        "value": input_text[1],
-                                        "short": True
-                                    }
-                                ],
-                                "footer": function_response_json['info']
-                            }
-                        ]
-                    }
-                    '''
-
                     slack_message = [
                         {
                             "type": "header",
@@ -86,11 +61,11 @@ def security_ctf(request):
                             "fields": [
                                 {
                                     "type": "mrkdwn",
-                                    "text": f"*User:*\n{input_text[2]}"
+                                    "text": f"*User Email:*\n{input_text[2]}"
                                 },
                                 {
                                     "type": "mrkdwn",
-                                    "text": f"*Env:*\n{input_text[1]}"
+                                    "text": f"*Env Name:*\n{input_text[1]}"
                                 }
                             ]
                         },
@@ -101,28 +76,6 @@ def security_ctf(request):
                     ]
 
                     if function_response_json['info'] == "Grant: Successful":
-                        '''revoke_attachment = {
-                            "text": "Use the button below to revoke this access.",
-                            "fallback": "You are unable to play the game",
-                            "callback_id": "wopr_game",
-                            "color": "#3AA3E3",
-                            "attachment_type": "default",
-                            "actions": [
-                                {
-                                    "name": "revoke",
-                                    "type": "button",
-                                    "text": "Revoke Access",
-                                    "value": f"type=admin+env_name={input_text[1]}+user_email={input_text[2]}+action=revoke",
-                                    "style": "danger",
-                                    "confirm": {
-                                        "title": "Are you sure?",
-                                        "text": f"Do you want to revoke access for *{input_text[2]}*?",
-                                        "ok_text": "Do it!",
-                                        "dismiss_text": "Stop, I've changed my mind!"
-                                    }
-                                }
-                            ]
-                        }'''
                         slack_message[2]['elements'].append({
                             "type": "button",
                             "text": {
@@ -131,7 +84,7 @@ def security_ctf(request):
                                 "text": "Revoke"
                             },
                             "style": "danger",
-                            "value": f"type=admin+env_name={input_text[1]}+user_email={input_text[2]}+action=revoke",
+                            "value": f"type=admin+env_name={input_text[1]}+user_email={input_text[2]}+action=Revoke",
                             "confirm": {
                                 "title": {
                                     "type": "plain_text",
@@ -201,9 +154,6 @@ def security_ctf(request):
                             }
                         },
                         {
-                            "type": "divider"
-                        },
-                        {
                             "type": "section",
                             "fields": [
                                 {
@@ -218,10 +168,7 @@ def security_ctf(request):
                         }
                     ]
                 }
-                post_slack_response(response_json['response_url'], slack_message)
-                return {
-                    'statusCode': 200
-                }
+                return post_slack_response(response_json['response_url'], slack_message)
         else:
             print("Not a valid payload!")
             return {
