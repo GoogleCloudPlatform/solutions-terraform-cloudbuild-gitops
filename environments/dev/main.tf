@@ -667,12 +667,12 @@ resource "google_firebase_project" "firestore" {
 
 # Provisions the Firestore database instance.
 resource "google_firestore_database" "firestore" {
-  provider                    = google-beta
-  project                     = google_project.firestore.project_id
-  name                        = "security-ctf"
-  location_id                 = "nam5"
-  type                        = "FIRESTORE_NATIVE"
-  concurrency_mode            = "OPTIMISTIC"
+  provider          = google-beta
+  project           = var.project
+  name              = "security-ctf"
+  location_id       = "nam5"
+  type              = "FIRESTORE_NATIVE"
+  concurrency_mode  = "OPTIMISTIC"
 
   depends_on = [
     google_firebase_project.firestore,
