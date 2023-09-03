@@ -744,10 +744,10 @@ resource "google_firestore_document" "doc" {
 }
 
 # Creates a Firebase Web App in the new project created above.
-resource "google_firebase_web_app" "firestore" {
+resource "google_firebase_web_app" "security_ctf_app" {
   provider     = google-beta
   project      = var.project
-  display_name = "My Web app"
+  display_name = "Security CTF App"
 
   deletion_policy = "DELETE"
 
