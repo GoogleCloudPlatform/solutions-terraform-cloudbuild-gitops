@@ -720,6 +720,11 @@ resource "google_firestore_index" "indexes" {
     order      = "ASCENDING"
   }
 
+  fields {
+    field_path = "scenario"
+    order      = "ASCENDING"
+  }
+
   depends_on = [
     google_firestore_database.firestore,
   ]
