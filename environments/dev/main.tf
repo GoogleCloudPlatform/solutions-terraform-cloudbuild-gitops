@@ -702,6 +702,12 @@ resource "google_firebaserules_release" "firestore" {
   ruleset_name = google_firebaserules_ruleset.firestore.name
   project      = var.project
 
+  lifecycle {
+    replace_triggered_by = [
+      google_firebaserules_ruleset.firestore
+    ]
+  }
+
   depends_on = [
     google_firestore_database.firestore,
   ]
