@@ -681,7 +681,6 @@ resource "google_firestore_database" "firestore" {
 
 # Creates a ruleset of Firestore Security Rules from a local file.
 resource "google_firebaserules_ruleset" "firestore" {
-  provider = google-beta
   project  = var.project
   source {
     files {
@@ -697,7 +696,6 @@ resource "google_firebaserules_ruleset" "firestore" {
 
 # Releases the ruleset for the Firestore instance.
 resource "google_firebaserules_release" "firestore" {
-  provider     = google-beta
   name         = "cloud.firestore" # must be cloud.firestore
   ruleset_name = google_firebaserules_ruleset.firestore.name
   project      = var.project
