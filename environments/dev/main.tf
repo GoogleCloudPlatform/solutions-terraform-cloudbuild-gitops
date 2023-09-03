@@ -653,3 +653,101 @@ module "cloud_ids" {
   vpc_subnet        = module.vpc.subnet
   vpc_subnet_ip     = module.vpc.subnet_ip
 }
+
+
+####################################
+## Security CTF FireStore Backend ##
+####################################
+
+# Enables Firebase services for the new project created above.
+resource "google_firebase_project" "firestore" {
+  provider = google-beta
+  project  = var.project
+}
+
+# Provisions the Firestore database instance.
+resource "google_firestore_database" "firestore" {
+  provider                    = google-beta
+  project                     = google_project.firestore.project_id
+  name                        = "security-ctf"
+  location_id                 = "nam5"
+  type                        = "FIRESTORE_NATIVE"
+  concurrency_mode            = "OPTIMISTIC"
+
+  depends_on = [
+    google_firebase_project.firestore,
+  ]
+}
+
+# Creates a ruleset of Firestore Security Rules from a local file.
+resource "google_firebaserules_ruleset" "firestore" {
+  provider = google-beta
+  project  = var.project
+  source {
+    files {
+      name = "firestore.rules"
+      content = "service cloud.firestore {match /databases/{database}/documents { match /{document=**} { allow read, write: if false; } } }"
+    }
+  }
+
+  depends_on = [
+    google_firestore_database.firestore,
+  ]
+}
+
+# Releases the ruleset for the Firestore instance.
+resource "google_firebaserules_release" "firestore" {
+  provider     = google-beta
+  name         = "cloud.firestore" # must be cloud.firestore
+  ruleset_name = google_firebaserules_ruleset.firestore.name
+  project      = var.project
+
+  depends_on = [
+    google_firestore_database.firestore,
+  ]
+}
+
+# Adds a new Firestore index.
+resource "google_firestore_index" "indexes" {
+  provider = google-beta
+  project  = var.project
+
+  collection  = "security-ctf-challenges"
+  query_scope = "COLLECTION"
+
+  fields {
+    field_path = "id"
+    order      = "ASCENDING"
+  }
+
+  depends_on = [
+    google_firestore_database.firestore,
+  ]
+}
+
+# Adds a new Firestore document with seed data.
+resource "google_firestore_document" "doc" {
+  provider    = google-beta
+  project     = var.project
+  collection  = "security-ctf-challenges"
+  document_id = "ch01"
+  fields      = "{\"id\":{\"integerValue\":\"01\"},\"scenario\":{\"stringValue\":\"Favorite Database\"},\"answer\":{\"stringValue\":\"Firestore\"}}"
+
+  depends_on = [
+    google_firestore_database.firestore,
+  ]
+}
+
+# Creates a Firebase Web App in the new project created above.
+resource "google_firebase_web_app" "firestore" {
+  provider     = google-beta
+  project      = var.project
+  display_name = "My Web app"
+
+  deletion_policy = "DELETE"
+
+  # Wait for Firebase to be enabled in the Google Cloud project before creating this App.
+  depends_on = [
+    google_firebase_project.firestore,
+  ]
+}

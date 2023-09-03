@@ -73,3 +73,15 @@ resource "google_project_service" "service_networking" {
   project = var.project
   service = "servicenetworking.googleapis.com"
 }
+
+resource "google_project_service" "firestore" {
+  project = var.project
+  
+  for_each = toset([
+    "firestore.googleapis.com",
+    "firebaserules.googleapis.com",
+  ])
+  service = each.key
+
+  disable_on_destroy = false
+}
