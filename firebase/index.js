@@ -47,26 +47,8 @@ async function main() {
 
   db = getFirestore();
 
-  // FirebaseUI config
-  const uiConfig = {
-    credentialHelper: firebaseui.auth.CredentialHelper.NONE,
-    signInOptions: [
-      // Email / Password Provider.
-      EmailAuthProvider.PROVIDER_ID,
-    ],
-    callbacks: {
-      signInSuccessWithAuthResult: function (authResult, redirectUrl) {
-        // Handle sign-in.
-        // Return false to avoid redirect.
-        return false;
-      },
-    },
-  };
-
-  // const ui = new firebaseui.auth.AuthUI(auth);
-
   // Create query for messages
-  const q = query(collection(db, 'security-ctf-challenges'), orderBy('id'));
+  const q = query(collection(db, 'security-ctf-challenges'), orderBy('id', 'desc'));
   onSnapshot(q, snaps => {
     // Reset page
     guestbook.innerHTML = '';
