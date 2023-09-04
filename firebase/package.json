@@ -1,0 +1,16 @@
+{
+    "name": "firebase-gtk-web",
+    "version": "2.0.1",
+    "private": true,
+    "scripts": {
+        "build": "webpack --mode=development"
+    },
+    "dependencies": {
+        "firebase": "^9.23.0",
+        "firebaseui": "^6.0.1"
+    },
+    "devDependencies": {
+        "webpack": "^5.88.2",
+        "webpack-cli": "^5.1.4"
+    }
+}

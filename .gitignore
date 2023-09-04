@@ -2,3 +2,5 @@
 *.tfstate*
 *.tfplan
 .firebase*
+firebase/dist
+firebase/node_modules

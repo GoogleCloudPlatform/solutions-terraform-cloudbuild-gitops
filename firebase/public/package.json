@@ -1,9 +1,0 @@
-{
-    "name": "firebase-gtk-web",
-    "version": "2.0.1",
-    "private": true,
-    "dependencies": {
-      "firebase": "^9.6.11",
-      "firebaseui": "^6.0.1"
-    }
-}
