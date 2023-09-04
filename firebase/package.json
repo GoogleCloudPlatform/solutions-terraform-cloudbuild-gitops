@@ -1,15 +1,19 @@
 {
     "name": "firebase-gtk-web",
     "version": "2.0.1",
+    "description": "Security CTF Leaderboard",
     "private": true,
+    "main": "index.js",
     "scripts": {
-        "build": "webpack --mode=development"
+        "build": "webpack"
     },
     "dependencies": {
         "firebase": "^9.23.0",
         "firebaseui": "^6.0.1"
     },
     "devDependencies": {
+        "css-loader": "^0.28.11",
+        "style-loader": "^0.20.3",
         "webpack": "^5.88.2",
         "webpack-cli": "^5.1.4"
     }
