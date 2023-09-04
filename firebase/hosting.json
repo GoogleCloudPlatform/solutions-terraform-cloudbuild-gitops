@@ -1,0 +1,15 @@
+{
+    "hosting": {
+      "public": "dist",
+      "ignore": [
+        "__/**",
+        "**/.*"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+}
