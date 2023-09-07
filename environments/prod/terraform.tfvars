@@ -1,1 +1,1 @@
-project="gcp-breckenridge-artifact"
+project="PROJECT_ID"
