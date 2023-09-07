@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "gcp-breckenridge-artifact-tfstate"
+    bucket = "project-breckenridge-dev"
     prefix = "env/prod"
   }
 }
