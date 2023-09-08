@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "project-breckenridge-dev"
+    bucket = "project-breckenridge-dev-tfstate"
     prefix = "env/dev"
   }
 }
