@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 steps:
 - id: 'branch name'
   name: 'alpine'
@@ -30,11 +29,12 @@ steps:
   args: 
   - '-c'
   - |
-      if [ -d "$project_environments/$BRANCH_NAME/" ]; then
-        cd $project_environments/$BRANCH_NAME
+      project="acncloud"
+      if [ -d "$project'_environments/$BRANCH_NAME/'" ]; then
+        cd $project'_environments/$BRANCH_NAME'
         terraform init
       else
-        for dir in environments/*/
+        for dir in $project'_environments/*/
         do 
           cd ${dir}   
           env=${dir%*/}
@@ -55,11 +55,12 @@ steps:
   args: 
   - '-c'
   - | 
-      if [ -d "$project_environments/$BRANCH_NAME/" ]; then
-        cd $project_environments/$BRANCH_NAME
+      project="acncloud"
+      if [ -d "$project'_environments/$BRANCH_NAME/'" ]; then
+        cd $project'_environments/$BRANCH_NAME'
         terraform plan
       else
-        for dir in environments/*/
+        for dir in $project'_environments/*/
         do 
           cd ${dir}   
           env=${dir%*/}
@@ -81,8 +82,9 @@ steps:
   args: 
   - '-c'
   - | 
-      if [ -d "$project_environments/$BRANCH_NAME/" ]; then
-        cd $project_environments/$BRANCH_NAME      
+      project="acncloud"
+      if [ -d "$project'_environments/$BRANCH_NAME/'" ]; then
+        cd $project'_environments/$BRANCH_NAME'      
         terraform apply -auto-approve
       else
         echo "***************************** SKIPPING APPLYING *******************************"
@@ -98,8 +100,9 @@ steps:
 #   args: 
 #   - '-c'
 #   - | 
-#       if [ -d "$project_environments/$BRANCH_NAME/" ]; then
-#         cd $project_environments/$BRANCH_NAME      
+#       project="acncloud"
+#       if [ -d "$project'_environments/$BRANCH_NAME/'" ]; then
+#         cd $project'_environments/$BRANCH_NAME'      
 #         terraform destroy -auto-approve
 #       else
 #         echo "***************************** SKIPPING APPLYING *******************************"
