@@ -25,7 +25,8 @@ steps:
       echo "$BRANCH_NAME"
       echo "***********************"
 
-- id: 'tf init'
+# [START tf-init]
+- id: 'tf init - acncloud'
   name: 'hashicorp/terraform:1.5'
   entrypoint: 'sh'
   args: 
@@ -48,9 +49,10 @@ steps:
           cd ../../
         done
       fi 
+# [END tf-init]
 
 # [START tf-plan]
-- id: 'tf plan'
+- id: 'tf plan - acncloud'
   name: 'hashicorp/terraform:1.5'
   entrypoint: 'sh'
   args: 
@@ -76,7 +78,7 @@ steps:
 # [END tf-plan]
 
 # [START tf-apply]
-- id: 'tf apply'
+- id: 'tf apply - acncloud'
   name: 'hashicorp/terraform:1.5'
   entrypoint: 'sh'
   args: 
@@ -93,7 +95,7 @@ steps:
 # [END tf-apply]  
 
 # # [START tf-destroy]
-# - id: 'tf destroy'
+# - id: 'tf destroy - acncloud'
 #   name: 'hashicorp/terraform:1.5'
 #   entrypoint: 'sh'
 #   args: 
@@ -114,7 +116,8 @@ steps:
 
 ############## Project - acncloud-devops ##############
 
-- id: 'tf init'
+# [START tf-init]
+- id: 'tf init - acncloud-devops'
   name: 'hashicorp/terraform:1.5'
   entrypoint: 'sh'
   args: 
@@ -137,9 +140,10 @@ steps:
           cd ../../
         done
       fi 
+# [END tf-init]
 
 # [START tf-plan]
-- id: 'tf plan'
+- id: 'tf plan - acncloud-devops'
   name: 'hashicorp/terraform:1.5'
   entrypoint: 'sh'
   args: 
@@ -165,7 +169,7 @@ steps:
 # [END tf-plan]
 
 # [START tf-apply]
-- id: 'tf apply'
+- id: 'tf apply - acncloud-devops'
   name: 'hashicorp/terraform:1.5'
   entrypoint: 'sh'
   args: 
@@ -182,7 +186,7 @@ steps:
 # [END tf-apply]  
 
 # # [START tf-destroy]
-# - id: 'tf destroy'
+# - id: 'tf destroy - acncloud-devops'
 #   name: 'hashicorp/terraform:1.5'
 #   entrypoint: 'sh'
 #   args: 
