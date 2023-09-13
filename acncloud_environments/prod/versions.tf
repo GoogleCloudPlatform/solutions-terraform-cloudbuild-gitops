@@ -3,7 +3,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-#
+# calshi
 #     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -13,20 +13,6 @@
 # limitations under the License.
 
 
-locals {
-  network = "${element(split("-", var.subnet), 0)}"
-}
-
-resource "google_compute_firewall" "allow-http" {
-  name    = "${local.network}-allow-http"
-  network = "${local.network}"
-  project = "${var.project}"
-
-  allow {
-    protocol = "tcp"
-    ports    = ["80"]
-  }
-
-  target_tags   = ["http-server"]
-  source_ranges = ["0.0.0.0/0"]
+terraform {
+  required_version = "~> 1.5.0"
 }

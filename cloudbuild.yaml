@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+############## Project - acncloud ##############
 
 steps:
 - id: 'branch name'
@@ -24,17 +25,18 @@ steps:
       echo "$BRANCH_NAME"
       echo "***********************"
 
-- id: 'tf init'
-  name: 'hashicorp/terraform:1.0.0'
+# [START tf-init]
+- id: 'tf init - acncloud'
+  name: 'hashicorp/terraform:1.5'
   entrypoint: 'sh'
   args: 
   - '-c'
   - |
-      if [ -d "environments/$BRANCH_NAME/" ]; then
-        cd environments/$BRANCH_NAME
+      if [ -d acncloud_environments/$BRANCH_NAME/ ]; then
+        cd acncloud_environments/$BRANCH_NAME
         terraform init
       else
-        for dir in environments/*/
+        for dir in acncloud_environments/*/
         do 
           cd ${dir}   
           env=${dir%*/}
@@ -47,19 +49,20 @@ steps:
           cd ../../
         done
       fi 
+# [END tf-init]
 
 # [START tf-plan]
-- id: 'tf plan'
-  name: 'hashicorp/terraform:1.0.0'
+- id: 'tf plan - acncloud'
+  name: 'hashicorp/terraform:1.5'
   entrypoint: 'sh'
   args: 
   - '-c'
   - | 
-      if [ -d "environments/$BRANCH_NAME/" ]; then
-        cd environments/$BRANCH_NAME
+      if [ -d acncloud_environments/$BRANCH_NAME/ ]; then
+        cd acncloud_environments/$BRANCH_NAME
         terraform plan
       else
-        for dir in environments/*/
+        for dir in acncloud_environments/*/
         do 
           cd ${dir}   
           env=${dir%*/}
@@ -75,18 +78,129 @@ steps:
 # [END tf-plan]
 
 # [START tf-apply]
-- id: 'tf apply'
-  name: 'hashicorp/terraform:1.0.0'
+- id: 'tf apply - acncloud'
+  name: 'hashicorp/terraform:1.5'
   entrypoint: 'sh'
   args: 
   - '-c'
   - | 
-      if [ -d "environments/$BRANCH_NAME/" ]; then
-        cd environments/$BRANCH_NAME      
+      if [ -d acncloud_environments/$BRANCH_NAME/ ]; then
+        cd acncloud_environments/$BRANCH_NAME      
         terraform apply -auto-approve
       else
         echo "***************************** SKIPPING APPLYING *******************************"
         echo "Branch '$BRANCH_NAME' does not represent an official environment."
         echo "*******************************************************************************"
       fi
-# [END tf-apply]      
+# [END tf-apply]  
+
+# # [START tf-destroy]
+# - id: 'tf destroy - acncloud'
+#   name: 'hashicorp/terraform:1.5'
+#   entrypoint: 'sh'
+#   args: 
+#   - '-c'
+#   - | 
+#       if [ -d acncloud_environments/$BRANCH_NAME/ ]; then
+#         cd acncloud_environments/$BRANCH_NAME      
+#         terraform destroy -auto-approve
+#       else
+#         echo "***************************** SKIPPING APPLYING *******************************"
+#         echo "Branch '$BRANCH_NAME' does not represent an official environment."
+#         echo "*******************************************************************************"
+#       fi
+# # [END tf-destroy]        
+
+
+############## Project - acncloud END ##############
+
+############## Project - acncloud-devops ##############
+
+# [START tf-init]
+- id: 'tf init - acncloud-devops'
+  name: 'hashicorp/terraform:1.5'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - |
+      if [ -d acncloud-devops_environments/$BRANCH_NAME/ ]; then
+        cd acncloud-devops_environments/$BRANCH_NAME
+        terraform init
+      else
+        for dir in acncloud-devops_environments/*/
+        do 
+          cd ${dir}   
+          env=${dir%*/}
+          env=${env#*/}
+          echo ""
+          echo "****************** TERRAFORM INIT *********************"
+          echo "******* At acncloud-devops environment: ${env} ********"
+          echo "*******************************************************"
+          terraform init || exit 1
+          cd ../../
+        done
+      fi 
+# [END tf-init]
+
+# [START tf-plan]
+- id: 'tf plan - acncloud-devops'
+  name: 'hashicorp/terraform:1.5'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - | 
+      if [ -d acncloud-devops_environments/$BRANCH_NAME/ ]; then
+        cd acncloud-devops_environments/$BRANCH_NAME
+        terraform plan
+      else
+        for dir in acncloud-devops_environments/*/
+        do 
+          cd ${dir}   
+          env=${dir%*/}
+          env=${env#*/}  
+          echo ""
+          echo "******************* TERRAFOM PLAN **********************"
+          echo "******* At acncloud-devops environment: ${env} *********"
+          echo "********************************************************"
+          terraform plan || exit 1
+          cd ../../
+        done
+      fi 
+# [END tf-plan]
+
+# [START tf-apply]
+- id: 'tf apply - acncloud-devops'
+  name: 'hashicorp/terraform:1.5'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - | 
+      if [ -d acncloud-devops_environments/$BRANCH_NAME/ ]; then
+        cd acncloud-devops_environments/$BRANCH_NAME      
+        terraform apply -auto-approve
+      else
+        echo "***************************** SKIPPING APPLYING *******************************"
+        echo "Branch '$BRANCH_NAME' does not represent an official environment."
+        echo "*******************************************************************************"
+      fi
+# [END tf-apply]  
+
+# # [START tf-destroy]
+# - id: 'tf destroy - acncloud-devops'
+#   name: 'hashicorp/terraform:1.5'
+#   entrypoint: 'sh'
+#   args: 
+#   - '-c'
+#   - | 
+#       if [ -d acncloud-devops_environments/$BRANCH_NAME/ ]; then
+#         cd acncloud-devops_environments/$BRANCH_NAME      
+#         terraform destroy -auto-approve
+#       else
+#         echo "***************************** SKIPPING APPLYING *******************************"
+#         echo "Branch '$BRANCH_NAME' does not represent an official environment."
+#         echo "*******************************************************************************"
+#       fi
+# # [END tf-destroy]        
+
+
+############## Project - acncloud-devops END ##############
