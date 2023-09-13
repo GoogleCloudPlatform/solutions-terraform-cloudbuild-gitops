@@ -29,12 +29,11 @@ steps:
   args: 
   - '-c'
   - |
-      project="acncloud"
-      if [ -d "$project"_environments/$BRANCH_NAME/ ]; then
-        cd "$project"_environments/$BRANCH_NAME
+      if [ -d acncloud_environments/$BRANCH_NAME/ ]; then
+        cd acncloud_environments/$BRANCH_NAME
         terraform init
       else
-        for dir in "$project"_environments/*/
+        for dir in acncloud_environments/*/
         do 
           cd ${dir}   
           env=${dir%*/}
@@ -55,12 +54,11 @@ steps:
   args: 
   - '-c'
   - | 
-      project="acncloud"
-      if [ -d "$project"_environments/$BRANCH_NAME/ ]; then
-        cd "$project"_environments/$BRANCH_NAME
+      if [ -d acncloud_environments/$BRANCH_NAME/ ]; then
+        cd acncloud_environments/$BRANCH_NAME
         terraform plan
       else
-        for dir in "$project"_environments/*/
+        for dir in acncloud_environments/*/
         do 
           cd ${dir}   
           env=${dir%*/}
@@ -82,9 +80,8 @@ steps:
   args: 
   - '-c'
   - | 
-      project="acncloud"
-      if [ -d "$project"_environments/$BRANCH_NAME/ ]; then
-        cd "$project"_environments/$BRANCH_NAME      
+      if [ -d acncloud_environments/$BRANCH_NAME/ ]; then
+        cd acncloud_environments/$BRANCH_NAME      
         terraform apply -auto-approve
       else
         echo "***************************** SKIPPING APPLYING *******************************"
@@ -100,9 +97,8 @@ steps:
 #   args: 
 #   - '-c'
 #   - | 
-#       project="acncloud"
-#       if [ -d "$project"_environments/$BRANCH_NAME/ ]; then
-#         cd "$project"_environments/$BRANCH_NAME      
+#       if [ -d acncloud_environments/$BRANCH_NAME/ ]; then
+#         cd acncloud_environments/$BRANCH_NAME      
 #         terraform destroy -auto-approve
 #       else
 #         echo "***************************** SKIPPING APPLYING *******************************"
