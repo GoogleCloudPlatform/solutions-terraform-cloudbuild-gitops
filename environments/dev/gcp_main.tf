@@ -64,7 +64,6 @@ resource "google_compute_firewall" "hub_firewall_ingress_ssh" {
 }
 
 resource "google_compute_firewall" "spoke_firewall" {
-  count    = var.is_create_gcp_instance
   provider = google.spoke
 
   name      = "${var.gcp_project_spoke}-spokevpc01-firewall01"
