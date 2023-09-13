@@ -30,7 +30,7 @@ steps:
   args: 
   - '-c'
   - |
-      if [ -d "environments/$BRANCH_NAME/" ]; then
+      if [ -d "*/environments/$BRANCH_NAME/" ]; then
         cd environments/$BRANCH_NAME
         terraform init
       else
@@ -55,7 +55,7 @@ steps:
   args: 
   - '-c'
   - | 
-      if [ -d "environments/$BRANCH_NAME/" ]; then
+      if [ -d "*/environments/$BRANCH_NAME/" ]; then
         cd environments/$BRANCH_NAME
         terraform plan
       else
@@ -81,7 +81,7 @@ steps:
   args: 
   - '-c'
   - | 
-      if [ -d "environments/$BRANCH_NAME/" ]; then
+      if [ -d "*/environments/$BRANCH_NAME/" ]; then
         cd environments/$BRANCH_NAME      
         terraform apply -auto-approve
       else
@@ -98,7 +98,7 @@ steps:
 #   args: 
 #   - '-c'
 #   - | 
-#       if [ -d "environments/$BRANCH_NAME/" ]; then
+#       if [ -d "*/environments/$BRANCH_NAME/" ]; then
 #         cd environments/$BRANCH_NAME      
 #         terraform destroy -auto-approve
 #       else
