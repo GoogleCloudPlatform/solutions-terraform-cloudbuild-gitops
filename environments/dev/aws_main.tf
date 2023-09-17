@@ -337,7 +337,7 @@ resource "aws_vpn_gateway_route_propagation" "cmk_vgw_rp" {
 
 // 1つ目のカスタマーゲートウェイの設定
 resource "aws_customer_gateway" "paloma-dv-vpc01-cgw01" {
-  count = var.is_create_aws_instance
+  count = var.is_create_vpn_with_aws
 
   bgp_asn    = 65513
   ip_address = google_compute_ha_vpn_gateway.hub_vpc_havpn_gw[0].vpn_interfaces[0].ip_address
@@ -349,7 +349,7 @@ resource "aws_customer_gateway" "paloma-dv-vpc01-cgw01" {
 }
 // 1つ目のサイト間のVPN接続の設定
 resource "aws_vpn_connection" "paloma-dv-vpc01-vpn01" {
-  count = var.is_create_aws_instance
+  count = var.is_create_vpn_with_aws
 
   vpn_gateway_id      = aws_vpn_gateway.paloma-dv-vpc01-vgw01.id
   customer_gateway_id = aws_customer_gateway.paloma-dv-vpc01-cgw01[0].id
