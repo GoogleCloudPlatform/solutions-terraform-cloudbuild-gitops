@@ -5,6 +5,7 @@
 resource "google_compute_network" "hub_vpc" {
   provider = google
 
+
   name                            = "${var.gcp_project_hub}-hubvpc01"
   description                     = "This is a Hub VPC"
   auto_create_subnetworks         = false
