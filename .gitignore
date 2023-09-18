@@ -2,5 +2,4 @@
 *.tfstate*
 *.tfplan
 *.terraform.lock.hcl
-dev/**/credential.auto.tfvars
-prod/**/credential.auto.tfvars
+credential.auto.tfvars
