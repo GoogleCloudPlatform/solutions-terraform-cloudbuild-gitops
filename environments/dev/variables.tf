@@ -30,11 +30,11 @@ variable "is_create_vpn_with_aws" {
 /* AWS用変数 */
 variable "aws_access_key" {
   type    = string
-  default = "AKIATC5O4VTNKLHRD37T"
+  default = "NONE"
 }
 variable "aws_secret_key" {
   type    = string
-  default = "gkljZsFmK9aRhxfrN4TkxhY5VwiR0ZCO+wCuoSLv"
+  default = "NONE"
 }
 variable "aws_resname_prefix" {
   type    = string
