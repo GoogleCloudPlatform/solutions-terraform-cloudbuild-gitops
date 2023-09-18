@@ -316,7 +316,6 @@ module "paloma-dv-vpc-endpoint-ssm" {
 
 }
 
-
 # 仮想プライベートゲートウェイの設定
 resource "aws_vpn_gateway" "paloma-dv-vpc01-vgw01" {
   vpc_id          = aws_vpc.paloma-dv-vpc01.id
