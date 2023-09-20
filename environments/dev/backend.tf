@@ -12,10 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
-    prefix = "env/dev"
+    bucket = "packer-demo-397008-tfstate"
+    prefix = "env/prod"
   }
 }
