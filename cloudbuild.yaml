@@ -72,6 +72,7 @@ steps:
           cd ../../
         done
       fi 
+  secretEnv: ['TF_VAR_aws_access_key', 'TF_VAR_aws_secret_key']
 # [END tf-plan]
 
 # [START tf-apply]
@@ -89,4 +90,11 @@ steps:
         echo "Branch '$BRANCH_NAME' does not represent an official environment."
         echo "*******************************************************************************"
       fi
+  secretEnv: ['TF_VAR_aws_access_key', 'TF_VAR_aws_secret_key']
 # [END tf-apply]      
+availableSecrets:
+  secretManager:
+  - versionName: projects/181997179469/secrets/paloma-cicd-secret-aws-access-key/versions/latest
+    env: 'TF_VAR_aws_access_key'
+  - versionName: projects/181997179469/secrets/paloma-cicd-secret-aws-secret-key/versions/latest
+    env: 'TF_VAR_aws_secret_key'
