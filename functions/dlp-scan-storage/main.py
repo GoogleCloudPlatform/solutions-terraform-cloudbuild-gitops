@@ -15,7 +15,7 @@ MAX_FINDINGS = 0
 
 # The infoTypes of information to match
 INFO_TYPES = [
-    'PHONE_NUMBER', 'EMAIL_ADDRESS', 'US_SOCIAL_SECURITY_NUMBER'
+    'PHONE_NUMBER', 'EMAIL_ADDRESS', 'US_SOCIAL_SECURITY_NUMBER', 'INDIA_AADHAAR_INDIVIDUAL'
 ]
 
 def dlp_scan_storage(event, context):
