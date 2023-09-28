@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "braided-visitor-399707-tfstate"
     prefix = "env/dev"
   }
 }
