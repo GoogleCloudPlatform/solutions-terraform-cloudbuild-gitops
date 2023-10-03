@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "soy-storm-400821-tfstate"
     prefix = "env/prod"
   }
 }
