@@ -18,30 +18,33 @@ def security_ctf_challenges(event, context):
     try:
         mybucket = storage_client.get_bucket(event['bucket'])
         blob = mybucket.get_blob(event['name'])
-        print(f"Input file fetch successful! Content Type: {event['contentType']}")
-
-        csvfile = blob.download_as_bytes()
-        csvcontent = csvfile.decode('utf-8').splitlines()
-        lines = csv.reader(csvcontent)
         
-        header = 0
-        data = {}
-        db = firestore.Client(project=PROJECT_NAME)
+        if event['contentType']=='text/csv':
+            csvfile = blob.download_as_bytes()
+            csvcontent = csvfile.decode('utf-8').splitlines()
+            lines = csv.reader(csvcontent)
+            
+            header = 0
+            data = {}
+            db = firestore.Client(project=PROJECT_NAME)
 
-        for line in lines:
-            if header == 0:
-                header_row = line
-                header += 1
-            else:
-                index = 0
-                for column in line:
-                    if index == 0:
-                        document_id = column 
-                    else:
-                        data[header_row[index]] = column
-                    index += 1
-                print(data)
-                db.collection("security-ctf-challenges").document(document_id).set(data)
+            for line in lines:
+                if header == 0:
+                    header_row = line
+                    header += 1
+                else:
+                    index = 0
+                    for column in line:
+                        if index == 0:
+                            document_id = column 
+                        else:
+                            data[header_row[index]] = column
+                        index += 1
+                    print(data)
+                    db.collection("security-ctf-challenges").document(document_id).set(data)
+        else:
+            print(f"Sorry, I cannot process the file format: {event['contentType']}!")
+    
     except Exception as e:
         print(e)
         print("Input file read unsuccessful!")
