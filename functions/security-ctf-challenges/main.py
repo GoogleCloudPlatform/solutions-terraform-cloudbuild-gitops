@@ -1,6 +1,5 @@
 import os
 import csv
-import firebase_admin
 from firebase_admin import firestore
 from google.cloud import storage
 
@@ -27,8 +26,7 @@ def security_ctf_challenges(event, context):
         
         header = 0
         data = {}
-        app = firebase_admin.initialize_app()
-        db = firestore.client()
+        db = firestore.client(project=PROJECT_NAME)
 
         for line in lines:
             if header == 0:
