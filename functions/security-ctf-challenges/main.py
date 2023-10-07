@@ -26,7 +26,7 @@ def security_ctf_challenges(event, context):
         
         header = 0
         data = {}
-        db = firestore.client(project=PROJECT_NAME)
+        db = firestore.Client(project=PROJECT_NAME)
 
         for line in lines:
             if header == 0:
