@@ -1,6 +1,6 @@
 import os
 import csv
-from firebase_admin import firestore
+from google.cloud import firestore
 from google.cloud import storage
 
 # declare environment variables
