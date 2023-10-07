@@ -1190,7 +1190,7 @@ module "security_ctf_challenges_cloud_function" {
 
 # Create a custom IAM role for the security-ctf-challenges function over storage buckets
 resource "google_project_iam_custom_role" "security_ctf_challenges_custom_role" {
-  role_id     = "security-ctf-challenges-custom-role"
+  role_id     = "security_ctf_challenges_custom_role"
   title       = "Custom Role for the security-ctf-challenges function to read from storage buckets"
   description = "This role is used by the security-ctf-challenges function's SA in ${var.project}"
   permissions = ["storage.buckets.get","storage.objects.get"]
