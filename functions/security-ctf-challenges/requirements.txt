@@ -1,4 +1,4 @@
 # Function dependencies, for example:
 # package>=version
 google-cloud-storage
-google-cloud-dlp
+google-cloud-firestore

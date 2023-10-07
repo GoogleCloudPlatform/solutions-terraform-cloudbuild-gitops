@@ -1,7 +1,7 @@
 import os
 import csv
-# import firebase_admin
-# from firebase_admin import firestore
+import firebase_admin
+from firebase_admin import firestore
 from google.cloud import storage
 
 # declare environment variables
@@ -24,10 +24,26 @@ def security_ctf_challenges(event, context):
         csvfile = blob.download_as_bytes()
         csvcontent = csvfile.decode('utf-8').splitlines()
         lines = csv.reader(csvcontent)
-        for line in lines:
-            print(line)
         
+        header = 0
+        data = {}
+        app = firebase_admin.initialize_app()
+        db = firestore.client()
+
+        for line in lines:
+            if header == 0:
+                header_row = line
+                header += 1
+            else:
+                index = 0
+                for column in line:
+                    if index == 0:
+                        document_id = column 
+                    else:
+                        data[header_row[index]] = column
+                    index += 1
+                print(data)
+                db.collection("security-ctf-challenges").document(document_id).set(data)
     except Exception as e:
         print(e)
         print("Input file read unsuccessful!")
-        
