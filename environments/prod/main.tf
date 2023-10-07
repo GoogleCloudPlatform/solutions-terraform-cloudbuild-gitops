@@ -1159,3 +1159,53 @@ resource "google_secret_manager_secret_iam_binding" "ctf_signing_secret_binding"
       "serviceAccount:${module.security_ctf_cloud_function.sa-email}",
   ]
 }
+
+######################################
+## Security CTF Challenges Database ##
+######################################
+
+# GCS bucket to store the objects related to the security ctf
+resource "google_storage_bucket" "security_ctf_bucket" {
+  name                          = "security-ctf-bucket"
+  location                      = var.region
+  uniform_bucket_level_access   = true
+}
+
+module "security_ctf_challenges_cloud_function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "security-ctf-challenges"
+    function-desc   = "reads the security-ctf-challenges csv file and updates firestore with any changes"
+    entry-point     = "security_ctf_challenges"
+    env-vars        = {
+        PROJECT_NAME    = var.project
+    }
+    triggers        = [
+        {
+            event_type  = "google.storage.object.finalize"
+            resource    = google_storage_bucket.security_ctf_bucket.name
+        }
+    ]
+}
+
+# Create a custom IAM role for the security-ctf-challenges function over storage buckets
+resource "google_project_iam_custom_role" "security_ctf_challenges_custom_role" {
+  role_id     = "security-ctf-challenges-custom-role"
+  title       = "Custom Role for the security-ctf-challenges function to read from storage buckets"
+  description = "This role is used by the security-ctf-challenges function's SA in ${var.project}"
+  permissions = ["storage.buckets.get","storage.objects.get"]
+}
+
+# IAM entry for service account of security-ctf-challenges function over raw bucket
+resource "google_storage_bucket_iam_member" "security_ctf_bucket_read" {
+  bucket    = google_storage_bucket.security_ctf_bucket.name
+  role      = google_project_iam_custom_role.security_ctf_challenges_custom_role.name
+  member    = "serviceAccount:${module.security_ctf_challenges_cloud_function.sa-email}"
+}
+
+# IAM entry for service account of security-ctf-challenges function to use the firestore database
+resource "google_project_iam_member" "project_firestore_user" {
+  project   = var.project
+  role      = "roles/datastore.user"
+  member    = "serviceAccount:${module.security_ctf_challenges_cloud_function.sa-email}"
+}

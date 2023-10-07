@@ -706,7 +706,7 @@ resource "google_firebaserules_release" "firestore" {
     google_firestore_database.firestore,
   ]
 }
-
+/*
 # Adds a new Firestore index.
 resource "google_firestore_index" "indexes" {
   provider = google-beta
@@ -742,7 +742,7 @@ resource "google_firestore_document" "doc" {
     google_firestore_database.firestore,
   ]
 }
-
+*/
 # Creates a Firebase Web App in the new project created above.
 resource "google_firebase_web_app" "security_ctf_app" {
   provider     = google-beta
