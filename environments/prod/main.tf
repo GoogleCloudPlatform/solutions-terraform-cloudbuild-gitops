@@ -1063,12 +1063,10 @@ module "security_ctf_cloud_function" {
     function-desc   = "intakes requests from slack for security ctf admins and users"
     entry-point     = "security_ctf"
     env-vars        = {
-        SLACK_CTF_EASY_CHANNEL = var.slack_ctf_easy_channel,
-        SLACK_CTF_HARD_CHANNEL = var.slack_ctf_hard_channel,
+        SLACK_ADMIN = var.slack_admin,
         SLACK_CTF_ADMIN_CHANNEL = var.slack_ctf_admin_channel,
         DEPLOYMENT_PROJECT = var.project,
-        DEPLOYMENT_REGION = var.region,
-        SLACK_ADMIN = var.slack_admin
+        DEPLOYMENT_REGION = var.region
     }
     secrets         = [
         {
@@ -1090,36 +1088,6 @@ resource "google_cloudfunctions_function_iam_member" "security_ctf_invoker" {
 
   role   = "roles/cloudfunctions.invoker"
   member = "allUsers"
-}
-
-module "secuity_ctf_admin_cloud_function" {
-    source          = "../../modules/cloud_function"
-    project         = var.project
-    function-name   = "security-ctf-admin"
-    function-desc   = "processes access requests for security-ctf users"
-    entry-point     = "security_ctf_admin"
-    env-vars        = {
-        CTF_EASY_PROJECT = var.ctf_easy_project,
-        CTF_HARD_PROJECT = var.ctf_hard_project,
-        ORG_ID = var.organization
-    }
-}
-
-# IAM entry for service account of security-ctf function to invoke the security-ctf-admin function
-resource "google_cloudfunctions_function_iam_member" "security_ctf_admin_invoker" {
-  project        = var.project
-  region         = var.region
-  cloud_function = module.secuity_ctf_admin_cloud_function.function_name
-
-  role   = "roles/cloudfunctions.invoker"
-  member = "serviceAccount:${module.security_ctf_cloud_function.sa-email}"
-}
-
-# IAM entry for service account of security-ctf-admin function to manage IAM policies
-resource "google_organization_iam_member" "security_ctf_admin_org_iam_admin" {
-  org_id    = var.organization
-  role      = "roles/resourcemanager.projectIamAdmin"
-  member    = "serviceAccount:${module.secuity_ctf_admin_cloud_function.sa-email}"
 }
 
 resource "google_secret_manager_secret" "slack_security_ctf_bot_token" {
@@ -1158,6 +1126,64 @@ resource "google_secret_manager_secret_iam_binding" "ctf_signing_secret_binding"
   members    = [
       "serviceAccount:${module.security_ctf_cloud_function.sa-email}",
   ]
+}
+
+module "secuity_ctf_admin_cloud_function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "security-ctf-admin"
+    function-desc   = "processes access requests for security-ctf users"
+    entry-point     = "security_ctf_admin"
+    env-vars        = {
+        CTF_EASY_PROJECT = var.ctf_easy_project,
+        CTF_HARD_PROJECT = var.ctf_hard_project,
+        ORG_ID = var.organization
+    }
+}
+
+# IAM entry for service account of security-ctf function to invoke the security-ctf-admin function
+resource "google_cloudfunctions_function_iam_member" "security_ctf_admin_invoker" {
+  project        = var.project
+  region         = var.region
+  cloud_function = module.secuity_ctf_admin_cloud_function.function_name
+
+  role   = "roles/cloudfunctions.invoker"
+  member = "serviceAccount:${module.security_ctf_cloud_function.sa-email}"
+}
+
+# IAM entry for service account of security-ctf-admin function to manage IAM policies
+resource "google_organization_iam_member" "security_ctf_admin_org_iam_admin" {
+  org_id    = var.organization
+  role      = "roles/resourcemanager.projectIamAdmin"
+  member    = "serviceAccount:${module.secuity_ctf_admin_cloud_function.sa-email}"
+}
+
+module "secuity_ctf_game_cloud_function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "security-ctf-game"
+    function-desc   = "processes game administration requests"
+    entry-point     = "security_ctf_game"
+    env-vars        = {
+        PROJECT_NAME    = var.project
+    }
+}
+
+# IAM entry for service account of security-ctf function to invoke the security-ctf-game function
+resource "google_cloudfunctions_function_iam_member" "security_ctf_game_invoker" {
+  project        = var.project
+  region         = var.region
+  cloud_function = module.secuity_ctf_game_cloud_function.function_name
+
+  role   = "roles/cloudfunctions.invoker"
+  member = "serviceAccount:${module.security_ctf_cloud_function.sa-email}"
+}
+
+# IAM entry for service account of security-ctf-game function to use the firestore database
+resource "google_organization_iam_member" "security_ctf_game_firestore_user" {
+  project   = var.project
+  role      = "roles/datastore.user"
+  member    = "serviceAccount:${module.secuity_ctf_game_cloud_function.sa-email}"
 }
 
 ######################################

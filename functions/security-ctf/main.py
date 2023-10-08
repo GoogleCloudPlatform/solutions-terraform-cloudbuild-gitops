@@ -15,8 +15,6 @@ def security_ctf(request):
     payload = request.get_data().decode('utf-8')
     slack_signature = request.headers['X-Slack-Signature']
     slack_signing_secret = os.environ.get('SLACK_SIGNING_SECRET', 'Specified environment variable is not set.')
-    slack_ctf_easy_channel = os.environ.get('SLACK_CTF_EASY_CHANNEL', 'Specified environment variable is not set.')
-    slack_ctf_hard_channel = os.environ.get('SLACK_CTF_HARD_CHANNEL', 'Specified environment variable is not set.')
     slack_ctf_admin_channel = os.environ.get('SLACK_CTF_ADMIN_CHANNEL', 'Specified environment variable is not set.')
     deployment_project = os.environ.get('DEPLOYMENT_PROJECT', 'Specified environment variable is not set.')
     deployment_region = os.environ.get('DEPLOYMENT_REGION', 'Specified environment variable is not set.')
@@ -26,12 +24,10 @@ def security_ctf(request):
         if payload.startswith("token="):
             # parse the slash command for access request
             url = urllib.parse.unquote(payload.split("response_url=")[1].split("&")[0])
-            channel_id = payload.split("channel_id=")[1].split("&")[0]
-            channel_name = payload.split("channel_name=")[1].split("&")[0]
             requestor_name = payload.split("user_name=")[1].split("&")[0]
             requestor_id = payload.split("user_id=")[1].split("&")[0]
             request_text = urllib.parse.unquote(payload.split("text=")[1].split("&")[0])
-            print(f"New CTF Request: {channel_name}, {requestor_name}, {request_text}")
+            print(f"New CTF Request: {requestor_id}, {requestor_name}, {request_text}")
             
             input_text = request_text.split("+")
             if input_text[0].lower() == 'admin':
@@ -113,6 +109,80 @@ def security_ctf(request):
                         "type": "mrkdwn",
                         "text": f"You are unauthorized to execute CTF admin functions. Please ping <@{slack_admin}>"
                     }
+            elif input_text[0].lower() == 'game' and input_text[1].lower() == 'create':
+                if requestor_id == slack_admin:
+                    slack_ack(url, "Hey, _CTF commando_, game is being created!")
+                    print(f"Creating new game: {input_text[2]} as requested by: {requestor_name}")
+                    http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/security-ctf-game"
+                    access_payload = {
+                        "game_name": input_text[2],
+                        "action": "Create"
+                    }
+                    function_response = call_function(http_endpoint, access_payload)
+                    function_response_json = function_response.json()
+                    
+                    # compose message to respond back to the caller
+                    slack_message = [
+                        {
+                            "type": "header",
+                            "text": {
+                                "type": "plain_text",
+                                "text": function_response_json['info']
+                            }
+                        },
+                        {
+                            "type": "section",
+                            "fields": [
+                                {
+                                    "type": "mrkdwn",
+                                    "text": f"*Game Name:*\n{input_text[2]}"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "actions",
+                            "elements": []
+                        }
+                    ]
+
+                    if function_response_json['info'] == "Create: Successful":
+                        slack_message[2]['elements'].append({
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "emoji": True,
+                                "text": "End"
+                            },
+                            "style": "danger",
+                            "value": f"type=game+game_name={input_text[2]}+action=End",
+                            "confirm": {
+                                "title": {
+                                    "type": "plain_text",
+                                    "text": "Are you sure?"
+                                },
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": f"Do you want to end the Game: {input_text[2]}?"
+                                },
+                                "confirm": {
+                                    "type": "plain_text",
+                                    "text": "Yes, end it!"
+                                },
+                                "deny": {
+                                    "type": "plain_text",
+                                    "text": "Stop, I've changed my mind!"
+                                }
+                            }
+                        })
+
+                    return post_slack_message(slack_ctf_admin_channel, function_response_json['info'], slack_message)
+                else:
+                    print(f"{requestor_name} is unauthorized to execute CTF game functions")
+                    return {
+                        "response_type": "ephemeral",
+                        "type": "mrkdwn",
+                        "text": f"You are unauthorized to execute CTF game functions. Please ping <@{slack_admin}>"
+                    }
             else:
                 print("Invalid action invoked")
                 return {
@@ -126,13 +196,15 @@ def security_ctf(request):
             value = response_json['actions'][0]['value']
             print(value)
             action_type = value.split("type=")[1].split("+")[0]
-            env_name = value.split("env_name=")[1].split("+")[0]
-            user_email = value.split("user_email=")[1].split("+")[0]
             action = value.split("action=")[1].split("+")[0]
 
             if action_type == "admin" and action == "Revoke":
+                env_name = value.split("env_name=")[1].split("+")[0]
+                user_email = value.split("user_email=")[1].split("+")[0]
+            
                 slack_ack(response_json['response_url'], "Hey, _CTF commando_, access is being revoked!")
                 print(f"Revoking access to env: {env_name} for: {user_email} as requested by: {response_json['user']['name']}")
+                
                 http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/security-ctf-admin"
                 access_payload = {
                     "env_name": env_name,
@@ -163,6 +235,43 @@ def security_ctf(request):
                                 {
                                     "type": "mrkdwn",
                                     "text": f"*Env Name:*\n{env_name}"
+                                }
+                            ]
+                        }
+                    ]
+                }
+                return post_slack_response(response_json['response_url'], slack_message)
+            elif action_type == "game" and action == "End":
+                game_name = value.split("game_name=")[1].split("+")[0]
+                
+                slack_ack(response_json['response_url'], "Hey, _CTF commando_, game is being ended!")
+                print(f"Ending Game: {game_name} as requested by: {response_json['user']['name']}")
+                
+                http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/security-ctf-game"
+                access_payload = {
+                    "game_name": game_name,
+                    "action": action
+                }
+                function_response = call_function(http_endpoint, access_payload)
+                function_response_json = function_response.json()
+    
+                # compose message to respond back to the caller
+                slack_message = {
+                    "text": "Game End!",
+                    "blocks": [ 
+                        {
+                            "type": "header",
+                            "text": {
+                                "type": "plain_text",
+                                "text": function_response_json['info']
+                            }
+                        },
+                        {
+                            "type": "section",
+                            "fields": [
+                                {
+                                    "type": "mrkdwn",
+                                    "text": f"*Game:*\n{game_name}"
                                 }
                             ]
                         }
