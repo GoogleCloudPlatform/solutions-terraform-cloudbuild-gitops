@@ -73,11 +73,7 @@ variable "create_prod_gke_cluster" {
   default       = false
 }
 
-variable "slack_ctf_easy_channel" {
-  type        = string
-}
-
-variable "slack_ctf_hard_channel" {
+variable "slack_admin" {
   type        = string
 }
 
@@ -90,9 +86,5 @@ variable "ctf_easy_project" {
 }
 
 variable "ctf_hard_project" {
-  type        = string
-}
-
-variable "slack_admin" {
   type        = string
 }
