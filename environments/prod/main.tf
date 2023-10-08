@@ -1180,7 +1180,7 @@ resource "google_cloudfunctions_function_iam_member" "security_ctf_game_invoker"
 }
 
 # IAM entry for service account of security-ctf-game function to use the firestore database
-resource "google_organization_iam_member" "security_ctf_game_firestore_user" {
+resource "google_project_iam_member" "security_ctf_game_firestore_user" {
   project   = var.project
   role      = "roles/datastore.user"
   member    = "serviceAccount:${module.secuity_ctf_game_cloud_function.sa-email}"
