@@ -151,6 +151,34 @@ def security_ctf(request):
                             "text": {
                                 "type": "plain_text",
                                 "emoji": True,
+                                "text": "Start"
+                            },
+                            "style": "danger",
+                            "value": f"type=game+game_name={input_text[2]}+action=Start",
+                            "confirm": {
+                                "title": {
+                                    "type": "plain_text",
+                                    "text": "Are you sure?"
+                                },
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": f"Do you want to start the Game: {input_text[2]}?"
+                                },
+                                "confirm": {
+                                    "type": "plain_text",
+                                    "text": "Yes, start it!"
+                                },
+                                "deny": {
+                                    "type": "plain_text",
+                                    "text": "Stop, I've changed my mind!"
+                                }
+                            }
+                        })
+                        slack_message[2]['elements'].append({
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "emoji": True,
                                 "text": "End"
                             },
                             "style": "danger",
@@ -241,7 +269,7 @@ def security_ctf(request):
                     ]
                 }
                 return post_slack_response(response_json['response_url'], slack_message)
-            elif action_type == "game" and action == "End":
+            elif action_type == "game":
                 game_name = value.split("game_name=")[1].split("+")[0]
                 
                 slack_ack(response_json['response_url'], "Hey, _CTF commando_, game is being ended!")
@@ -257,7 +285,7 @@ def security_ctf(request):
     
                 # compose message to respond back to the caller
                 slack_message = {
-                    "text": "Game End!",
+                    "text": "Game Action!",
                     "blocks": [ 
                         {
                             "type": "header",
