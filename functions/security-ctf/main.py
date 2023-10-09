@@ -103,11 +103,11 @@ def security_ctf(request):
 
                     return post_slack_message(slack_ctf_admin_channel, function_response_json['info'], slack_message)
                 else:
-                    print(f"{requestor_name} is unauthorized to execute CTF admin functions")
+                    print(f"{requestor_name} is unauthorized to execute CTF admin commands.")
                     return {
                         "response_type": "ephemeral",
                         "type": "mrkdwn",
-                        "text": f"You are unauthorized to execute CTF admin functions. Please ping <@{slack_admin}>"
+                        "text": f"You are unauthorized to execute CTF admin commands. Please ping <@{slack_admin}>"
                     }
             elif input_text[0].lower() == 'game' and input_text[1].lower() == 'create':
                 if requestor_id == slack_admin:
@@ -135,7 +135,7 @@ def security_ctf(request):
                             "fields": [
                                 {
                                     "type": "mrkdwn",
-                                    "text": f"*Game Name:*\n{input_text[2]}"
+                                    "text": f"*Game:*\n{input_text[2]}"
                                 }
                             ]
                         },
@@ -146,77 +146,118 @@ def security_ctf(request):
                     ]
 
                     if function_response_json['info'] == "Create: Successful":
-                        slack_message[2]['elements'].append({
-                            "type": "button",
-                            "text": {
-                                "type": "plain_text",
-                                "emoji": True,
-                                "text": "Start"
-                            },
-                            "style": "danger",
-                            "value": f"type=game+game_name={input_text[2]}+action=Start",
-                            "confirm": {
-                                "title": {
-                                    "type": "plain_text",
-                                    "text": "Are you sure?"
-                                },
+                        buttons = ["Start", "End"]
+                        for button in buttons:
+                            slack_message[2]['elements'].append({
+                                "type": "button",
                                 "text": {
-                                    "type": "mrkdwn",
-                                    "text": f"Do you want to start the Game: {input_text[2]}?"
+                                    "type": "plain_text",
+                                    "emoji": True,
+                                    "text": button
                                 },
+                                "style": "danger",
+                                "value": f"type=game+game_name={input_text[2]}+action={button}",
                                 "confirm": {
-                                    "type": "plain_text",
-                                    "text": "Yes, start it!"
-                                },
-                                "deny": {
-                                    "type": "plain_text",
-                                    "text": "Stop, I've changed my mind!"
+                                    "title": {
+                                        "type": "plain_text",
+                                        "text": "Are you sure?"
+                                    },
+                                    "text": {
+                                        "type": "mrkdwn",
+                                        "text": f"Do you want to {button} the Game: {input_text[2]}?"
+                                    },
+                                    "confirm": {
+                                        "type": "plain_text",
+                                        "text": f"Yes, {button} it!"
+                                    },
+                                    "deny": {
+                                        "type": "plain_text",
+                                        "text": "Stop, I've changed my mind!"
+                                    }
                                 }
-                            }
-                        })
-                        slack_message[2]['elements'].append({
-                            "type": "button",
-                            "text": {
-                                "type": "plain_text",
-                                "emoji": True,
-                                "text": "End"
-                            },
-                            "style": "danger",
-                            "value": f"type=game+game_name={input_text[2]}+action=End",
-                            "confirm": {
-                                "title": {
-                                    "type": "plain_text",
-                                    "text": "Are you sure?"
-                                },
-                                "text": {
-                                    "type": "mrkdwn",
-                                    "text": f"Do you want to end the Game: {input_text[2]}?"
-                                },
-                                "confirm": {
-                                    "type": "plain_text",
-                                    "text": "Yes, end it!"
-                                },
-                                "deny": {
-                                    "type": "plain_text",
-                                    "text": "Stop, I've changed my mind!"
-                                }
-                            }
-                        })
+                            })
 
                     return post_slack_message(slack_ctf_admin_channel, function_response_json['info'], slack_message)
                 else:
-                    print(f"{requestor_name} is unauthorized to execute CTF game functions")
+                    print(f"{requestor_name} is unauthorized to execute CTF game commands.")
                     return {
                         "response_type": "ephemeral",
                         "type": "mrkdwn",
-                        "text": f"You are unauthorized to execute CTF game functions. Please ping <@{slack_admin}>"
+                        "text": f"You are unauthorized to execute CTF game commands. Please ping <@{slack_admin}>"
                     }
+            elif input_text[0].lower() == 'player' and input_text[1].lower() == 'start':
+                slack_ack(url, "Hey, _CTF commando_, you're being enrolled!")
+                print(f"Enrolling player: {requestor_name}, {requestor_id} in game: {input_text[2]}")
+                http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/security-ctf-player"
+                access_payload = {
+                    "requestor_name": requestor_name,
+                    "requestor_id": requestor_id,
+                    "game_name": input_text[2],
+                    "action": "Enroll"
+                }
+                function_response = call_function(http_endpoint, access_payload)
+                function_response_json = function_response.json()
+                
+                # compose message to respond back to the caller
+                slack_message = [
+                    {
+                        "type": "header",
+                        "text": {
+                            "type": "plain_text",
+                            "text": function_response_json['info']
+                        }
+                    },
+                    {
+                        "type": "section",
+                        "fields": [
+                            {
+                                "type": "mrkdwn",
+                                "text": f"*Game:*\n{input_text[2]}"
+                            }
+                        ]
+                    }
+                ]
+
+                if function_response_json['info'] == "Enroll: Successful":
+                    slack_message.append({
+                        "type": "actions",
+                        "elements": [{
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "emoji": True,
+                                "text": "Begin"
+                            },
+                            "style": "danger",
+                            "value": f"type=game+game_name={input_text[2]}+action=Begin",
+                            "confirm": {
+                                "title": {
+                                    "type": "plain_text",
+                                    "text": "Are you sure?"
+                                },
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": f"Do you want to begin the Game: {input_text[2]}?"
+                                },
+                                "confirm": {
+                                    "type": "plain_text",
+                                    "text": "Yes, bring it on!"
+                                },
+                                "deny": {
+                                    "type": "plain_text",
+                                    "text": "Stop, I've changed my mind!"
+                                }
+                            }
+                        }]
+                    })
+
+                return post_slack_message(slack_ctf_admin_channel, function_response_json['info'], slack_message)
             else:
                 print("Invalid action invoked")
                 return {
                     "response_type": "ephemeral",
                     "type": "mrkdwn",
-                    "text": "Invalid slash command. Please use /ctf `user` and so on..."
+                    "text": "Invalid slash command. Please use /ctf `player` and so on..."
                 }
         elif payload.startswith("payload="):
             # handling the response action
@@ -273,7 +314,7 @@ def security_ctf(request):
                 game_name = value.split("game_name=")[1].split("+")[0]
                 
                 slack_ack(response_json['response_url'], "Hey, _CTF commando_, game is being ended!")
-                print(f"Ending Game: {game_name} as requested by: {response_json['user']['name']}")
+                print(f"{action}ing Game: {game_name} as requested by: {response_json['user']['name']}")
                 
                 http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/security-ctf-game"
                 access_payload = {
@@ -285,8 +326,8 @@ def security_ctf(request):
     
                 # compose message to respond back to the caller
                 slack_message = {
-                    "text": "Game Action!",
-                    "blocks": [ 
+                    "text": f"Game {action}ed!",
+                    "blocks": [
                         {
                             "type": "header",
                             "text": {

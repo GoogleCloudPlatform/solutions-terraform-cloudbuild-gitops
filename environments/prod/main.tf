@@ -1186,6 +1186,34 @@ resource "google_project_iam_member" "security_ctf_game_firestore_user" {
   member    = "serviceAccount:${module.secuity_ctf_game_cloud_function.sa-email}"
 }
 
+module "secuity_ctf_player_cloud_function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "security-ctf-player"
+    function-desc   = "processes player requests"
+    entry-point     = "security_ctf_player"
+    env-vars        = {
+        PROJECT_NAME    = var.project
+    }
+}
+
+# IAM entry for service account of security-ctf function to invoke the security-ctf-game function
+resource "google_cloudfunctions_function_iam_member" "security_ctf_player_invoker" {
+  project        = var.project
+  region         = var.region
+  cloud_function = module.secuity_ctf_player_cloud_function.function_name
+
+  role   = "roles/cloudfunctions.invoker"
+  member = "serviceAccount:${module.security_ctf_cloud_function.sa-email}"
+}
+
+# IAM entry for service account of security-ctf-player function to use the firestore database
+resource "google_project_iam_member" "security_ctf_player_firestore_user" {
+  project   = var.project
+  role      = "roles/datastore.user"
+  member    = "serviceAccount:${module.secuity_ctf_player_cloud_function.sa-email}"
+}
+
 ######################################
 ## Security CTF Challenges Database ##
 ######################################
