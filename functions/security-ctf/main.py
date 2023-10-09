@@ -190,8 +190,8 @@ def security_ctf(request):
                 print(f"Enrolling player: {requestor_name}, {requestor_id} in game: {input_text[2]}")
                 http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/security-ctf-player"
                 access_payload = {
-                    "requestor_name": requestor_name,
-                    "requestor_id": requestor_id,
+                    "player_name": requestor_name,
+                    "player_id": requestor_id,
                     "game_name": input_text[2],
                     "action": "Enroll"
                 }
@@ -229,7 +229,7 @@ def security_ctf(request):
                                 "text": "Play"
                             },
                             "style": "danger",
-                            "value": f"type=game+game_name={input_text[2]}+action=Play",
+                            "value": f"type=player+game_name={input_text[2]}+action=Play+next_challenge=ch01",
                             "confirm": {
                                 "title": {
                                     "type": "plain_text",
@@ -341,6 +341,46 @@ def security_ctf(request):
                                 {
                                     "type": "mrkdwn",
                                     "text": f"*Game:*\n{game_name}"
+                                }
+                            ]
+                        }
+                    ]
+                }
+                return post_slack_response(response_json['response_url'], slack_message)
+            elif action_type == "player" and action == "Play":
+                game_name = value.split("game_name=")[1].split("+")[0]
+                next_challenge = value.split("next_challenge=")[1].split("+")[0]
+                
+                slack_ack(response_json['response_url'], "Hey, _CTF commando_, game is being started!")
+                print(f"{action}ing Game: {game_name} as requested by: {response_json['user']['name']}")
+                
+                http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/security-ctf-player"
+                access_payload = {
+                    "player_id": response_json['user']['id'],
+                    "game_name": game_name,
+                    "action": action,
+                    "next_challenge": next_challenge
+                }
+                function_response = call_function(http_endpoint, access_payload)
+                function_response_json = function_response.json()
+    
+                # compose message to respond back to the caller
+                slack_message = {
+                    "text": function_response_json['info'],
+                    "blocks": [
+                        {
+                            "type": "header",
+                            "text": {
+                                "type": "plain_text",
+                                "text": f"*Game:*\n{game_name}"
+                            }
+                        },
+                        {
+                            "type": "section",
+                            "fields": [
+                                {
+                                    "type": "mrkdwn",
+                                    "text": function_response_json['info']
                                 }
                             ]
                         }
