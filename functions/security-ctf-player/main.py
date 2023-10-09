@@ -15,12 +15,12 @@ def security_ctf_player(request):
             game_doc = db.collection("security-ctf-games").document(event['game_name']).get()
             if game_doc.exists:
                 if game_doc.get("state") == "Started":
-                    player_doc = db.collection("security-ctf-games").document(event['game_name']).collection('playerList').doc(event['player_id']).get()
+                    player_doc = db.collection("security-ctf-games").document(event['game_name']).collection('playerList').document(event['player_id']).get()
                     if player_doc.exists:
                         info = f"You're already enrolled in Game: {event['game_name']}. Press Play to begin!"
-                    else:  
+                    else:
                         print(f"Enrolling Player: {event['player_name']}, {event['player_id']} to Game: {event['game_name']}")
-                        db.collection("security-ctf-games").document(event['game_name']).collection('playerList').doc(event['player_id']).set({
+                        db.collection("security-ctf-games").document(event['game_name']).collection('playerList').document(event['player_id']).set({
                             "player_name": event['player_name'],
                             "started": firestore.SERVER_TIMESTAMP,
                             "total_score": 0,
@@ -33,7 +33,7 @@ def security_ctf_player(request):
                 info = f"Game: {event['game_name']} is invalid! Please contact the CTF admin."
         elif event['action'] == "Play":
             info = f"Player: {event['player_id']}. Serving challenge: {event['next_challenge']}"
-            db.collection("security-ctf-games").document(event['game_name']).collection('playerList').doc(event['player_id']).set({
+            db.collection("security-ctf-games").document(event['game_name']).collection('playerList').document(event['player_id']).set({
                             [event['next_challenge']]: {
                                 "start_time": firestore.SERVER_TIMESTAMP,
                                 "hint_taken": False
