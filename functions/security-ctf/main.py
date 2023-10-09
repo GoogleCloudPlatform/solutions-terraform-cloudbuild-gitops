@@ -198,13 +198,13 @@ def security_ctf(request):
                 function_response = call_function(http_endpoint, access_payload)
                 function_response_json = function_response.json()
                 
-                # compose message to respond back to the caller
+                # compose message to respond back to the player
                 slack_message = [
                     {
                         "type": "header",
                         "text": {
                             "type": "plain_text",
-                            "text": function_response_json['info']
+                            "text": f"*Game:*\n{input_text[2]}"
                         }
                     },
                     {
@@ -212,7 +212,7 @@ def security_ctf(request):
                         "fields": [
                             {
                                 "type": "mrkdwn",
-                                "text": f"*Game:*\n{input_text[2]}"
+                                "text": function_response_json['info']
                             }
                         ]
                     }
@@ -251,7 +251,7 @@ def security_ctf(request):
                         }]
                     })
 
-                return post_slack_message(slack_ctf_admin_channel, function_response_json['info'], slack_message)
+                return post_slack_message(requestor_id, function_response_json['info'], slack_message)
             else:
                 print("Invalid action invoked")
                 return {

@@ -14,7 +14,7 @@ def security_ctf_player(request):
         if event['action'] == "Enroll":
             game_doc = db.collection("security-ctf-games").document(event['game_name']).get()
             if game_doc.exists:
-                if game_doc.state == "Started":
+                if game_doc.getString("state") == "Started":
                     player_doc = db.collection("security-ctf-games").document(event['game_name']).collection('playerList').doc(event['requestor_id']).get()
                     if player_doc.exists:
                         info = f"You're already enrolled in Game: {event['game_name']}. Press Play to begin!"
