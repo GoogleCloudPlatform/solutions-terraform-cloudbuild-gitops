@@ -218,7 +218,7 @@ def security_ctf(request):
                     }
                 ]
 
-                if function_response_json['info'] == "Enroll: Successful":
+                if function_response_json['info'].startswith("Welcome"):
                     slack_message.append({
                         "type": "actions",
                         "elements": [{
@@ -226,10 +226,10 @@ def security_ctf(request):
                             "text": {
                                 "type": "plain_text",
                                 "emoji": True,
-                                "text": "Begin"
+                                "text": "Play"
                             },
                             "style": "danger",
-                            "value": f"type=game+game_name={input_text[2]}+action=Begin",
+                            "value": f"type=game+game_name={input_text[2]}+action=Play",
                             "confirm": {
                                 "title": {
                                     "type": "plain_text",
@@ -237,7 +237,7 @@ def security_ctf(request):
                                 },
                                 "text": {
                                     "type": "mrkdwn",
-                                    "text": f"Do you want to begin the Game: {input_text[2]}?"
+                                    "text": f"Do you want to play the Game: {input_text[2]}?"
                                 },
                                 "confirm": {
                                     "type": "plain_text",
