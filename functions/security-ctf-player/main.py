@@ -96,7 +96,7 @@ def send_slack_challenge(db, game_name, player_id, challenge_id):
             ]
         for option in range(1, 5):
             option_id = f"Option {option}"
-            option_desc = challenge_doc.get('option_id')
+            option_desc = challenge_doc.get(f"{option_id}")
             slack_message.append({
                 "type": "section",
                 "text": {
