@@ -39,7 +39,7 @@ def security_ctf_player(request):
             if send_slack_challenge(db, event['game_name'], event['player_id'], event['next_challenge']):
                 next_challenge = event['next_challenge']
                 db.collection("security-ctf-games").document(event['game_name']).collection('playerList').document(event['player_id']).update({
-                                [next_challenge]: {
+                                next_challenge: {
                                     "start_time": firestore.SERVER_TIMESTAMP,
                                     "hint_taken": False
                                 }
@@ -50,10 +50,10 @@ def security_ctf_player(request):
             }
         elif event['action'] == "hint":
             info = f"Game: {event['game_name']} Player: {event['player_id']}. Serving hint for Challenge: {event['challenge_id']}"
-            hint = db.collection("security-ctf-challenges").document(event['challenge_id']).get('hint')
+            challenge_doc = db.collection("security-ctf-challenges").document(event['challenge_id']).get()
             slack_message = {
                 "thread_ts": event['thread_ts'],
-                "text": hint,
+                "text": challenge_doc.get('hint'),
                 "response_type": "in_channel",
                 "replace_original": False
             }
