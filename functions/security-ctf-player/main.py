@@ -1,6 +1,8 @@
 import os
 import json
 import requests
+from pytz import timezone 
+from datetime import datetime, timedelta
 from google.cloud import firestore
 
 def security_ctf_player(request):
@@ -33,7 +35,7 @@ def security_ctf_player(request):
             else:
                 info = f"Game: {event['game_name']} is invalid! Please contact the CTF admin."
         elif event['action'] == "Play":
-            info = f"Player: {event['player_id']}. Serving challenge: {event['next_challenge']}"
+            info = f"Game: {event['game_name']} Player: {event['player_id']}. Serving challenge: {event['next_challenge']}"
             if send_slack_challenge(db, event['game_name'], event['player_id'], event['next_challenge']):
                 next_challenge = event['next_challenge']
                 db.collection("security-ctf-games").document(event['game_name']).collection('playerList').document(event['player_id']).update({
@@ -46,6 +48,16 @@ def security_ctf_player(request):
                 'statusCode': 200,
                 'body': json.dumps("Completed!")
             }
+        elif event['action'] == "hint":
+            info = f"Game: {event['game_name']} Player: {event['player_id']}. Serving hint for Challenge: {event['challenge_id']}"
+            hint = db.collection("security-ctf-challenges").document(event['challenge_id']).get('hint')
+            slack_message = {
+                "thread_ts": event['thread_ts'],
+                "text": hint,
+                "response_type": "in_channel",
+                "replace_original": False
+            }
+            post_slack_response(event['response_url'], slack_message)
         print(info)
     except Exception as error:
         print(f"{event['action']} action failed for Game: {event['game_name']}! - {error}")
@@ -58,8 +70,11 @@ def security_ctf_player(request):
 
 def send_slack_challenge(db, game_name, player_id, challenge_id):
     try:
-        challenge_doc = db.collection("security-ctf-challenges").document(challenge_id).get()
         next_challenge = "ch{:02d}".format(int(challenge_id[-2:]) + 1)
+        reply_by = (datetime.now(timezone("Asia/Kolkata"))+ timedelta(minutes = 10)).strftime('%Y-%m-%d %H:%M:%S')
+        challenge_doc = db.collection("security-ctf-challenges").document(challenge_id).get()
+
+
         slack_message = [
                 {
                     "type": "header",
@@ -82,6 +97,20 @@ def send_slack_challenge(db, game_name, player_id, challenge_id):
                         "image_url": "https://api.slack.com/img/blocks/bkb_template_images/notifications.png",
                         "alt_text": "calendar thumbnail"
                     }
+                },
+                {
+                    "type": "context",
+                    "elements": [
+                        {
+                            "type": "image",
+                            "image_url": "https://api.slack.com/img/blocks/bkb_template_images/notificationsWarningIcon.png",
+                            "alt_text": "notifications warning icon"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": f"To earn points, you must answer this question by {reply_by} IST"
+                        }
+                    ]
                 },
                 {
                     "type": "divider"
@@ -113,6 +142,32 @@ def send_slack_challenge(db, game_name, player_id, challenge_id):
                     "value": f"type=player+game_name={game_name}+action=Play+option={option_id}+next_challenge={next_challenge}",
                 }
 		    })
+        
+        slack_message.append({
+            "type": "divider"
+        },
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "You can opt to take a hint. A correct answer with a hint gets you only 5 points."
+            }
+        },
+        {
+            "type": "actions",
+            "elements": [
+                {
+                    "type": "button",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Take Hint",
+                        "emoji": True
+                    },
+                    "value": f"type=player+game_name={game_name}+action=hint+challenge={challenge_id}"
+                }
+            ]
+        })
+
         slack_token = os.environ.get('SLACK_ACCESS_TOKEN', 'Specified environment variable is not set.')
         response = requests.post("https://slack.com/api/chat.postMessage", data={
             "token": slack_token,
@@ -125,3 +180,10 @@ def send_slack_challenge(db, game_name, player_id, challenge_id):
     except Exception as e:
         print(e)
         return False
+
+def post_slack_response(url, slack_message):
+    response = requests.post(url, data=json.dumps(slack_message), headers={'Content-Type': 'application/json'})
+    print(f"Message posted - Slack responded with Status Code: {response.status_code}")
+    return {
+        'statusCode': response.status_code
+    }

@@ -2,3 +2,4 @@
 # package>=version
 google-cloud-firestore
 requests
+pytz

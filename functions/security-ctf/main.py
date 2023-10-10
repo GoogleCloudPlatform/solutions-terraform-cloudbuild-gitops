@@ -319,7 +319,7 @@ def security_ctf(request):
             elif action_type == "game":
                 game_name = value.split("game_name=")[1].split("+")[0]
                 
-                slack_ack(response_json['response_url'], "Hey, _CTF commando_, game is being ended!")
+                slack_ack(response_json['response_url'], f"Hey, _CTF commando_, game is being {action}ed!")
                 print(f"{action}ing Game: {game_name} as requested by: {response_json['user']['name']}")
                 
                 http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/security-ctf-game"
@@ -361,7 +361,7 @@ def security_ctf(request):
                 option_id = value.split("option=")[1].split("+")[0]
                 next_challenge = value.split("next_challenge=")[1].split("+")[0]
                 
-                slack_ack(response_json['response_url'], "Hey, _CTF commando_, game is being started!")
+                slack_ack(response_json['response_url'], "Hey, _CTF commando_, your request is being actioned!")
                 print(f"{action}ing Game: {game_name} as requested by: {response_json['user']['name']}")
                 
                 http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/security-ctf-player"
@@ -373,9 +373,29 @@ def security_ctf(request):
                     "next_challenge": next_challenge,
                     "response_url": response_json['response_url']
                 }
-                response_statuscode = call_function(http_endpoint, player_payload)
+                response = call_function(http_endpoint, player_payload)
                 return {
-                    'statusCode': response_statuscode
+                    'statusCode': response.status_code
+                }
+            elif action_type == "player" and action == "hint":
+                game_name = value.split("game_name=")[1].split("+")[0]
+                challenge_id = value.split("challenge=")[1].split("+")[0]
+                
+                slack_ack(response_json['response_url'], "Hey, _CTF commando_, your hint is being served!")
+                print(f"{action}ing Game: {game_name} as requested by: {response_json['user']['name']}")
+                
+                http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/security-ctf-player"
+                player_payload = {
+                    "player_id": response_json['user']['id'],
+                    "game_name": game_name,
+                    "action": action,
+                    "challenge_id": challenge_id,
+                    "response_url": response_json['response_url'],
+                    "thread_ts": response_json['container']['message_ts']
+                }
+                response = call_function(http_endpoint, player_payload)
+                return {
+                    'statusCode': response.status_code
                 }
         else:
             print("Not a valid payload!")
