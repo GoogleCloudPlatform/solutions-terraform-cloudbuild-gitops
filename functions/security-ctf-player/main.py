@@ -20,7 +20,7 @@ def security_ctf_player(request):
                 if game_doc.get("state") == "Started":
                     player_doc = db.collection("security-ctf-games").document(event['game_name']).collection('playerList').document(event['player_id']).get()
                     if player_doc.exists:
-                        info = f"You're already enrolled in Game: {event['game_name']}. Press Play to begin!"
+                        info = f"You're already enrolled. Press Play to begin!"
                     else:
                         print(f"Enrolling Player: {event['player_name']}, {event['player_id']} to Game: {event['game_name']}")
                         db.collection("security-ctf-games").document(event['game_name']).collection('playerList').document(event['player_id']).set({
@@ -31,9 +31,9 @@ def security_ctf_player(request):
                         })
                         info = f"Welcome to {event['game_name']}! When you're ready, press the Play button below."
                 else:
-                    info = f"Game: {event['game_name']} is yet to begin! Please contact the CTF admin."
+                    info = f"Game is yet to begin! Please contact the CTF admin."
             else:
-                info = f"Game: {event['game_name']} is invalid! Please contact the CTF admin."
+                info = f"Invalid game code! Please contact the CTF admin."
         elif event['action'] == "Play":
             info = f"Game: {event['game_name']} Player: {event['player_id']}. Serving challenge: {event['next_challenge']}"
             if send_slack_challenge(db, event['game_name'], event['player_id'], event['next_challenge']):
@@ -143,7 +143,7 @@ def send_slack_challenge(db, game_name, player_id, challenge_id):
                 }
 		    })
         
-        slack_message.append({
+        slack_message.extend([{
             "type": "divider"
         },
         {
@@ -166,7 +166,7 @@ def send_slack_challenge(db, game_name, player_id, challenge_id):
                     "value": f"type=player+game_name={game_name}+action=hint+challenge={challenge_id}"
                 }
             ]
-        })
+        }])
 
         slack_token = os.environ.get('SLACK_ACCESS_TOKEN', 'Specified environment variable is not set.')
         response = requests.post("https://slack.com/api/chat.postMessage", data={
