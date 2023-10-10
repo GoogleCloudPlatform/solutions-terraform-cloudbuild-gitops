@@ -1195,6 +1195,12 @@ module "secuity_ctf_player_cloud_function" {
     env-vars        = {
         PROJECT_NAME    = var.project
     }
+    secrets         = [
+        {
+            key = "SLACK_ACCESS_TOKEN"
+            id  = google_secret_manager_secret.slack_security_ctf_bot_token.secret_id
+        }
+    ]
 }
 
 # IAM entry for service account of security-ctf function to invoke the security-ctf-game function
@@ -1205,6 +1211,16 @@ resource "google_cloudfunctions_function_iam_member" "security_ctf_player_invoke
 
   role   = "roles/cloudfunctions.invoker"
   member = "serviceAccount:${module.security_ctf_cloud_function.sa-email}"
+}
+
+# IAM entry for service account of security-ctf-player function to use the slack bot token
+resource "google_secret_manager_secret_iam_binding" "player_bot_token_binding" {
+  project   = google_secret_manager_secret.slack_security_ctf_bot_token.project
+  secret_id = google_secret_manager_secret.slack_security_ctf_bot_token.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  members    = [
+      "serviceAccount:${module.secuity_ctf_player_cloud_function.sa-email}",
+  ]
 }
 
 # IAM entry for service account of security-ctf-player function to use the firestore database

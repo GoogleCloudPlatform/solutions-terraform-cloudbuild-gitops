@@ -232,7 +232,7 @@ def security_ctf(request):
                                 "text": "Play"
                             },
                             "style": "danger",
-                            "value": f"type=player+game_name={input_text[2]}+action=Play+next_challenge=ch01",
+                            "value": f"type=player+game_name={input_text[2]}+action=Play+option=Option 0+next_challenge=ch01",
                             "confirm": {
                                 "title": {
                                     "type": "plain_text",
@@ -358,6 +358,7 @@ def security_ctf(request):
                 return post_slack_response(response_json['response_url'], slack_message)
             elif action_type == "player" and action == "Play":
                 game_name = value.split("game_name=")[1].split("+")[0]
+                option_id = value.split("option=")[1].split("+")[0]
                 next_challenge = value.split("next_challenge=")[1].split("+")[0]
                 
                 slack_ack(response_json['response_url'], "Hey, _CTF commando_, game is being started!")
@@ -368,6 +369,7 @@ def security_ctf(request):
                     "player_id": response_json['user']['id'],
                     "game_name": game_name,
                     "action": action,
+                    "option": option_id,
                     "next_challenge": next_challenge,
                     "response_url": response_json['response_url']
                 }
