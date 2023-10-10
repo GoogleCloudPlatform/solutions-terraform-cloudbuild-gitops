@@ -1100,13 +1100,11 @@ resource "google_secret_manager_secret" "slack_security_ctf_bot_token" {
 }
 
 # IAM entry for service account of security-ctf function to use the slack bot token
-resource "google_secret_manager_secret_iam_binding" "ctf_bot_token_binding" {
+resource "google_secret_manager_secret_iam_member" "ctf_bot_token_member" {
   project   = google_secret_manager_secret.slack_security_ctf_bot_token.project
   secret_id = google_secret_manager_secret.slack_security_ctf_bot_token.secret_id
   role      = "roles/secretmanager.secretAccessor"
-  members    = [
-      "serviceAccount:${module.security_ctf_cloud_function.sa-email}",
-  ]
+  member    = "serviceAccount:${module.security_ctf_cloud_function.sa-email}"
 }
 
 resource "google_secret_manager_secret" "slack_security_ctf_signing_secret" {
@@ -1214,13 +1212,11 @@ resource "google_cloudfunctions_function_iam_member" "security_ctf_player_invoke
 }
 
 # IAM entry for service account of security-ctf-player function to use the slack bot token
-resource "google_secret_manager_secret_iam_binding" "player_bot_token_binding" {
+resource "google_secret_manager_secret_iam_member" "player_bot_token_member" {
   project   = google_secret_manager_secret.slack_security_ctf_bot_token.project
   secret_id = google_secret_manager_secret.slack_security_ctf_bot_token.secret_id
   role      = "roles/secretmanager.secretAccessor"
-  members    = [
-      "serviceAccount:${module.secuity_ctf_player_cloud_function.sa-email}",
-  ]
+  member    = "serviceAccount:${module.secuity_ctf_player_cloud_function.sa-email}"
 }
 
 # IAM entry for service account of security-ctf-player function to use the firestore database
