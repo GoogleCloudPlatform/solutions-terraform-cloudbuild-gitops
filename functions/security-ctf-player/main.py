@@ -65,7 +65,7 @@ def send_slack_challenge(db, game_name, player_id, challenge_id):
                     "type": "header",
                     "text": {
                         "type": "plain_text",
-                        "text": f"New Challenge: {challenge_doc.get('Name')}!"
+                        "text": f"New Challenge: {challenge_doc.get('name')}!"
                     }
                 },
                 {
@@ -75,7 +75,7 @@ def send_slack_challenge(db, game_name, player_id, challenge_id):
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": f"*Description*\n{challenge_doc.get('Description')}"
+                        "text": f"{challenge_doc.get('description')}\n{challenge_doc.get('task')}"
                     },
                     "accessory": {
                         "type": "image",
@@ -95,13 +95,13 @@ def send_slack_challenge(db, game_name, player_id, challenge_id):
                 }
             ]
         for option in range(1, 5):
-            option_id = f"Option {option}"
+            option_id = f"option_{option}"
             option_desc = challenge_doc.get(f"{option_id}")
             slack_message.append({
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"*{option_id}*\n{option_desc}"
+                    "text": f"{option_desc}"
                 },
                 "accessory": {
                     "type": "button",
@@ -117,7 +117,7 @@ def send_slack_challenge(db, game_name, player_id, challenge_id):
         response = requests.post("https://slack.com/api/chat.postMessage", data={
             "token": slack_token,
             "channel": player_id,
-            "text": f"Challenge {challenge_doc.get('Name')}",
+            "text": f"Challenge {challenge_doc.get('name')}",
             "blocks": json.dumps(slack_message)
         })
         print(f"Slack responded with Status Code: {response.status_code}")
