@@ -50,15 +50,15 @@ def security_ctf_player(request):
                 ################### compute score ###################
                 challenge_score = 0
                 player_doc = player_ref.get()
-                if firestore.SERVER_TIMESTAMP.seconds - player_doc.get(f"{challenge_id}.start_time").seconds > 600:
-                    result = "Sorry, we didn't receive your response within 10 mins."
-                else:
-                    if event['option'] == challenge_doc.get('answer') and player_doc.get(f"{challenge_id}.hint_taken"):
-                        result = "Congratulations! You answered correctly but with a hint!"
-                        challenge_score = 5
-                    elif event['option'] == challenge_doc.get('answer') and not player_doc.get(f"{challenge_id}.hint_taken"):
-                        result = "Congratulations! You got the right answer!"
-                        challenge_score = 10
+                # if firestore.SERVER_TIMESTAMP.seconds - player_doc.get(f"{challenge_id}.start_time").seconds > 600:
+                #    result = "Sorry, we didn't receive your response within 10 mins."
+                #else:
+                if event['option'] == challenge_doc.get('answer') and player_doc.get(f"{challenge_id}.hint_taken"):
+                    result = "Congratulations! You answered correctly but with a hint!"
+                    challenge_score = 5
+                elif event['option'] == challenge_doc.get('answer') and not player_doc.get(f"{challenge_id}.hint_taken"):
+                    result = "Congratulations! You got the right answer!"
+                    challenge_score = 10
                 print(result)
                 ################### update challenge score ##########
                 player_ref.update({
