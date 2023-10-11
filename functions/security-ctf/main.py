@@ -232,7 +232,7 @@ def security_ctf(request):
                                 "text": "Play"
                             },
                             "style": "danger",
-                            "value": f"type=player+game_name={input_text[2]}+action=Play+option=Option 0+next_challenge=ch01",
+                            "value": f"type=player+game_name={input_text[2]}+action=play+option=option_0+challenge=ch00",
                             "confirm": {
                                 "title": {
                                     "type": "plain_text",
@@ -356,10 +356,10 @@ def security_ctf(request):
                     ]
                 }
                 return post_slack_response(response_json['response_url'], slack_message)
-            elif action_type == "player" and action == "Play":
+            elif action_type == "player" and action == "play":
                 game_name = value.split("game_name=")[1].split("+")[0]
-                option_id = value.split("option=")[1].split("+")[0]
-                next_challenge = value.split("next_challenge=")[1].split("+")[0]
+                option_id = value.split("option_id=")[1].split("+")[0]
+                challenge_id = value.split("challenge_id=")[1].split("+")[0]
                 
                 slack_ack(response_json['response_url'], "Hey, _CTF commando_, your request is being actioned!")
                 print(f"{action}ing Game: {game_name} as requested by: {response_json['user']['name']}")
@@ -369,8 +369,8 @@ def security_ctf(request):
                     "player_id": response_json['user']['id'],
                     "game_name": game_name,
                     "action": action,
-                    "option": option_id,
-                    "next_challenge": next_challenge,
+                    "option_id": option_id,
+                    "challenge_id": challenge_id,
                     "response_url": response_json['response_url']
                 }
                 response = call_function(http_endpoint, player_payload)
@@ -379,7 +379,7 @@ def security_ctf(request):
                 }
             elif action_type == "player" and action == "hint":
                 game_name = value.split("game_name=")[1].split("+")[0]
-                challenge_id = value.split("challenge=")[1].split("+")[0]
+                challenge_id = value.split("challenge_id=")[1].split("+")[0]
                 
                 slack_ack(response_json['response_url'], "Hey, _CTF commando_, your hint is being served!")
                 print(f"{action}ing Game: {game_name} as requested by: {response_json['user']['name']}")
