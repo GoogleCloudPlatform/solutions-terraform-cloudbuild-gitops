@@ -46,22 +46,21 @@ def security_ctf_player(request):
             challenge_doc = db.collection("security-ctf-challenges").document(challenge_id).get()
 
             if challenge_id > "ch00":
-                
                 ################### compute score ###################
                 challenge_score = 0
+                result = "You've got it wrong baby! Better luck in the next one."
                 player_doc = player_ref.get()
-                # if firestore.SERVER_TIMESTAMP.seconds - player_doc.get(f"{challenge_id}.start_time").seconds > 600:
-                #    result = "Sorry, we didn't receive your response within 10 mins."
-                #else:
-                print(challenge_doc.get('answer'))
-                print(player_doc.get(f"{challenge_id}.hint_taken"))
-                if event['option_id'] == challenge_doc.get('answer') and player_doc.get(f"{challenge_id}.hint_taken"):
-                    result = "Congratulations! You answered correctly but with a hint!"
-                    challenge_score = 5
-                elif event['option_id'] == challenge_doc.get('answer') and not player_doc.get(f"{challenge_id}.hint_taken"):
-                    result = "Congratulations! You got the right answer!"
-                    challenge_score = 10
+                if datetime.now().timestamp() - player_doc.get(f"{challenge_id}.start_time").timestamp_pb().seconds > 600:
+                    result = "Sorry, we didn't receive your response within 10 mins."
+                else:
+                    if event['option_id'] == challenge_doc.get('answer') and player_doc.get(f"{challenge_id}.hint_taken"):
+                        result = "Congratulations! You answered correctly but with a hint!"
+                        challenge_score = 5
+                    elif event['option_id'] == challenge_doc.get('answer') and not player_doc.get(f"{challenge_id}.hint_taken"):
+                        result = "Congratulations! You got the right answer!"
+                        challenge_score = 10
                 print(result)
+                
                 ################### update challenge score ##########
                 player_ref.update({
                     f"{challenge_id}.resp_time": firestore.SERVER_TIMESTAMP,
@@ -79,7 +78,7 @@ def security_ctf_player(request):
                             "type": "header",
                             "text": {
                                 "type": "plain_text",
-                                "text": f"{event['game_name']}: {challenge_doc.get('name')}"
+                                "text": f"Game: {event['game_name']}: {challenge_doc.get('name')}"
                             }
                         },
                         {
@@ -103,11 +102,7 @@ def security_ctf_player(request):
                         }
                     ]
                 }
-                post_slack_response(event['response_url'],slack_message)
-                return {
-                    'statusCode': 200,
-                    'body': json.dumps("Completed!")
-                }
+                post_slack_response(event['response_url'],slack_message)   
             if challenge_id < "ch10":
                 next_challenge = "ch{:02d}".format(int(challenge_id[-2:]) + 1)
                 info = f"Serving Game: {event['game_name']} Player: {event['player_id']} Challenge: {next_challenge}"
@@ -133,7 +128,7 @@ def security_ctf_player(request):
             }
             if post_slack_response(event['response_url'], slack_message):
                 player_ref.update({
-                    f"{challenge_id}.hint_taken": True
+                    f"{event['challenge_id']}.hint_taken": True
                 })
         print(info)
     except Exception as error:
