@@ -232,7 +232,7 @@ def security_ctf(request):
                                 "text": "Play"
                             },
                             "style": "danger",
-                            "value": f"type=player+game_name={input_text[2]}+action=play+option=option_0+challenge=ch00",
+                            "value": f"type=player+game_name={input_text[2]}+action=play+option_id=option_0+challenge_id=ch00",
                             "confirm": {
                                 "title": {
                                     "type": "plain_text",

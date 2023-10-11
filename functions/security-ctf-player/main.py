@@ -212,7 +212,7 @@ def send_slack_challenge(db, game_name, player_id, challenge_id):
                         "emoji": True,
                         "text": "Choose"
                     },
-                    "value": f"type=player+game_name={game_name}+action=play+option_id={option_id}+challenge={challenge_id}",
+                    "value": f"type=player+game_name={game_name}+action=play+option_id={option_id}+challenge_id={challenge_id}",
                 }
 		    })
         
@@ -236,7 +236,7 @@ def send_slack_challenge(db, game_name, player_id, challenge_id):
                         "text": "Take Hint",
                         "emoji": True
                     },
-                    "value": f"type=player+game_name={game_name}+action=hint+challenge={challenge_id}"
+                    "value": f"type=player+game_name={game_name}+action=hint+challenge_id={challenge_id}"
                 }
             ]
         }])
