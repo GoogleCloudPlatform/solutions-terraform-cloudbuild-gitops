@@ -5,14 +5,18 @@ from pytz import timezone
 from datetime import datetime, timedelta
 from google.cloud import firestore
 
-def security_ctf_player(request):
-    # declare environment variables
-    PROJECT_NAME = os.environ.get('PROJECT_NAME')
-    db = firestore.Client(project=PROJECT_NAME)
+# declare environment variables
+PROJECT_NAME = os.environ.get('PROJECT_NAME')
+games_collection = os.environ.get('GAMES_COLLECTION')
+challenges_collection = os.environ.get('CHALLENGES_COLLECTION')
+time_limit = int(os.environ.get('TIME_LIMIT', '600'))
+db = firestore.Client(project=PROJECT_NAME)
 
+def security_ctf_player(request):
+    
     event       = json.loads(request.get_data().decode('UTF-8'))
-    game_ref    = db.collection("security-ctf-games").document(event['game_name'])
-    player_ref  = db.collection("security-ctf-games").document(event['game_name']).collection('playerList').document(event['player_id'])
+    game_ref    = db.collection(games_collection).document(event['game_name'])
+    player_ref  = db.collection(games_collection).document(event['game_name']).collection('playerList').document(event['player_id'])
     
     try:
         info = "Do nothing!"
@@ -43,14 +47,14 @@ def security_ctf_player(request):
                 info = f"Invalid game code! Please contact the CTF admin."
         elif event['action'] == "play":
             challenge_id = event['challenge_id']
-            challenge_doc = db.collection("security-ctf-challenges").document(challenge_id).get()
+            challenge_doc = db.collection(challenges_collection).document(challenge_id).get()
 
             if challenge_id > "ch00":
                 ################### compute score ###################
                 challenge_score = 0
                 result = "You've got it wrong baby! Better luck in the next one."
                 player_doc = player_ref.get()
-                if datetime.now().timestamp() - player_doc.get(f"{challenge_id}.start_time").timestamp_pb().seconds > 600:
+                if datetime.now().timestamp() - player_doc.get(f"{challenge_id}.start_time").timestamp_pb().seconds > time_limit:
                     result = "Sorry, we didn't receive your response within 10 mins."
                 else:
                     if event['option_id'] == challenge_doc.get('answer') and player_doc.get(f"{challenge_id}.hint_taken"):
@@ -59,7 +63,6 @@ def security_ctf_player(request):
                     elif event['option_id'] == challenge_doc.get('answer') and not player_doc.get(f"{challenge_id}.hint_taken"):
                         result = "Congratulations! You got the right answer!"
                         challenge_score = 10
-                print(result)
                 
                 ################### update challenge score ##########
                 player_ref.update({
@@ -71,6 +74,7 @@ def security_ctf_player(request):
                 ################### update total score ##############
                 player_ref.update({"total_score": firestore.Increment(challenge_score)})
 
+                ################### announce results ##############
                 slack_message = {
                     "text": f"{result}\n",
                     "blocks": [ 
@@ -78,7 +82,7 @@ def security_ctf_player(request):
                             "type": "header",
                             "text": {
                                 "type": "plain_text",
-                                "text": f"Game: {event['game_name']}: {challenge_doc.get('name')}"
+                                "text": f"Challenge: {challenge_doc.get('name')}"
                             }
                         },
                         {
@@ -96,17 +100,23 @@ def security_ctf_player(request):
                             "fields": [
                                 {
                                     "type": "mrkdwn",
+                                    "text": f"*Level:*\n{challenge_doc.get('category')}"
+                                },
+                                {
+                                    "type": "mrkdwn",
                                     "text": f"*Score:*\n{challenge_score}"
                                 }
                             ]
                         }
                     ]
                 }
-                post_slack_response(event['response_url'],slack_message)   
+                post_slack_response(event['response_url'],slack_message)
+            
+            ################### send next challenge and update database ##############
             if challenge_id < "ch10":
                 next_challenge = "ch{:02d}".format(int(challenge_id[-2:]) + 1)
                 info = f"Serving Game: {event['game_name']} Player: {event['player_id']} Challenge: {next_challenge}"
-                if send_slack_challenge(db, event['game_name'], event['player_id'], next_challenge):
+                if send_slack_challenge(event['game_name'], event['player_id'], next_challenge, False):
                     player_ref.update({
                         next_challenge: {
                             "start_time": firestore.SERVER_TIMESTAMP,
@@ -117,16 +127,20 @@ def security_ctf_player(request):
                     'statusCode': 200,
                     'body': json.dumps("Completed!")
                 }
+            
+        ################### serve hint and update database ##############
         elif event['action'] == "hint":
             info = f"Serving Game: {event['game_name']} Player: {event['player_id']}. Hint: {event['challenge_id']}"
-            challenge_doc = db.collection("security-ctf-challenges").document(event['challenge_id']).get()
+            '''
+            challenge_doc = db.collection(challenges_collection).document(event['challenge_id']).get()
             slack_message = {
                 "thread_ts": event['thread_ts'],
                 "text": challenge_doc.get('hint'),
                 "response_type": "in_channel",
                 "replace_original": False
             }
-            if post_slack_response(event['response_url'], slack_message):
+            '''
+            if send_slack_challenge(event['game_name'], event['player_id'], event['challenge_id'], True):
                 player_ref.update({
                     f"{event['challenge_id']}.hint_taken": True
                 })
@@ -140,10 +154,10 @@ def security_ctf_player(request):
     }
     return json.dumps(data), 200, {'Content-Type': 'application/json'}
 
-def send_slack_challenge(db, game_name, player_id, challenge_id):
+def send_slack_challenge(game_name, player_id, challenge_id, hint_taken):
     try:
         reply_by = (datetime.now(timezone("Asia/Kolkata"))+ timedelta(minutes = 10)).strftime('%H:%M:%S')
-        challenge_doc = db.collection("security-ctf-challenges").document(challenge_id).get()
+        challenge_doc = db.collection(challenges_collection).document(challenge_id).get()
 
         slack_message = [
                 {
@@ -212,31 +226,42 @@ def send_slack_challenge(db, game_name, player_id, challenge_id):
                     "value": f"type=player+game_name={game_name}+action=play+option_id={option_id}+challenge_id={challenge_id}",
                 }
 		    })
-        
-        slack_message.extend([{
-            "type": "divider"
-        },
-        {
-            "type": "section",
-            "text": {
-                "type": "mrkdwn",
-                "text": "You can opt to take a hint. A correct answer with a hint gets you only 5 points."
-            }
-        },
-        {
-            "type": "actions",
-            "elements": [
-                {
-                    "type": "button",
-                    "text": {
-                        "type": "plain_text",
-                        "text": "Take Hint",
-                        "emoji": True
-                    },
-                    "value": f"type=player+game_name={game_name}+action=hint+challenge_id={challenge_id}"
+        if hint_taken:
+            slack_message.extend([{
+                "type": "divider"
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": f"*Hint:*\n{challenge_doc.get('hint')}"
                 }
-            ]
-        }])
+            }])
+        else:
+            slack_message.extend([{
+                "type": "divider"
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "You can opt to take a hint. A correct answer with a hint gets you only 5 points."
+                }
+            },
+            {
+                "type": "actions",
+                "elements": [
+                    {
+                        "type": "button",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Take Hint",
+                            "emoji": True
+                        },
+                        "value": f"type=player+game_name={game_name}+action=hint+challenge_id={challenge_id}"
+                    }
+                ]
+            }])
 
         slack_token = os.environ.get('SLACK_ACCESS_TOKEN', 'Specified environment variable is not set.')
         response = requests.post("https://slack.com/api/chat.postMessage", data={

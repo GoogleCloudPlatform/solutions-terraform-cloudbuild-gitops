@@ -88,3 +88,15 @@ variable "ctf_easy_project" {
 variable "ctf_hard_project" {
   type        = string
 }
+
+variable "challenges_collection" {
+  type        = string
+}
+
+variable "games_collection" {
+  type        = string
+}
+
+variable "time_limit" {
+  type        = string
+}
