@@ -100,3 +100,7 @@ variable "games_collection" {
 variable "time_limit" {
   type        = string
 }
+
+variable "last_challenge" {
+  type        = string
+}

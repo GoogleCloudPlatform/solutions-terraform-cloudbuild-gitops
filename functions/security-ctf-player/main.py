@@ -10,6 +10,7 @@ PROJECT_NAME = os.environ.get('PROJECT_NAME')
 games_collection = os.environ.get('GAMES_COLLECTION')
 challenges_collection = os.environ.get('CHALLENGES_COLLECTION')
 time_limit = int(os.environ.get('TIME_LIMIT', '600'))
+last_challenge = os.environ.get('LAST_CHALLENGE')
 db = firestore.Client(project=PROJECT_NAME)
 
 def security_ctf_player(request):
@@ -38,7 +39,7 @@ def security_ctf_player(request):
                             "player_name": event['player_name'],
                             "started": firestore.SERVER_TIMESTAMP,
                             "total_score": 0,
-                            "last_challenge": 0
+                            "current_challenge": 0
                         })
                         info = f"This ain't a game for the faint hearted.\nWhen you're ready, press the Play button below."
                 else:
@@ -50,10 +51,11 @@ def security_ctf_player(request):
             challenge_doc = db.collection(challenges_collection).document(challenge_id).get()
 
             if challenge_id > "ch00":
-                ################### compute score ###################
                 challenge_score = 0
-                result = "You've got it wrong baby! Better luck in the next one."
                 player_doc = player_ref.get()
+                result = "You've got it wrong baby! Better luck in the next one."
+                
+                ################### compute score ###################
                 if datetime.now().timestamp() - player_doc.get(f"{challenge_id}.start_time").timestamp_pb().seconds > time_limit:
                     result = "Sorry, we didn't receive your response within 10 mins."
                 else:
@@ -74,7 +76,7 @@ def security_ctf_player(request):
                 ################### update total score ##############
                 player_ref.update({"total_score": firestore.Increment(challenge_score)})
 
-                ################### announce results ##############
+                ################### announce challenge result ##############
                 slack_message = {
                     "text": f"{result}\n",
                     "blocks": [ 
@@ -111,9 +113,48 @@ def security_ctf_player(request):
                     ]
                 }
                 post_slack_response(event['response_url'],slack_message)
+
+                ################### end game and announce game score ##############
+                if challenge_id == last_challenge:
+                    slack_message = [ 
+                        {
+                            "type": "header",
+                            "text": {
+                                "type": "plain_text",
+                                "text": f"End of CTF: {event['game_name']}"
+                            }
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "section",
+                            "text": {
+                                "type": "mrkdwn",
+                                "text": "Congratulations! You've reached the end of the CTF.\n"
+                            }
+                        },
+                        {
+                            "type": "section",
+                            "fields": [
+                                {
+                                    "type": "mrkdwn",
+                                    "text": f"*Total Score:*\n{player_doc.get('total_score')}"
+                                }
+                            ]
+                        }
+                    ]
+                    slack_token = os.environ.get('SLACK_ACCESS_TOKEN', 'Specified environment variable is not set.')
+                    response = requests.post("https://slack.com/api/chat.postMessage", data={
+                        "token": slack_token,
+                        "channel": event['player_id'],
+                        "text": f"End of CTF: {event['game_name']}",
+                        "blocks": json.dumps(slack_message)
+                    })
+                    info = f"Game: {event['game_name']} for player {event['player_id']} ended responded with Status Code: {response.status_code}"
             
             ################### send next challenge and update database ##############
-            if challenge_id < "ch10":
+            if challenge_id < last_challenge:
                 next_challenge = "ch{:02d}".format(int(challenge_id[-2:]) + 1)
                 info = f"Serving Game: {event['game_name']} Player: {event['player_id']} Challenge: {next_challenge}"
                 if send_slack_challenge(event['game_name'], event['player_id'], next_challenge, False):
@@ -121,13 +162,10 @@ def security_ctf_player(request):
                         next_challenge: {
                             "start_time": firestore.SERVER_TIMESTAMP,
                             "hint_taken": False
-                        }
+                        },
+                        "current_challenge": int(next_challenge[-2:])
                     })
-                return {
-                    'statusCode': 200,
-                    'body': json.dumps("Completed!")
-                }
-            
+
         ################### serve hint and update database ##############
         elif event['action'] == "hint":
             info = f"Serving Game: {event['game_name']} Player: {event['player_id']}. Hint: {event['challenge_id']}"
@@ -144,11 +182,10 @@ def security_ctf_player(request):
                 player_ref.update({
                     f"{event['challenge_id']}.hint_taken": True
                 })
-        print(info)
     except Exception as error:
-        print(f"{event['action']} action failed for Game: {event['game_name']}! - {error}")
-        info = f"{event['action']} Error: {error}"
+        info = f"{event['action']} for Game: {event['game_name']} failed! Error: {error}"
     
+    print(info)
     data = {
         "info": info
     }
