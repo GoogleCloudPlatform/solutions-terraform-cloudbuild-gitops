@@ -40,7 +40,7 @@ def security_ctf_player(request):
                             "total_score": 0,
                             "last_challenge": 0
                         })
-                        info = f"Welcome to {event['game_name']}! When you're ready, press the Play button below."
+                        info = f"This ain't a game for the faint hearted.\nWhen you're ready, press the Play button below."
                 else:
                     info = f"Game is yet to begin! Please contact the CTF admin."
             else:
