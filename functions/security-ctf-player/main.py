@@ -41,7 +41,7 @@ def security_ctf_player(request):
                             "total_score": 0,
                             "current_challenge": 0
                         })
-                        info = f"This ain't a game for the faint hearted.\nWhen you're ready, press the Play button below."
+                        info = f"This ain't a game for the faint hearted!\nPress the Play button when you're ready."
                 else:
                     info = f"Game is yet to begin! Please contact the CTF admin."
             else:
@@ -51,11 +51,12 @@ def security_ctf_player(request):
             challenge_doc = db.collection(challenges_collection).document(challenge_id).get()
 
             if challenge_id > "ch00":
+                player_doc      = player_ref.get()
                 challenge_score = 0
-                player_doc = player_ref.get()
+                total_score     = player_doc.get('total_score')
                 result = "You've got it wrong baby! Better luck in the next one."
                 
-                ################### compute score ###################
+                ################### compute challenge score ###################
                 if datetime.now().timestamp() - player_doc.get(f"{challenge_id}.start_time").timestamp_pb().seconds > time_limit:
                     result = "Sorry, we didn't receive your response within 10 mins."
                 else:
@@ -74,7 +75,8 @@ def security_ctf_player(request):
                 })
                 
                 ################### update total score ##############
-                player_ref.update({"total_score": firestore.Increment(challenge_score)})
+                total_score += challenge_score
+                player_ref.update({"total_score": total_score})
 
                 ################### announce challenge result ##############
                 slack_message = {
@@ -139,7 +141,7 @@ def security_ctf_player(request):
                             "fields": [
                                 {
                                     "type": "mrkdwn",
-                                    "text": f"*Total Score:*\n{player_doc.get('total_score')}"
+                                    "text": f"*Total Score:*\n{total_score}"
                                 }
                             ]
                         }
@@ -169,15 +171,6 @@ def security_ctf_player(request):
         ################### serve hint and update database ##############
         elif event['action'] == "hint":
             info = f"Serving Game: {event['game_name']} Player: {event['player_id']}. Hint: {event['challenge_id']}"
-            '''
-            challenge_doc = db.collection(challenges_collection).document(event['challenge_id']).get()
-            slack_message = {
-                "thread_ts": event['thread_ts'],
-                "text": challenge_doc.get('hint'),
-                "response_type": "in_channel",
-                "replace_original": False
-            }
-            '''
             if send_slack_challenge(event['game_name'], event['player_id'], event['challenge_id'], True):
                 player_ref.update({
                     f"{event['challenge_id']}.hint_taken": True
