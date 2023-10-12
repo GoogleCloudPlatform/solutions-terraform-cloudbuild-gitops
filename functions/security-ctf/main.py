@@ -357,32 +357,37 @@ def security_ctf(request):
                 }
                 if action == "Start":
                     slack_message['blocks'].append({
-                        "type": "button",
-                        "text": {
-                            "type": "plain_text",
-                            "emoji": True,
-                            "text": "End"
-                        },
-                        "style": "danger",
-                        "value": f"type=game+game_name={game_name}+action=End",
-                        "confirm": {
-                            "title": {
-                                "type": "plain_text",
-                                "text": "Are you sure?"
-                            },
-                            "text": {
-                                "type": "mrkdwn",
-                                "text": f"Do you want to end the game: {game_name}?"
-                            },
-                            "confirm": {
-                                "type": "plain_text",
-                                "text": f"Yes, kill it!"
-                            },
-                            "deny": {
-                                "type": "plain_text",
-                                "text": "Stop, I've changed my mind!"
+                        "type": "actions",
+                        "elements": [
+                            {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "emoji": True,
+                                    "text": "End"
+                                },
+                                "style": "danger",
+                                "value": f"type=game+game_name={game_name}+action=End",
+                                "confirm": {
+                                    "title": {
+                                        "type": "plain_text",
+                                        "text": "Are you sure?"
+                                    },
+                                    "text": {
+                                        "type": "mrkdwn",
+                                        "text": f"Do you want to end the game: {game_name}?"
+                                    },
+                                    "confirm": {
+                                        "type": "plain_text",
+                                        "text": f"Yes, kill it!"
+                                    },
+                                    "deny": {
+                                        "type": "plain_text",
+                                        "text": "Stop, I've changed my mind!"
+                                    }
+                                }
                             }
-                        }
+                        ]
                     })
                 return post_slack_response(response_json['response_url'], slack_message)
             elif action_type == "player" and action == "play":
