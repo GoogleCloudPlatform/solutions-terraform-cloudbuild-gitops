@@ -11,24 +11,27 @@ import {
   collection,
   query,
   orderBy,
-  onSnapshot
+  onSnapshot,
+  where, 
+  getDocs,
+  querySnapshot
 } from 'firebase/firestore';
 
 import * as firebaseui from 'firebaseui';
 
 // Document elements
 const startRsvpButton = document.getElementById('startRsvp');
-const guestbookContainer = document.getElementById('guestbook-container');
+const leaderboardContainer = document.getElementById('leaderboard-container');
 
 const form = document.getElementById('leave-message');
 const input = document.getElementById('message');
-const guestbook = document.getElementById('guestbook');
+const players = document.getElementById('players');
 const numberAttending = document.getElementById('number-attending');
 const rsvpYes = document.getElementById('rsvp-yes');
 const rsvpNo = document.getElementById('rsvp-no');
 
 let rsvpListener = null;
-let guestbookListener = null;
+let leaderboardListener = null;
 
 let db, auth;
 
@@ -46,19 +49,62 @@ async function main() {
   initializeApp(firebaseConfig);
 
   db = getFirestore();
-
-  // Create query for messages
-  const q = query(collection(db, 'security-ctf-challenges'), orderBy('id', 'desc'));
+  const game_name = await getGame(db)
+  
+  const entry = document.createElement('h2');
+  entry.textContent = "Leaderboard for " + game_name;
+  leaderboardContainer.appendChild(entry);
+  
+  // Create query for scores
+  const q = query(collection(db, 'security-ctf-games', game_name, "playerList"), orderBy('total_score', 'desc'));
   onSnapshot(q, snaps => {
     // Reset page
-    guestbook.innerHTML = '';
+    players.innerHTML = '';
+
+    let tr = document.createElement('tr'); // header row
+    const headerList = ["Player", "Score", "Challenge"];
+    for (var j = 0; j < 3; j++) {
+      var th = document.createElement('th'); //column
+      var text = document.createTextNode(headerList[j]); //cell
+      th.appendChild(text);
+      tr.appendChild(th);
+    }
+    players.appendChild(tr);
+
     // Loop through documents in database
     snaps.forEach(doc => {
-      // Create an HTML entry for each document and add it to the chat
-      const entry = document.createElement('p');
-      entry.textContent = doc.data().scenario + ': ' + doc.data().answer;
-      guestbook.appendChild(entry);
+      // Create an row entry for each player on the leaderboard
+      let tr = document.createElement('tr'); // row
+      
+      var td = document.createElement('td'); //column
+      var text = document.createTextNode(doc.data().player_name); //cell
+      td.appendChild(text);
+      tr.appendChild(td);
+
+      var td = document.createElement('td'); //column
+      var text = document.createTextNode(doc.data().total_score); //cell
+      td.appendChild(text);
+      tr.appendChild(td);
+
+      var td = document.createElement('td'); //column
+      var text = document.createTextNode(doc.data().current_challenge); //cell
+      td.appendChild(text);
+      tr.appendChild(td);
+
+      players.appendChild(tr);
     });
   });
 }
+
+async function getGame(db) {
+  let game = "";
+  // Create query for game
+  const q = query(collection(db, 'security-ctf-games'), where("state", "==", "Started"));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    game = doc.id;
+  });
+  return game;
+}
+
 main();
