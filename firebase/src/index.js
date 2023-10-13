@@ -51,56 +51,58 @@ async function main() {
   db = getFirestore();
   const game_name = await getGame(db)
   
-  const entry = document.createElement('h2');
-  entry.textContent = "Leaderboard for " + game_name;
-  leaderboardContainer.appendChild(entry);
-  
-  // Create query for scores
-  const q = query(collection(db, 'security-ctf-games', game_name, "playerList"), orderBy('total_score', 'desc'));
-  onSnapshot(q, snaps => {
-    // Reset page
-    players.innerHTML = '';
+  if (game_name !== "" ) {
+    const entry = document.createElement('h2');
+    entry.textContent = "Leaderboard for " + game_name;
+    leaderboardContainer.appendChild(entry);
+    
+    // Create query for scores
+    const q = query(collection(db, 'security-ctf-games', game_name, "playerList"), orderBy('total_score', 'desc'));
+    onSnapshot(q, snaps => {
+      // Reset page
+      players.innerHTML = '';
 
-    let tr = document.createElement('tr'); // header row
-    const headerList = ["Player", "Score", "Challenge"];
-    for (var j = 0; j < 3; j++) {
-      var th = document.createElement('th'); //column
-      var text = document.createTextNode(headerList[j]); //cell
-      th.appendChild(text);
-      tr.appendChild(th);
-    }
-    players.appendChild(tr);
-
-    // Loop through documents in database
-    snaps.forEach(doc => {
-      // Create an row entry for each player on the leaderboard
-      let tr = document.createElement('tr'); // row
-      
-      var td = document.createElement('td'); //column
-      var text = document.createTextNode(doc.data().player_name); //cell
-      td.appendChild(text);
-      tr.appendChild(td);
-
-      var td = document.createElement('td'); //column
-      var text = document.createTextNode(doc.data().total_score); //cell
-      td.appendChild(text);
-      tr.appendChild(td);
-
-      if (doc.data().current_challenge == 0) {
-        var text = document.createTextNode("Enrolled");
-      } else if (doc.data().current_challenge == 10) {
-        var text = document.createTextNode("Ended");
-      } else {
-        var text = document.createTextNode(doc.data().current_challenge);
+      let tr = document.createElement('tr'); // header row
+      const headerList = ["Player", "Score", "Challenge"];
+      for (var j = 0; j < 3; j++) {
+        var th = document.createElement('th'); //column
+        var text = document.createTextNode(headerList[j]); //cell
+        th.appendChild(text);
+        tr.appendChild(th);
       }
-
-      var td = document.createElement('td'); //column
-      td.appendChild(text);
-      tr.appendChild(td);
-
       players.appendChild(tr);
+
+      // Loop through documents in database
+      snaps.forEach(doc => {
+        // Create an row entry for each player on the leaderboard
+        let tr = document.createElement('tr'); // row
+        
+        var td = document.createElement('td'); //column
+        var text = document.createTextNode(doc.data().player_name); //cell
+        td.appendChild(text);
+        tr.appendChild(td);
+
+        var td = document.createElement('td'); //column
+        var text = document.createTextNode(doc.data().total_score); //cell
+        td.appendChild(text);
+        tr.appendChild(td);
+
+        if (doc.data().current_challenge == 0) {
+          var text = document.createTextNode("Enrolled");
+        } else if (doc.data().current_challenge == 10) {
+          var text = document.createTextNode("Ended");
+        } else {
+          var text = document.createTextNode(doc.data().current_challenge);
+        }
+
+        var td = document.createElement('td'); //column
+        td.appendChild(text);
+        tr.appendChild(td);
+
+        players.appendChild(tr);
+      });
     });
-  });
+  }
 }
 
 async function getGame(db) {
