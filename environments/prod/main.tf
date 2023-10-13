@@ -1163,7 +1163,8 @@ module "secuity_ctf_game_cloud_function" {
     function-desc   = "processes game administration requests"
     entry-point     = "security_ctf_game"
     env-vars        = {
-        PROJECT_NAME    = var.project
+        PROJECT_NAME        = var.project
+        GAMES_COLLECTION    = var.games_collection
     }
 }
 

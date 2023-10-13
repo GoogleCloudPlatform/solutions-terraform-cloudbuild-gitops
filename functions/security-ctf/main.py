@@ -138,14 +138,14 @@ def security_ctf(request):
                                     "text": function_response_json['info']
                                 }
                             ]
-                        },
-                        {
-                            "type": "actions",
-                            "elements": []
                         }
                     ]
 
                     if function_response_json['info'] == "Create: Successful":
+                        slack_message.append({
+                            "type": "actions",
+                            "elements": []
+                        })
                         buttons = ["Start", "End"]
                         for button in buttons:
                             slack_message[2]['elements'].append({
@@ -199,6 +199,10 @@ def security_ctf(request):
                 function_response_json = function_response.json()
                 
                 # compose message to respond back to the player
+                display_text = function_response_json['info']
+                if not function_response_json['info'].startswith("This"):
+                    display_text += f"\nPlease ping <@{slack_admin}>"
+
                 slack_message = [
                     {
                         "type": "header",
@@ -215,7 +219,7 @@ def security_ctf(request):
                         "fields": [
                             {
                                 "type": "mrkdwn",
-                                "text": function_response_json['info']
+                                "text": display_text
                             }
                         ]
                     }
