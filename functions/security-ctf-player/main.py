@@ -39,9 +39,11 @@ def security_ctf_player(request):
                             "player_name": event['player_name'],
                             "started": firestore.SERVER_TIMESTAMP,
                             "total_score": 0,
-                            "current_challenge": 0
+                            "current_challenge": "Accepted!"
                         })
                         info = f"This ain't a game for the faint hearted!\nPress the Play button when you're ready."
+                elif game_doc.get("state") == "Ended":
+                    info = f"Sorry, this game has already ended!"
                 else:
                     info = f"Game is yet to begin!"
             else:
@@ -122,6 +124,9 @@ def security_ctf_player(request):
                     if challenge_id == last_challenge:
                         response_code = announce_game_end(event['game_name'], event['player_id'], total_score)
                         info = f"Game: {event['game_name']} End for Player: {event['player_id']} responded with Status Code: {response_code}"
+                        player_ref.update({
+                            "current_challenge": "Completed!"
+                        })
                 
                 ################### send next challenge and update database ##############
                 if challenge_id < last_challenge:
@@ -133,7 +138,7 @@ def security_ctf_player(request):
                                 "start_time": firestore.SERVER_TIMESTAMP,
                                 "hint_taken": False
                             },
-                            "current_challenge": int(next_challenge[-2:])
+                            "current_challenge": next_challenge[-2:]
                         })
             
             ################### end game and announce game score ##############

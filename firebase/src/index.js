@@ -87,15 +87,8 @@ async function main() {
         td.appendChild(text);
         tr.appendChild(td);
 
-        if (doc.data().current_challenge == 0) {
-          var text = document.createTextNode("Enrolled");
-        } else if (doc.data().current_challenge == 10) {
-          var text = document.createTextNode("Ended");
-        } else {
-          var text = document.createTextNode(doc.data().current_challenge);
-        }
-
         var td = document.createElement('td'); //column
+        var text = document.createTextNode(doc.data().current_challenge); //cell
         td.appendChild(text);
         tr.appendChild(td);
 
