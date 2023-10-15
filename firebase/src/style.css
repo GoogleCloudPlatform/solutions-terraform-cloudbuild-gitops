@@ -4,6 +4,7 @@
       margin: 0 auto;
     }
 }
+
 @media all and (min-width: 960px) and (max-width: 1199px) {
     #app{
       max-width: 900px;
@@ -83,6 +84,26 @@ p {
     margin-bottom:0px;
 }
   
+#challenges {
+    font-weight: lighter;
+    font-size: 18px;
+    border-collapse: collapse;
+    width: 90%;
+    margin-top:20px;
+    margin-bottom:0px;
+    margin-left: 20px;
+    text-align: left;
+    border: 1px solid transparent;
+}
+  
+#challenges td, #challenges th {
+    color: rgb(18, 194, 47);
+    border: 1px solid transparent;
+    padding: 8px;
+}
+  
+#challenges td:hover {background-color: rgb(60, 60, 60);}
+
 #players {
     font-weight: lighter;
     font-size: 14px;
@@ -97,7 +118,7 @@ p {
     padding: 8px;
 }
   
-#players tr:hover {background-color: rgb(185, 69, 189);}
+#players tr:hover {background-color: rgb(60, 60, 60);}
   
 #players th {
     padding-top: 12px;

@@ -25,6 +25,7 @@ const leaderboardContainer = document.getElementById('leaderboard-container');
 
 const form = document.getElementById('leave-message');
 const input = document.getElementById('message');
+const challenges = document.getElementById('challenges');
 const players = document.getElementById('players');
 const numberAttending = document.getElementById('number-attending');
 const rsvpYes = document.getElementById('rsvp-yes');
@@ -47,10 +48,37 @@ async function main() {
   };
 
   initializeApp(firebaseConfig);
-
   db = getFirestore();
+
+  // Display Challenges
+  const c = query(collection(db, 'security-ctf-challenges'));
+  onSnapshot(c, snaps => {
+    // Reset page
+    challenges.innerHTML = '';
+
+    const categoryList = ["Easy", "Medium", "Hard"];
+    for (var i = 0; i < 3; i++) {
+      var tr = document.createElement('tr'); // category row
+      var th = document.createElement('th'); // header column
+      var text = document.createTextNode(categoryList[i]); // header cell
+      th.appendChild(text);
+      tr.appendChild(th);
+
+      snaps.forEach(doc => {
+        // Create a column entry for each challenge
+        if (doc.data().category == categoryList[i]) {
+          var td = document.createElement('td'); //column
+          var text = document.createTextNode(doc.data().name); //cell
+          td.appendChild(text);
+          tr.appendChild(td);
+        }
+      });
+      challenges.appendChild(tr);
+    }
+  });
+
+  // Display Leaderboard
   const game_name = await getGame(db)
-  
   if (game_name !== "" ) {
     const entry = document.createElement('h2');
     entry.textContent = "Leaderboard for " + game_name;
@@ -74,7 +102,7 @@ async function main() {
 
       // Loop through documents in database
       snaps.forEach(doc => {
-        // Create an row entry for each player on the leaderboard
+        // Create a row entry for each player on the leaderboard
         let tr = document.createElement('tr'); // row
         
         var td = document.createElement('td'); //column
