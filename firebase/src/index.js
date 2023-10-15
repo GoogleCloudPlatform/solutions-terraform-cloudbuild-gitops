@@ -170,6 +170,12 @@ async function main() {
 
         players.appendChild(tr);
       });
+
+      // Add ending line breaks after the leaderboard
+      const linebreak1 = document.createElement("br");
+      players.appendChild(linebreak1);
+      const linebreak2 = document.createElement("br");
+      players.appendChild(linebreak2);
     });
   }
 }
