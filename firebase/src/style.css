@@ -40,6 +40,10 @@
    }
 }
   
+#firebaseui-auth-container {
+    display: inline-block;
+}
+
 hr {
     clear: both;
     margin-bottom: 20px;
@@ -80,8 +84,18 @@ label {
   
 p {
     font-size: 18px;
-    margin-top:10px;
+    margin-top:20px;
     margin-bottom:0px;
+}
+  
+#bullet {
+    font-size: 16px;
+    margin-top:20px;
+    margin-bottom:0px;
+}
+  
+a {
+    color: rgb(18, 194, 47);
 }
   
 #challenges {

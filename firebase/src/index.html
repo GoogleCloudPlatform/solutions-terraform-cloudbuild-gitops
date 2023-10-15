@@ -1,12 +1,16 @@
 <head>
     <meta charset="utf-8" />
     <title>Security CTF</title>
-    <link
-      href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Roboto:300,400,700&display=swap"
+    <link 
+      href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css"
       rel="stylesheet"
     />
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link 
+      href="https://www.w3schools.com/w3css/4/w3.css"
       rel="stylesheet"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,14 +24,12 @@
     
       <section id="event-details-container">
         <h1>Security CTF Meetup</h1>
-    
         <p><i class="material-icons">calendar_today</i> October 30</p>
         <p><i class="material-icons">location_city</i> Mumbai, India</p>
         <!-- ADD THE RSVP BUTTON HERE -->
         <button id="startRsvp">RSVP</button>
+        <section id="firebaseui-auth-container"></section>
       </section>
-    
-      <section id="firebaseui-auth-container"></section>
     
       <hr />
     
@@ -38,12 +40,21 @@
         <table id="challenges"></table>
         <hr />
     
-        <h2>How do I enroll</h2>
+        <h2>Player Instructions</h2>
         <ul>
-          <li><p>Sign up to the Slack workspace using this <a href="https://join.slack.com/t/sandeep-m4l3838/shared_invite/zt-24xrqkpg6-69nJB15zRIsR31snWZ5sDA">link</a></p></li>
-          <li><p>Contact the admin for the game code</p></li>
-          <li><p>Fire the following slash command in slack</p></li>
-          <p><i>/ctf player start &lt;game_code&gt;</i></p> 
+          <li><p>Before the event</p></li>
+            <ol>
+              <li><p id=bullet>Use the RSVP button above and sign-in using a (non-gmail) Google account</p></li>
+              <li><p id=bullet>Sign up to the CTF Slack workspace using this <a href="https://join.slack.com/t/sandeep-m4l3838/shared_invite/zt-24xrqkpg6-69nJB15zRIsR31snWZ5sDA">link</a></p></li>
+            </ol>
+          <li><p>During the event</p></li>
+            <ol>
+              <li><p id=bullet>Login to the <a href="http://console.cloud.google.com">Google Cloud Console</a> with your Google identity from the previous step.</p></li>
+              <li><p id=bullet>Go to the project selector box at the top left, select from “NO ORGANIZATION” and search for the <i>security-ctf-easy</i> project</li>
+              <li><p id=bullet>Contact the CTF admin for the game code</p></li>
+              <li><p id=bullet>Kick off by firing the following slash command in slack</p></li>
+              <p id=bullet><i>/ctf player start &lt;game_code&gt;</i></p>
+            </ol>
         </ul>
       </section>
     
@@ -56,4 +67,4 @@
       <table id="players"></table>
     </div>
 </body>
-    
+  
