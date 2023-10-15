@@ -4,7 +4,13 @@ import './style.css';
 import { initializeApp } from 'firebase/app';
 
 // Add the Firebase products and methods that you want to use
-import {} from 'firebase/auth';
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signOut,
+  onAuthStateChanged
+} from 'firebase/auth';
+
 import {
   getFirestore,
   addDoc,
@@ -49,6 +55,48 @@ async function main() {
 
   initializeApp(firebaseConfig);
   db = getFirestore();
+  auth = getAuth();
+
+  // Initialize the FirebaseUI widget using Firebase
+  const ui = new firebaseui.auth.AuthUI(auth);
+
+  // FirebaseUI config
+  const uiConfig = {
+    // Popup signin flow rather than redirect flow.
+    signInFlow: 'popup',
+    signInOptions: [
+      GoogleAuthProvider.PROVIDER_ID
+    ],
+    callbacks: {
+      signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+        // Handle sign-in.
+        // Return false to avoid redirect.
+        return false;
+      }
+    }
+  };
+
+  // Listen to RSVP button clicks
+  startRsvpButton.addEventListener('click', () => {
+    if (auth.currentUser) {
+      // User is signed in; allows user to sign out
+      signOut(auth);
+    } else {
+      // No user is signed in; allows user to sign in
+      ui.start('#firebaseui-auth-container', uiConfig);
+    }
+  });
+
+  // Listen to the current Auth state
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      startRsvpButton.textContent = 'LOGOUT';
+      challenges.style.display = 'block';
+    } else {
+      startRsvpButton.textContent = 'RSVP';
+      challenges.style.display = 'none';
+    }
+  });
 
   // Display Challenges
   const c = query(collection(db, 'security-ctf-challenges'));
