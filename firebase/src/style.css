@@ -1,4 +1,4 @@
-@media all and (min-width:1200px){
+@media all and (min-width:1200px) {
     #app{
       max-width: 1000px;
       margin: 0 auto;
@@ -74,7 +74,7 @@ h2 {
     margin-bottom: 0px;
 }
   
-label{
+label {
     font-size: 18px;
 }
   
@@ -128,7 +128,7 @@ p {
     color: white;
 }
   
-input{
+input {
     border: none;
     border-bottom: 1px solid rgba(0,0,0,.12);
     font-size: 14px;
@@ -138,36 +138,36 @@ input{
     color: inherit;
 }
   
-button.clicked{
+button.clicked {
     background-color: rgb(60, 67, 154);
     border-color: rgb(60, 67, 154);
     color: white;
     outline-color: rgb(60, 67, 154);
 }
   
-button, button.firebaseui-id-submit.mdl-button--raised.mdl-button--colored{
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0);
-  border-color: rgb(60, 67, 154);
-  border-radius: 4px;
-  border-style: solid;
-  border-width: 1px;
-  box-shadow: none;
-  color: rgb(60, 67, 154);
-  cursor: default;
-  display: inline-flex;
-  font-family: Roboto, sans-serif;
-  font-size: 14px;
-  font-weight: bold;
-  height: 36px;
-  justify-content: center;
-  margin: 8px 16px;
-  outline-color: rgb(60, 67, 154);
-  overflow: hidden;
-  padding: 0px 15px;
-  position: relative;
-  text-align: center;
-  text-transform: uppercase;
-  vertical-align: middle;
+button, button.firebaseui-id-submit.mdl-button--raised.mdl-button--colored {
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0);
+    border-color: rgb(18, 194, 47);
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: none;
+    color: rgb(18, 194, 47);
+    cursor: default;
+    display: inline-flex;
+    font-family: Consolas, Courier, monospace;
+    font-size: 14px;
+    font-weight: bold;
+    height: 36px;
+    justify-content: center;
+    margin: 8px 16px;
+    outline-color: rgb(18, 194, 47);
+    overflow: hidden;
+    padding: 0px 15px;
+    position: relative;
+    text-align: center;
+    text-transform: uppercase;
+    vertical-align: middle;
 }
   
