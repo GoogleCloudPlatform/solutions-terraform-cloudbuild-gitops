@@ -17,7 +17,7 @@ module "vpc" {
   source  = "terraform-google-modules/network/google"
   version = "3.3.0"
 
-  project_id   = "${var.project}"
+  kubernetes-402212   = "${var.project}"
   network_name = "${var.env}"
 
   subnets = [
