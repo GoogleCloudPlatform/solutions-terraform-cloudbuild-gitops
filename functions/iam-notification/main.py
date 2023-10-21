@@ -20,18 +20,23 @@ def iam_notification(event, context):
             if old_binding == "no_old_binding": 
                 # no old binding hence report new binding as is
                 delta.append(new_binding)
-            else: 
+            else:
                 # compare against old binding and find new members
-                new_member = next(m for m in new_binding["members"] if m not in old_binding["members"])
-                delta.append({
-                    "members": [new_member],
-                    "role": new_binding["role"]
-                })
-    
-    print(f"Delta: {delta}")
-    assetType = message_json["asset"]["assetType"].split("/")[-1]
-    assetName = message_json["asset"]["name"].split("/")[-1]
-    send_slack_chat_notification(assetType, assetName, delta)
+                members = []
+                for new_member in new_binding["members"]:
+                    if new_member not in old_binding["members"]:
+                        members.append(new_member)
+                if members:
+                    delta.append({
+                        "members": members,
+                        "role": new_binding["role"]
+                    })
+                
+    if delta:
+        print(f"Delta: {delta}")
+        assetType = message_json["asset"]["assetType"].split("/")[-1]
+        assetName = message_json["asset"]["name"].split("/")[-1]
+        send_slack_chat_notification(assetType, assetName, delta)
         
 def send_slack_chat_notification(assetType, assetName, delta):
     try:
@@ -48,7 +53,7 @@ def send_slack_chat_notification(assetType, assetName, delta):
                     "fields": [
                         {
                             "type": "mrkdwn",
-                            "text": f"*{assetType}:*\n{assetName}"
+                            "text": f"*{assetType}:*{assetName}"
                         }
                     ]
                 }
@@ -60,7 +65,7 @@ def send_slack_chat_notification(assetType, assetName, delta):
                     "type": "divider"
                 }
             )
-            slack_message[3]["fields"].append(
+            slack_message.append(
                 {
                     "type": "section",
                     "fields": [
