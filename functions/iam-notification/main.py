@@ -53,7 +53,7 @@ def send_slack_chat_notification(assetType, assetName, delta):
                     "fields": [
                         {
                             "type": "mrkdwn",
-                            "text": f"*{assetType}:*{assetName}"
+                            "text": f"*{assetType}:* {assetName}"
                         }
                     ]
                 }
