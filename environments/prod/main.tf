@@ -1072,16 +1072,17 @@ resource "google_cloud_asset_organization_feed" "iam_policy_organization_feed" {
   }
 }
 
-# project whose identity will be used for sending the asset feed
-data "google_project" "feed_project" {
-  project_id = var.project
+resource "google_project_service_identity" "cloudasset_sa" {
+  provider  = google-beta
+  project   = var.project
+  service   = "cloudasset.googleapis.com"
 }
 
 resource "google_pubsub_topic_iam_member" "iam_policy_org_feed_writer" {
   project   = google_pubsub_topic.iam_notification_topic.project
   topic     = google_pubsub_topic.iam_notification_topic.name
   role      = "roles/pubsub.publisher"
-  member    = "serviceAccount:service-${data.google_project.feed_project.number}@gcp-sa-cloudasset.iam.gserviceaccount.com"
+  member    = "serviceAccount:${google_project_service_identity.cloudasset_sa.email}"
 }
 
 # topic where the iam-policy change notifications will be sent
