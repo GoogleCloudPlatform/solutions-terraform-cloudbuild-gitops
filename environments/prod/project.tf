@@ -25,3 +25,9 @@ resource "google_project_service" "bq_connection" {
   service = "bigqueryconnection.googleapis.com"
   disable_on_destroy = false
 }
+
+resource "google_project_service" "cloud_asset" {
+  project = var.project
+  service = "cloudasset.googleapis.com"
+  disable_on_destroy = false
+}
