@@ -52,24 +52,27 @@ def send_slack_chat_notification(assetType, assetName, delta):
                         }
                     ]
                 }
-                {
-                    "type": "divider"
-                },
-                {
-                    "type": "section",
-                    "fields": []
-                }
             ]
 
         for binding in delta:
-            slack_message[3].fields.append(
+            slack_message.append(
                 {
-                    "type": "mrkdwn",
-                    "text": f"*Members:*\n{binding["members"]}"
-                },
+                    "type": "divider"
+                }
+            )
+            slack_message[3]["fields"].append(
                 {
-                    "type": "mrkdwn",
-                    "text": f"*Role:*\n{binding["role"]}"
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": f"*Members:*\n{binding['members']}"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": f"*Role:*\n{binding['role']}"
+                        }
+                    ]
                 }
             )
     

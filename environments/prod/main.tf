@@ -1081,7 +1081,7 @@ resource "google_pubsub_topic_iam_member" "iam_policy_org_feed_writer" {
   project   = google_pubsub_topic.iam_notification_topic.project
   topic     = google_pubsub_topic.iam_notification_topic.name
   role      = "roles/pubsub.publisher"
-  member    = "serviceAccount:service-${google_project.feed_project.number}@gcp-sa-cloudasset.iam.gserviceaccount.com"
+  member    = "serviceAccount:service-${data.google_project.feed_project.number}@gcp-sa-cloudasset.iam.gserviceaccount.com"
 }
 
 # topic where the iam-policy change notifications will be sent
