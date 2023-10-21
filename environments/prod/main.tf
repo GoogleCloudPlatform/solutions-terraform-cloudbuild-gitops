@@ -1043,13 +1043,82 @@ resource "google_secret_manager_secret" "slack_identity_bot_token" {
 }
 
 # IAM entry for service account of identity-notification function to use the slack bot token
-resource "google_secret_manager_secret_iam_binding" "identity_bot_token_binding" {
+resource "google_secret_manager_secret_iam_member" "identity_bot_token_binding" {
   project   = google_secret_manager_secret.slack_identity_bot_token.project
   secret_id = google_secret_manager_secret.slack_identity_bot_token.secret_id
   role      = "roles/secretmanager.secretAccessor"
-  members    = [
-      "serviceAccount:${module.identity-notification-cloud-function.sa-email}",
+  member    = "serviceAccount:${module.identity-notification-cloud-function.sa-email}"
+}
+
+###########################################
+## IAM Policy Grant Alerts to Slack Demo ##
+###########################################
+
+# feed that sends notifications about iam-policy updates under the org
+resource "google_cloud_asset_organization_feed" "iam_policy_organization_feed" {
+  billing_project   = var.project
+  org_id            = var.organization
+  feed_id           = "iam-policy-organization-feed"
+  content_type      = "IAM_POLICY"
+
+  asset_types = [
+    "cloudresourcemanager.*"
   ]
+
+  feed_output_config {
+    pubsub_destination {
+      topic = google_pubsub_topic.iam_notification_topic.id
+    }
+  }
+}
+
+# project whose identity will be used for sending the asset feed
+data "google_project" "feed_project" {
+  project_id = var.project
+}
+
+resource "google_pubsub_topic_iam_member" "iam_policy_org_feed_writer" {
+  project   = google_pubsub_topic.iam_notification_topic.project
+  topic     = google_pubsub_topic.iam_notification_topic.name
+  role      = "roles/pubsub.publisher"
+  member    = "serviceAccount:service-${google_project.feed_project.number}@gcp-sa-cloudasset.iam.gserviceaccount.com"
+}
+
+# topic where the iam-policy change notifications will be sent
+resource "google_pubsub_topic" "iam_notification_topic" {
+  project   = var.project
+  name      = "iam-notification-topic"
+}
+
+module "iam_notification_cloud_function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "iam-notification"
+    function-desc   = "triggered by iam-notification-topic, communicates iam policy grant actions"
+    entry-point     = "iam_notification"
+    env-vars        = {
+        SLACK_CHANNEL = var.slack_secops_channel,
+    }
+    secrets         = [
+        {
+            key = "SLACK_ACCESS_TOKEN"
+            id  = google_secret_manager_secret.slack_identity_bot_token.secret_id
+        }
+    ]
+    triggers        = [
+        {
+            event_type  = "google.pubsub.topic.publish"
+            resource    = google_pubsub_topic.iam_notification_topic.id
+        }
+    ]
+}
+
+# IAM entry for service account of iam-notification function to use the slack bot token
+resource "google_secret_manager_secret_iam_member" "iam_bot_token_binding" {
+  project   = google_secret_manager_secret.slack_identity_bot_token.project
+  secret_id = google_secret_manager_secret.slack_identity_bot_token.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${module.iam_notification_cloud_function.sa-email}"
 }
 
 #######################
