@@ -69,18 +69,18 @@ def security_ctf_player(request):
                         result = "Congratulations! You got the right answer!"
                         challenge_score = int(challenge_doc.get('full_score'))
                 
-                ################### update challenge score ##########
+                ################### update challenge score ####################
                 player_ref.update({
                     f"{challenge_id}.resp_time": firestore.SERVER_TIMESTAMP,
                     f"{challenge_id}.answer": event['option_id'],
                     f"{challenge_id}.score": challenge_score
                 })
                 
-                ################### update total score ##############
+                ################### update total score ########################
                 total_score += challenge_score
                 player_ref.update({"total_score": total_score})
 
-                ################### announce challenge result ##############
+                ################### announce challenge result #################
                 slack_message = {
                     "text": f"{result}\n",
                     "blocks": [ 
@@ -119,7 +119,7 @@ def security_ctf_player(request):
                 response = requests.post(event['response_url'], data=json.dumps(slack_message), headers={'Content-Type': 'application/json'})
                 print(f"Game: {event['game_name']}, Challenge: {event['challenge_id']} for Player: {event['player_id']} announced with Status Code: {response.status_code}")
 
-                ################### send next challenge and update database ##############
+                ################### send next challenge interstitial ##############
                 if challenge_id < last_challenge:
                     next_challenge = "ch{:02d}".format(int(challenge_id[-2:]) + 1)
                     slack_message = [
@@ -165,19 +165,19 @@ def security_ctf_player(request):
                 response_code   = announce_game_end(event['game_name'], event['player_id'], total_score)
                 info            = f"Game: {event['game_name']} End for Player: {event['player_id']} responded with Status Code: {response_code}"
 
-        ################### serve hint and update database ##############
+        ################### serve challenge and update database ###############
         elif event['action'] == "hint" or event['action'] == "serve":
             if game_doc.get("state") == "Started":
                 hint_taken = True if event['action'] == "hint" else False   
                 info = f"Serving Game: {event['game_name']}, Challenge: {event['challenge_id']} for Player: {event['player_id']} Hint: {hint_taken}"
-                if send_slack_challenge(event['game_name'], event['player_id'], event['challenge_id'], hint_taken):
+                if send_slack_challenge(event['response_url'], event['game_name'], event['challenge_id'], hint_taken):
                     if hint_taken:
                         player_ref.update({
                             f"{event['challenge_id']}.hint_taken": hint_taken
                         })
                     else:
                         player_ref.update({
-                            next_challenge: {
+                            event['challenge_id']: {
                                 "start_time": firestore.SERVER_TIMESTAMP,
                                 "hint_taken": False
                             },
@@ -199,7 +199,7 @@ def security_ctf_player(request):
     }
     return json.dumps(data), 200, {'Content-Type': 'application/json'}
 
-def send_slack_challenge(game_name, player_id, challenge_id, hint_taken):
+def send_slack_challenge(response_url, game_name, challenge_id, hint_taken):
     try:
         challenge_doc   = db.collection(challenges_collection).document(challenge_id).get()
         time_limit      = int(challenge_doc.get('time_limit'))
@@ -210,7 +210,7 @@ def send_slack_challenge(game_name, player_id, challenge_id, hint_taken):
         else:
             time_message    = f"There's no time limit for this question, so take your time!"
 
-        slack_message = [
+        message_blocks = [
                 {
                     "type": "header",
                     "text": {
@@ -261,7 +261,7 @@ def send_slack_challenge(game_name, player_id, challenge_id, hint_taken):
         for option in range(1, 5):
             option_id = f"option_{option}"
             option_desc = challenge_doc.get(f"{option_id}")
-            slack_message.append({
+            message_blocks.append({
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
@@ -278,7 +278,7 @@ def send_slack_challenge(game_name, player_id, challenge_id, hint_taken):
                 }
 		    })
         if hint_taken:
-            slack_message.extend([{
+            message_blocks.extend([{
                 "type": "divider"
             },
             {
@@ -289,7 +289,7 @@ def send_slack_challenge(game_name, player_id, challenge_id, hint_taken):
                 }
             }])
         else:
-            slack_message.extend([{
+            message_blocks.extend([{
                 "type": "divider"
             },
             {
@@ -314,13 +314,12 @@ def send_slack_challenge(game_name, player_id, challenge_id, hint_taken):
                 ]
             }])
 
-        slack_token = os.environ.get('SLACK_ACCESS_TOKEN', 'Specified environment variable is not set.')
-        response = requests.post("https://slack.com/api/chat.postMessage", data={
-            "token": slack_token,
-            "channel": player_id,
-            "text": f"Challenge {challenge_doc.get('name')}",
-            "blocks": json.dumps(slack_message)
-        })
+        slack_message = {
+            "text": f"Serving Game: {game_name}, Challenge: {challenge_id} Hint: {hint_taken}",
+            "blocks": message_blocks
+        }
+
+        response = requests.post(response_url, data=json.dumps(slack_message), headers={'Content-Type': 'application/json'})
         print(f"Slack responded with Status Code: {response.status_code}")
         return True
     except Exception as e:
