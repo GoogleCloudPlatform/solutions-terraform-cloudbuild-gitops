@@ -1265,7 +1265,6 @@ module "secuity_ctf_player_cloud_function" {
         PROJECT_NAME            = var.project
         GAMES_COLLECTION        = var.games_collection
         CHALLENGES_COLLECTION   = var.challenges_collection
-        TIME_LIMIT              = var.time_limit
         LAST_CHALLENGE          = var.last_challenge
     }
     secrets         = [

@@ -9,7 +9,6 @@ from google.cloud import firestore
 PROJECT_NAME = os.environ.get('PROJECT_NAME')
 games_collection = os.environ.get('GAMES_COLLECTION')
 challenges_collection = os.environ.get('CHALLENGES_COLLECTION')
-time_limit = int(os.environ.get('TIME_LIMIT', '600'))
 last_challenge = os.environ.get('LAST_CHALLENGE')
 db = firestore.Client(project=PROJECT_NAME)
 
@@ -54,92 +53,111 @@ def security_ctf_player(request):
                 challenge_id = event['challenge_id']
                 challenge_doc = db.collection(challenges_collection).document(challenge_id).get()
 
-                if challenge_id > "ch00":
-                    challenge_score = 0
-                    total_score     = player_doc.get('total_score')
-                    result          = "You've got it wrong baby! Better luck in the next one."
-                    
-                    ################### compute challenge score ###################
-                    if datetime.now().timestamp() - player_doc.get(f"{challenge_id}.start_time").timestamp_pb().seconds > time_limit:
-                        result = "Sorry, we didn't receive your response within 10 mins."
-                    else:
-                        if event['option_id'] == challenge_doc.get('answer') and player_doc.get(f"{challenge_id}.hint_taken"):
-                            result = "Congratulations! You answered correctly but with a hint!"
-                            challenge_score = 5
-                        elif event['option_id'] == challenge_doc.get('answer') and not player_doc.get(f"{challenge_id}.hint_taken"):
-                            result = "Congratulations! You got the right answer!"
-                            challenge_score = 10
-                    
-                    ################### update challenge score ##########
-                    player_ref.update({
-                        f"{challenge_id}.resp_time": firestore.SERVER_TIMESTAMP,
-                        f"{challenge_id}.answer": event['option_id'],
-                        f"{challenge_id}.score": challenge_score
-                    })
-                    
-                    ################### update total score ##############
-                    total_score += challenge_score
-                    player_ref.update({"total_score": total_score})
-
-                    ################### announce challenge result ##############
-                    slack_message = {
-                        "text": f"{result}\n",
-                        "blocks": [ 
-                            {
-                                "type": "header",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": f"Challenge: {challenge_doc.get('name')}"
-                                }
-                            },
-                            {
-                                "type": "divider"
-                            },
-                            {
-                                "type": "section",
-                                "text": {
-                                    "type": "mrkdwn",
-                                    "text": f"{result}\n"
-                                }
-                            },
-                            {
-                                "type": "section",
-                                "fields": [
-                                    {
-                                        "type": "mrkdwn",
-                                        "text": f"*Level:*\n{challenge_doc.get('category')}"
-                                    },
-                                    {
-                                        "type": "mrkdwn",
-                                        "text": f"*Score:*\n{challenge_score}"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                    response = requests.post(event['response_url'], data=json.dumps(slack_message), headers={'Content-Type': 'application/json'})
-                    print(f"Game: {event['game_name']}, Challenge: {event['challenge_id']} for Player: {event['player_id']} announced with Status Code: {response.status_code}")
-
-                    ################### end game and announce game score ##############
-                    if challenge_id == last_challenge:
-                        response_code = announce_game_end(event['game_name'], event['player_id'], total_score)
-                        info = f"Game: {event['game_name']} End for Player: {event['player_id']} responded with Status Code: {response_code}"
-                        player_ref.update({
-                            "current_challenge": "Completed!"
-                        })
+                challenge_score = 0
+                total_score     = player_doc.get('total_score')
+                result          = "You've got it wrong baby! Better luck in the next one."
                 
+                ################### compute challenge score ###################
+                time_limit = int(challenge_doc.get('time_limit'))
+                if time_limit > 0 and datetime.now().timestamp() - player_doc.get(f"{challenge_id}.start_time").timestamp_pb().seconds > time_limit*60:
+                    result = f"Sorry, we didn't receive your response within {time_limit} mins."
+                else:
+                    if event['option_id'] == challenge_doc.get('answer') and player_doc.get(f"{challenge_id}.hint_taken"):
+                        result = "Congratulations! You answered correctly but with a hint!"
+                        challenge_score = int(challenge_doc.get('hint_score'))
+                    elif event['option_id'] == challenge_doc.get('answer') and not player_doc.get(f"{challenge_id}.hint_taken"):
+                        result = "Congratulations! You got the right answer!"
+                        challenge_score = int(challenge_doc.get('full_score'))
+                
+                ################### update challenge score ##########
+                player_ref.update({
+                    f"{challenge_id}.resp_time": firestore.SERVER_TIMESTAMP,
+                    f"{challenge_id}.answer": event['option_id'],
+                    f"{challenge_id}.score": challenge_score
+                })
+                
+                ################### update total score ##############
+                total_score += challenge_score
+                player_ref.update({"total_score": total_score})
+
+                ################### announce challenge result ##############
+                slack_message = {
+                    "text": f"{result}\n",
+                    "blocks": [ 
+                        {
+                            "type": "header",
+                            "text": {
+                                "type": "plain_text",
+                                "text": f"Challenge: {challenge_doc.get('name')}"
+                            }
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "section",
+                            "text": {
+                                "type": "mrkdwn",
+                                "text": f"{result}\n"
+                            }
+                        },
+                        {
+                            "type": "section",
+                            "fields": [
+                                {
+                                    "type": "mrkdwn",
+                                    "text": f"*Level:*\n{challenge_doc.get('category')}"
+                                },
+                                {
+                                    "type": "mrkdwn",
+                                    "text": f"*Score:*\n{challenge_score}"
+                                }
+                            ]
+                        }
+                    ]
+                }
+                response = requests.post(event['response_url'], data=json.dumps(slack_message), headers={'Content-Type': 'application/json'})
+                print(f"Game: {event['game_name']}, Challenge: {event['challenge_id']} for Player: {event['player_id']} announced with Status Code: {response.status_code}")
+
                 ################### send next challenge and update database ##############
                 if challenge_id < last_challenge:
                     next_challenge = "ch{:02d}".format(int(challenge_id[-2:]) + 1)
-                    info = f"Serving Game: {event['game_name']}, Challenge: {next_challenge} for Player: {event['player_id']} "
-                    if send_slack_challenge(event['game_name'], event['player_id'], next_challenge, False):
-                        player_ref.update({
-                            next_challenge: {
-                                "start_time": firestore.SERVER_TIMESTAMP,
-                                "hint_taken": False
-                            },
-                            "current_challenge": next_challenge[-2:]
-                        })
+                    slack_message = [
+                        {
+                            "type": "header",
+                            "text": {
+                                "type": "plain_text",
+                                "text": f"Security CTF: {event['game_name']}"
+                            }
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "actions",
+                            "elements": [
+                                {
+                                    "type": "button",
+                                    "text": {
+                                        "type": "plain_text",
+                                        "emoji": True,
+                                        "text": f"Serve {next_challenge}"
+                                    },
+                                    "style": "primary",
+                                    "value": f"type=player+game_name={event['game_name']}+action=serve+challenge_id={next_challenge}",
+                                }
+                            ]
+                        }
+                    ]
+                    response_code = post_slack_message(event['player_id'], info, slack_message)
+                    info = f"Game: {event['game_name']}, Interstitial: {next_challenge} for Player: {event['player_id']} served with Status Code: {response_code}"
+                ################### end game and announce game score ##############
+                else:
+                    response_code = announce_game_end(event['game_name'], event['player_id'], total_score)
+                    info = f"Game: {event['game_name']} End for Player: {event['player_id']} responded with Status Code: {response_code}"
+                    player_ref.update({
+                        "current_challenge": "Completed!"
+                    })   
             
             ################### end game and announce game score ##############
             else:
@@ -148,13 +166,23 @@ def security_ctf_player(request):
                 info            = f"Game: {event['game_name']} End for Player: {event['player_id']} responded with Status Code: {response_code}"
 
         ################### serve hint and update database ##############
-        elif event['action'] == "hint":
-            if game_doc.get("state") == "Started":    
-                info = f"Serving Game: {event['game_name']}, Challenge: {event['challenge_id']} for Player: {event['player_id']} Hint: {event['challenge_id']}"
-                if send_slack_challenge(event['game_name'], event['player_id'], event['challenge_id'], True):
-                    player_ref.update({
-                        f"{event['challenge_id']}.hint_taken": True
-                    })
+        elif event['action'] == "hint" or event['action'] == "serve":
+            if game_doc.get("state") == "Started":
+                hint_taken = True if event['action'] == "hint" else False   
+                info = f"Serving Game: {event['game_name']}, Challenge: {event['challenge_id']} for Player: {event['player_id']} Hint: {hint_taken}"
+                if send_slack_challenge(event['game_name'], event['player_id'], event['challenge_id'], hint_taken):
+                    if hint_taken:
+                        player_ref.update({
+                            f"{event['challenge_id']}.hint_taken": hint_taken
+                        })
+                    else:
+                        player_ref.update({
+                            next_challenge: {
+                                "start_time": firestore.SERVER_TIMESTAMP,
+                                "hint_taken": False
+                            },
+                            "current_challenge": event['challenge_id'][-2:]
+                        })
             
             ################### end game and announce game score ##############
             else:
@@ -173,8 +201,14 @@ def security_ctf_player(request):
 
 def send_slack_challenge(game_name, player_id, challenge_id, hint_taken):
     try:
-        reply_by = (datetime.now(timezone("Asia/Kolkata"))+ timedelta(minutes = 10)).strftime('%H:%M:%S')
-        challenge_doc = db.collection(challenges_collection).document(challenge_id).get()
+        challenge_doc   = db.collection(challenges_collection).document(challenge_id).get()
+        time_limit      = int(challenge_doc.get('time_limit'))
+        
+        if time_limit > 0:
+            reply_by        = (datetime.now(timezone("Asia/Kolkata"))+ timedelta(minutes = time_limit)).strftime('%H:%M:%S')
+            time_message    = f"To score points, answer this question within {time_limit} mins by {reply_by} IST!"
+        else:
+            time_message    = f"There's no time limit for this question, so take your time!"
 
         slack_message = [
                 {
@@ -209,7 +243,7 @@ def send_slack_challenge(game_name, player_id, challenge_id, hint_taken):
                         },
                         {
                             "type": "mrkdwn",
-                            "text": f"To score points, answer this question within 10 mins by {reply_by} IST"
+                            "text": time_message
                         }
                     ]
                 },
@@ -327,6 +361,16 @@ def announce_game_end(game_name, player_id, total_score):
         "token": slack_token,
         "channel": player_id,
         "text": f"End of CTF: {game_name}",
+        "blocks": json.dumps(slack_message)
+    })
+    return response.status_code
+
+def post_slack_message(slack_channel, slack_text, slack_message):
+    slack_token = os.environ.get('SLACK_ACCESS_TOKEN', 'Specified environment variable is not set.')
+    response = requests.post("https://slack.com/api/chat.postMessage", data={
+        "token": slack_token,
+        "channel": slack_channel,
+        "text": slack_text,
         "blocks": json.dumps(slack_message)
     })
     return response.status_code

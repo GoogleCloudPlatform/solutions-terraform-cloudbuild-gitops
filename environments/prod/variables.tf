@@ -97,10 +97,6 @@ variable "games_collection" {
   type        = string
 }
 
-variable "time_limit" {
-  type        = string
-}
-
 variable "last_challenge" {
   type        = string
 }

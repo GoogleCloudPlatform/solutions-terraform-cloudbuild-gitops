@@ -235,8 +235,8 @@ def security_ctf(request):
                                 "emoji": True,
                                 "text": "Play"
                             },
-                            "style": "danger",
-                            "value": f"type=player+game_name={input_text[2]}+action=play+option_id=option_0+challenge_id=ch00",
+                            "style": "primary",
+                            "value": f"type=player+game_name={input_text[2]}+action=serve+challenge_id=ch01",
                             "confirm": {
                                 "title": {
                                     "type": "plain_text",
@@ -394,6 +394,7 @@ def security_ctf(request):
                         ]
                     })
                 return post_slack_response(response_json['response_url'], slack_message)
+            ################### process response and compute score ###################
             elif action_type == "player" and action == "play":
                 game_name = value.split("game_name=")[1].split("+")[0]
                 option_id = value.split("option_id=")[1].split("+")[0]
@@ -415,11 +416,12 @@ def security_ctf(request):
                 return {
                     'statusCode': response.status_code
                 }
-            elif action_type == "player" and action == "hint":
+            ################### serve challenge with or without hint ###################
+            elif (action_type == "player") and (action == "hint" or action == "serve"):
                 game_name = value.split("game_name=")[1].split("+")[0]
                 challenge_id = value.split("challenge_id=")[1].split("+")[0]
                 
-                slack_ack(response_json['response_url'], "Hey, _CTF commando_, your hint is being served!")
+                slack_ack(response_json['response_url'], "Hey, _CTF commando_, your challenge is being served!")
                 print(f"{action}ing Game: {game_name} as requested by: {response_json['user']['name']}")
                 
                 http_endpoint = f"https://{deployment_region}-{deployment_project}.cloudfunctions.net/security-ctf-player"
@@ -428,8 +430,7 @@ def security_ctf(request):
                     "game_name": game_name,
                     "action": action,
                     "challenge_id": challenge_id,
-                    "response_url": response_json['response_url'],
-                    "thread_ts": response_json['container']['message_ts']
+                    "response_url": response_json['response_url']
                 }
                 response = call_function(http_endpoint, player_payload)
                 return {
