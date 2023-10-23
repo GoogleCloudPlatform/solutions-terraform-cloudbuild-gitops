@@ -31,7 +31,7 @@ def security_ctf_player(request):
                 if game_doc.get("state") == "Started":
                     player_doc = player_ref.get()
                     if player_doc.exists:
-                        info = f"You're already enrolled in the game.\nPress the Play button to begin!"
+                        info = f"You're already enrolled in the game. Press the Play button to begin!"
                     else:
                         print(f"Enrolling Player: {event['player_name']}, {event['player_id']} to Game: {event['game_name']}")
                         player_ref.set({
@@ -42,11 +42,11 @@ def security_ctf_player(request):
                         })
                         info = f"This ain't a game for the faint hearted!\nPress the Play button when you're ready."
                 elif game_doc.get("state") == "Ended":
-                    info = f"Sorry, this game has already ended!"
+                    info = "Sorry, this game has already ended!\n"
                 else:
-                    info = f"Game is yet to begin!"
+                    info = "Sorry, this game is yet to begin!\n"
             else:
-                info = f"Invalid game code!\nCodes are case-sensitive."
+                info = f"Invalid game code! Remember, game codes are case-sensitive."
         elif event['action'] == "play":
             player_doc  = player_ref.get()
             if game_doc.get("state") == "Started":
@@ -83,7 +83,7 @@ def security_ctf_player(request):
 
                 ################### announce challenge result #################
                 slack_message = {
-                    "text": f"{result}\n",
+                    "text": f"{result}",
                     "blocks": [ 
                         {
                             "type": "header",
@@ -209,11 +209,15 @@ def send_slack_challenge(response_url, game_name, challenge_id, hint_taken, play
             if hint_taken:
                 player_doc  = player_ref.get()
                 reply_by    = (datetime.fromtimestamp(player_doc.get(f"{challenge_id}.start_time").timestamp_pb().seconds) + timedelta(minutes = time_limit)).astimezone(timezone('Asia/Kolkata')).strftime('%H:%M:%S')
+                time_message    = f"To score {challenge_doc.get('hint_score')} points, answer this question within {time_limit} mins by {reply_by} IST!"
             else:
                 reply_by    = (datetime.now(timezone("Asia/Kolkata"))+ timedelta(minutes = time_limit)).strftime('%H:%M:%S')
-            time_message    = f"To score the full {challenge_doc.get('full_score')} points, answer this question within {time_limit} mins by {reply_by} IST!"
+                time_message    = f"To score {challenge_doc.get('full_score')} points, answer this question within {time_limit} mins by {reply_by} IST!"
         else:
-            time_message    = f"There's no time limit for this question, so take your time!"
+            if hint_taken:
+                time_message    = f"There's no time limit for this question, so take your time and score {challenge_doc.get('hint_score')} points!"
+            else:
+                time_message    = f"There's no time limit for this question, so take your time and score {challenge_doc.get('full_score')} points!"
 
         message_blocks = [
                 {
@@ -230,7 +234,7 @@ def send_slack_challenge(response_url, game_name, challenge_id, hint_taken, play
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": f"{challenge_doc.get('description')}\n{challenge_doc.get('task')}"
+                        "text": f"*Scenario:* {challenge_doc.get('description')}\n\n*Task:* {challenge_doc.get('task')}"
                     },
                     "accessory": {
                         "type": "image",
@@ -290,7 +294,7 @@ def send_slack_challenge(response_url, game_name, challenge_id, hint_taken, play
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"*Hint:*\n{challenge_doc.get('hint')}"
+                    "text": f"*Hint:* {challenge_doc.get('hint')}"
                 }
             }])
         else:
@@ -355,10 +359,17 @@ def announce_game_end(game_name, player_id, total_score):
             "fields": [
                 {
                     "type": "mrkdwn",
-                    "text": f"*Total Score:*\n{total_score}"
+                    "text": f"*Total Score:* {total_score}"
                 }
             ]
-        }
+        },
+        {
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "Check out the *Leaderboard <https://secops-project-348011.web.app/|here>*"
+			}
+		}
     ]
     slack_token = os.environ.get('SLACK_ACCESS_TOKEN', 'Specified environment variable is not set.')
     response = requests.post("https://slack.com/api/chat.postMessage", data={

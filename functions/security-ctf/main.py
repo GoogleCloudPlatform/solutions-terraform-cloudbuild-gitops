@@ -201,7 +201,7 @@ def security_ctf(request):
                 # compose message to respond back to the player
                 display_text = function_response_json['info']
                 if not function_response_json['info'].startswith("This"):
-                    display_text += f"\nPlease ping <@{slack_admin}>"
+                    display_text += f"\nPlease ping <@{slack_admin}> for any help."
 
                 slack_message = [
                     {
