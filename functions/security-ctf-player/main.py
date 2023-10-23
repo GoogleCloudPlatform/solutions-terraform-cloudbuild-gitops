@@ -20,7 +20,7 @@ def security_ctf_player(request):
     game_doc    = game_ref.get()
             
     try:
-        info = "Do nothing!"
+        info = ":wave:"
         
         ###################
         ## Enroll Action ##
@@ -31,7 +31,7 @@ def security_ctf_player(request):
                 if game_doc.get("state") == "Started":
                     player_doc = player_ref.get()
                     if player_doc.exists:
-                        info = f"You're already enrolled in the game. Press the Play button to begin!"
+                        info = f"You're already enrolled in the game. :face_with_rolling_eyes:\nPress the Play button to begin!"
                     else:
                         print(f"Enrolling Player: {event['player_name']}, {event['player_id']} to Game: {event['game_name']}")
                         player_ref.set({
@@ -40,13 +40,13 @@ def security_ctf_player(request):
                             "total_score": 0,
                             "current_challenge": "Accepted!"
                         })
-                        info = f"This ain't a game for the faint hearted!\nPress the Play button when you're ready."
+                        info = f"This ain't a game for the faint hearted! :sunglasses:\nPress the Play button when you're ready to take off. :airplane:"
                 elif game_doc.get("state") == "Ended":
-                    info = "Sorry, this game has already ended!\n"
+                    info = ":x: Sorry, this game has already ended! Keep an eye out for the next game. :eyes:"
                 else:
-                    info = "Sorry, this game is yet to begin!\n"
+                    info = ":warning: Sorry, this game is yet to begin! Keep an eye out for the announcement. :eyes:"
             else:
-                info = f"Invalid game code! Remember, game codes are case-sensitive."
+                info = f":exclamation: Invalid game code! Remember, game codes are case-sensitive. :capital_abcd:"
         elif event['action'] == "play":
             player_doc  = player_ref.get()
             if game_doc.get("state") == "Started":
@@ -55,18 +55,18 @@ def security_ctf_player(request):
 
                 challenge_score = 0
                 total_score     = player_doc.get('total_score')
-                result          = "You've got it wrong baby! Better luck in the next one."
+                result          = ":thumbsdown: You've got it wrong baby! Better luck in the next one. :thumbsup:"
                 
                 ################### compute challenge score ###################
                 time_limit = int(challenge_doc.get('time_limit'))
                 if time_limit > 0 and datetime.now().timestamp() - player_doc.get(f"{challenge_id}.start_time").timestamp_pb().seconds > time_limit*60:
-                    result = f"Sorry, we didn't receive your response within {time_limit} mins."
+                    result = f":x: Sorry, we didn't receive your response within {time_limit} mins. :cry:"
                 else:
                     if event['option_id'] == challenge_doc.get('answer') and player_doc.get(f"{challenge_id}.hint_taken"):
-                        result = "Congratulations! You answered correctly but with a hint!"
+                        result = ":tada::tada: Congratulations! You answered correctly but with a hint. :clap:"
                         challenge_score = int(challenge_doc.get('hint_score'))
                     elif event['option_id'] == challenge_doc.get('answer') and not player_doc.get(f"{challenge_id}.hint_taken"):
-                        result = "Congratulations! You got the right answer!"
+                        result = ":boom::boom: Congratulations! Full marks for your right answer! :muscle:"
                         challenge_score = int(challenge_doc.get('full_score'))
                 
                 ################### update challenge score ####################
@@ -107,11 +107,11 @@ def security_ctf_player(request):
                             "fields": [
                                 {
                                     "type": "mrkdwn",
-                                    "text": f"*Level:*\n{challenge_doc.get('category')}"
+                                    "text": f"*Level:* {challenge_doc.get('category')}"
                                 },
                                 {
                                     "type": "mrkdwn",
-                                    "text": f"*Score:*\n{challenge_score}"
+                                    "text": f"*Score:* {challenge_score}"
                                 }
                             ]
                         }
@@ -209,22 +209,22 @@ def send_slack_challenge(response_url, game_name, challenge_id, hint_taken, play
             if hint_taken:
                 player_doc  = player_ref.get()
                 reply_by    = (datetime.fromtimestamp(player_doc.get(f"{challenge_id}.start_time").timestamp_pb().seconds) + timedelta(minutes = time_limit)).astimezone(timezone('Asia/Kolkata')).strftime('%H:%M:%S')
-                time_message    = f"To score {challenge_doc.get('hint_score')} points, answer this question within {time_limit} mins by {reply_by} IST!"
+                time_message    = f"To score {challenge_doc.get('hint_score')} points, answer this question within {time_limit} mins by {reply_by} IST! :hourglass_flowing_sand:"
             else:
                 reply_by    = (datetime.now(timezone("Asia/Kolkata"))+ timedelta(minutes = time_limit)).strftime('%H:%M:%S')
-                time_message    = f"To score {challenge_doc.get('full_score')} points, answer this question within {time_limit} mins by {reply_by} IST!"
+                time_message    = f"To score {challenge_doc.get('full_score')} points, answer this question within {time_limit} mins by {reply_by} IST! :hourglass_flowing_sand:"
         else:
             if hint_taken:
-                time_message    = f"There's no time limit for this question, so take your time and score {challenge_doc.get('hint_score')} points!"
+                time_message    = f"There's no time limit for this question, so take your time and score {challenge_doc.get('hint_score')} points! :relaxed:"
             else:
-                time_message    = f"There's no time limit for this question, so take your time and score {challenge_doc.get('full_score')} points!"
+                time_message    = f"There's no time limit for this question, so take your time and score {challenge_doc.get('full_score')} points! :relaxed:"
 
         message_blocks = [
                 {
                     "type": "header",
                     "text": {
                         "type": "plain_text",
-                        "text": f"New Challenge: {challenge_doc.get('name')}!"
+                        "text": f":mega: New Challenge: {challenge_doc.get('name')}!"
                     }
                 },
                 {
@@ -234,7 +234,7 @@ def send_slack_challenge(response_url, game_name, challenge_id, hint_taken, play
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": f"*Scenario:* {challenge_doc.get('description')}\n\n*Task:* {challenge_doc.get('task')}"
+                        "text": f"*Scenario:* {challenge_doc.get('description')} :bomb:\n\n*Task:* {challenge_doc.get('task')} :male-detective:"
                     },
                     "accessory": {
                         "type": "image",
@@ -263,7 +263,7 @@ def send_slack_challenge(response_url, game_name, challenge_id, hint_taken, play
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": "*Select your answer:*"
+                        "text": "*Select your answer:* :mag:"
                     }
                 }
             ]
@@ -305,7 +305,7 @@ def send_slack_challenge(response_url, game_name, challenge_id, hint_taken, play
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"You can opt to take a hint. A correct answer with a hint gets you only {challenge_doc.get('hint_score')} points."
+                    "text": f":pushpin: You can opt to take a hint. But a correct answer with a hint gets you only {challenge_doc.get('hint_score')} points. :neutral_face:"
                 }
             },
             {
@@ -351,7 +351,7 @@ def announce_game_end(game_name, player_id, total_score):
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "Congratulations! You've reached the end of the CTF.\n"
+                "text": ":star2::star2: Congratulations! You've reached the end of the CTF. :face_with_cowboy_hat:\n"
             }
         },
         {
@@ -367,7 +367,7 @@ def announce_game_end(game_name, player_id, total_score):
 			"type": "section",
 			"text": {
 				"type": "mrkdwn",
-				"text": "Check out the *Leaderboard <https://secops-project-348011.web.app/|here>*"
+				"text": ":checkered_flag: Check out the *Leaderboard <https://secops-project-348011.web.app/|here>*"
 			}
 		}
     ]
