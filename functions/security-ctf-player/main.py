@@ -71,6 +71,7 @@ def security_ctf_player(request):
                 
                 ################### update challenge score ####################
                 player_ref.update({
+                    "current_challenge": f"Solved {challenge_id}",                    
                     f"{challenge_id}.resp_time": firestore.SERVER_TIMESTAMP,
                     f"{challenge_id}.answer": event['option_id'],
                     f"{challenge_id}.score": challenge_score
@@ -141,7 +142,7 @@ def security_ctf_player(request):
                                     "text": {
                                         "type": "plain_text",
                                         "emoji": True,
-                                        "text": f"Serve {next_challenge}"
+                                        "text": f"Serve Challenge {next_challenge[-2:]}"
                                     },
                                     "style": "primary",
                                     "value": f"type=player+game_name={event['game_name']}+action=serve+challenge_id={next_challenge}",
@@ -170,7 +171,7 @@ def security_ctf_player(request):
             if game_doc.get("state") == "Started":
                 hint_taken = True if event['action'] == "hint" else False   
                 info = f"Serving Game: {event['game_name']}, Challenge: {event['challenge_id']} for Player: {event['player_id']} Hint: {hint_taken}"
-                if send_slack_challenge(event['response_url'], event['game_name'], event['challenge_id'], hint_taken):
+                if send_slack_challenge(event['response_url'], event['game_name'], event['challenge_id'], hint_taken, player_ref):
                     if hint_taken:
                         player_ref.update({
                             f"{event['challenge_id']}.hint_taken": hint_taken
@@ -181,7 +182,7 @@ def security_ctf_player(request):
                                 "start_time": firestore.SERVER_TIMESTAMP,
                                 "hint_taken": False
                             },
-                            "current_challenge": event['challenge_id'][-2:]
+                            "current_challenge": f"Solving {event['challenge_id'][-2:]}"
                         })
             
             ################### end game and announce game score ##############
@@ -199,14 +200,18 @@ def security_ctf_player(request):
     }
     return json.dumps(data), 200, {'Content-Type': 'application/json'}
 
-def send_slack_challenge(response_url, game_name, challenge_id, hint_taken):
+def send_slack_challenge(response_url, game_name, challenge_id, hint_taken, player_ref):
     try:
         challenge_doc   = db.collection(challenges_collection).document(challenge_id).get()
         time_limit      = int(challenge_doc.get('time_limit'))
         
         if time_limit > 0:
-            reply_by        = (datetime.now(timezone("Asia/Kolkata"))+ timedelta(minutes = time_limit)).strftime('%H:%M:%S')
-            time_message    = f"To score points, answer this question within {time_limit} mins by {reply_by} IST!"
+            if hint_taken:
+                player_doc  = player_ref.get()
+                reply_by    = (datetime.fromtimestamp(player_doc.get(f"{challenge_id}.start_time").timestamp_pb().seconds) + timedelta(minutes = time_limit)).astimezone(timezone('Asia/Kolkata')).strftime('%H:%M:%S')
+            else:
+                reply_by    = (datetime.now(timezone("Asia/Kolkata"))+ timedelta(minutes = time_limit)).strftime('%H:%M:%S')
+            time_message    = f"To score the full {challenge_doc.get('full_score')} points, answer this question within {time_limit} mins by {reply_by} IST!"
         else:
             time_message    = f"There's no time limit for this question, so take your time!"
 
@@ -296,7 +301,7 @@ def send_slack_challenge(response_url, game_name, challenge_id, hint_taken):
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "You can opt to take a hint. A correct answer with a hint gets you only 5 points."
+                    "text": f"You can opt to take a hint. A correct answer with a hint gets you only {challenge_doc.get('hint_score')} points."
                 }
             },
             {
