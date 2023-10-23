@@ -71,7 +71,7 @@ def security_ctf_player(request):
                 
                 ################### update challenge score ####################
                 player_ref.update({
-                    "current_challenge": f"Solved {challenge_id}",                    
+                    "current_challenge": f"Solved {challenge_id[-2:]}",                    
                     f"{challenge_id}.resp_time": firestore.SERVER_TIMESTAMP,
                     f"{challenge_id}.answer": event['option_id'],
                     f"{challenge_id}.score": challenge_score
