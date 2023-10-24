@@ -40,7 +40,7 @@ def security_ctf_player(request):
                             "total_score": 0,
                             "current_challenge": "Accepted!"
                         })
-                        info = f"This ain't a game for the faint hearted! :sunglasses:\nPress the Play button when you're ready to take off. :airplane:"
+                        info = f"This ain't a game for the faint hearted! :ghost:\nPress the Play button when you're ready to take off. :airplane:"
                 elif game_doc.get("state") == "Ended":
                     info = ":x: Sorry, this game has already ended! Keep an eye out for the next game. :eyes:"
                 else:
@@ -55,18 +55,18 @@ def security_ctf_player(request):
 
                 challenge_score = 0
                 total_score     = player_doc.get('total_score')
-                result          = ":thumbsdown: You've got it wrong baby! Better luck in the next one. :thumbsup:"
+                result          = ":x: You've got it wrong baby! Better luck in the next one. :thumbsup:"
                 
                 ################### compute challenge score ###################
                 time_limit = int(challenge_doc.get('time_limit'))
                 if time_limit > 0 and datetime.now().timestamp() - player_doc.get(f"{challenge_id}.start_time").timestamp_pb().seconds > time_limit*60:
-                    result = f":x: Sorry, we didn't receive your response within {time_limit} mins. :cry:"
+                    result = f":thumbsdown: Sorry, we didn't receive your response within {time_limit} mins. :cry:"
                 else:
                     if event['option_id'] == challenge_doc.get('answer') and player_doc.get(f"{challenge_id}.hint_taken"):
-                        result = ":tada::tada: Congratulations! You answered correctly but with a hint. :clap:"
+                        result = ":clap: Congratulations! You answered correctly but with a hint. :slightly_smiling_face:"
                         challenge_score = int(challenge_doc.get('hint_score'))
                     elif event['option_id'] == challenge_doc.get('answer') and not player_doc.get(f"{challenge_id}.hint_taken"):
-                        result = ":boom::boom: Congratulations! Full marks for your right answer! :muscle:"
+                        result = ":tada: Congratulations! Full marks for your right answer! :muscle:"
                         challenge_score = int(challenge_doc.get('full_score'))
                 
                 ################### update challenge score ####################
@@ -294,7 +294,7 @@ def send_slack_challenge(response_url, game_name, challenge_id, hint_taken, play
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"*Hint:* {challenge_doc.get('hint')}"
+                    "text": f"*Hint:* {challenge_doc.get('hint')} :key:"
                 }
             }])
         else:
@@ -351,7 +351,7 @@ def announce_game_end(game_name, player_id, total_score):
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": ":star2::star2: Congratulations! You've reached the end of the CTF. :face_with_cowboy_hat:\n"
+                "text": ":star2: Congratulations! You've reached the end of the CTF. :face_with_cowboy_hat:\n"
             }
         },
         {

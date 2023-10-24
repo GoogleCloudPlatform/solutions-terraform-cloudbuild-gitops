@@ -107,7 +107,7 @@ def security_ctf(request):
                     return {
                         "response_type": "ephemeral",
                         "type": "mrkdwn",
-                        "text": f"You are unauthorized to execute CTF admin commands. Please ping <@{slack_admin}>"
+                        "text": f"You are unauthorized to execute CTF admin commands.\nPing <@{slack_admin}> for any help."
                     }
             elif input_text[0].lower() == 'game' and input_text[1].lower() == 'create':
                 if requestor_id == slack_admin:
@@ -183,7 +183,7 @@ def security_ctf(request):
                     return {
                         "response_type": "ephemeral",
                         "type": "mrkdwn",
-                        "text": f"You are unauthorized to execute CTF game commands. Please ping <@{slack_admin}>"
+                        "text": f"You are unauthorized to execute CTF game commands.\nPing <@{slack_admin}> for any help."
                     }
             elif input_text[0].lower() == 'player' and input_text[1].lower() == 'start':
                 slack_ack(url, "Hey, _CTF commando_, you're being enrolled!")
@@ -201,7 +201,7 @@ def security_ctf(request):
                 # compose message to respond back to the player
                 display_text = function_response_json['info']
                 if not function_response_json['info'].startswith("This"):
-                    display_text += f"\nPlease ping <@{slack_admin}> for any help."
+                    display_text += f"\nPing <@{slack_admin}> for any help."
 
                 slack_message = [
                     {
