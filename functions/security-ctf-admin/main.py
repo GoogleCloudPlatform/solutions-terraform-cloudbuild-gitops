@@ -15,7 +15,7 @@ def security_ctf_admin(request):
     # org_roles = ["securitycenter.adminViewer", "logging.viewer"] if event['env_name'] == 'easy' else ["logging.viewer"]
     predefined_roles = ["iam.securityReviewer", "cloudsecurityscanner.viewer", "compute.viewer", "bigquery.dataViewer", "bigquery.user", "dlp.reader", "monitoring.viewer"]
     custom_roles = [storage_role]
-    
+
     try:
         # initialize service and the user principal that needs access
         crm_service = initialize_service()
@@ -77,7 +77,8 @@ def add_member(policy: dict, predefined_roles: list, custom_roles: list, member:
     return policy
 
 def remove_member(policy: dict, predefined_roles: list, custom_roles: list, member: str) -> dict:
-    for role in predefined_roles:
+    for role_name in predefined_roles:
+        role = f"roles/{role_name}"
         print(f"Removing {member} from role {role}...")
         binding = next(b for b in policy["bindings"] if b["role"] == role)
         if "members" in binding and member in binding["members"]:
