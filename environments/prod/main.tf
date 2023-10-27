@@ -1203,8 +1203,7 @@ module "secuity_ctf_admin_cloud_function" {
     function-desc   = "processes access requests for security-ctf users"
     entry-point     = "security_ctf_admin"
     env-vars        = {
-        CTF_EASY_PROJECT = var.ctf_easy_project,
-        CTF_HARD_PROJECT = var.ctf_hard_project,
+        CTF_PROJECT      = var.ctf_project
         ORG_ID           = var.organization
         STORAGE_ROLE     = google_project_iam_custom_role.ctf_storage_reader.id
     }
@@ -1228,7 +1227,7 @@ resource "google_organization_iam_member" "security_ctf_admin_org_iam_admin" {
 }
 
 resource "google_project_iam_custom_role" "ctf_storage_reader" {
-  project     = var.ctf_easy_project
+  project     = var.ctf_project
   role_id     = "ctfStorageReader"
   title       = "Read-only Access to Storage Buckets and Objects"
   description = "Read-only Access to Storage Buckets and Objects"

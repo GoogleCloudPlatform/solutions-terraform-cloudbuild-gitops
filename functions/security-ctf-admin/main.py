@@ -7,11 +7,9 @@ def security_ctf_admin(request):
     # provisioning the requested access
     event = json.loads(request.get_data().decode('UTF-8'))
     # org_id = os.environ.get('ORG_ID', 'Specified environment variable is not set.')
-    ctf_easy_project = os.environ.get('CTF_EASY_PROJECT', 'Specified environment variable is not set.')
-    ctf_hard_project = os.environ.get('CTF_HARD_PROJECT', 'Specified environment variable is not set.')
+    project_id = os.environ.get('CTF_PROJECT', 'Specified environment variable is not set.')
     storage_role     = os.environ.get('STORAGE_ROLE', 'Specified environment variable is not set.')
     
-    project_id = ctf_easy_project if event['env_name'] == 'easy' else ctf_hard_project
     # org_roles = ["securitycenter.adminViewer", "logging.viewer"] if event['env_name'] == 'easy' else ["logging.viewer"]
     predefined_roles = ["iam.securityReviewer", "cloudsecurityscanner.viewer", "compute.viewer", "bigquery.dataViewer", "bigquery.user", "dlp.reader", "monitoring.viewer"]
     custom_roles = [storage_role]

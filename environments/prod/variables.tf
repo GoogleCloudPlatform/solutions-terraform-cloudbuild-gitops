@@ -81,11 +81,7 @@ variable "slack_ctf_admin_channel" {
   type        = string
 }
 
-variable "ctf_easy_project" {
-  type        = string
-}
-
-variable "ctf_hard_project" {
+variable "ctf_project" {
   type        = string
 }
 
