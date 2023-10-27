@@ -1205,7 +1205,8 @@ module "secuity_ctf_admin_cloud_function" {
     env-vars        = {
         CTF_EASY_PROJECT = var.ctf_easy_project,
         CTF_HARD_PROJECT = var.ctf_hard_project,
-        ORG_ID = var.organization
+        ORG_ID           = var.organization
+        CUSTOM_ROLES     = [google_project_iam_custom_role.ctf_storage_reader.id]
     }
 }
 
@@ -1224,6 +1225,13 @@ resource "google_organization_iam_member" "security_ctf_admin_org_iam_admin" {
   org_id    = var.organization
   role      = "roles/resourcemanager.projectIamAdmin"
   member    = "serviceAccount:${module.secuity_ctf_admin_cloud_function.sa-email}"
+}
+
+resource "google_project_iam_custom_role" "ctf_storage_reader" {
+  role_id     = "ctfStorageReader"
+  title       = "Read-only Access to Storage Buckets and Objects"
+  description = "Read-only Access to Storage Buckets and Objects"
+  permissions = ["storage.buckets.list", "storage.buckets.get", "storage.buckets.getIamPolicy", "storage.objects.list", "storage.objects.get", "storage.objects.getIamPolicy"]
 }
 
 module "secuity_ctf_game_cloud_function" {
