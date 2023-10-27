@@ -1228,6 +1228,7 @@ resource "google_organization_iam_member" "security_ctf_admin_org_iam_admin" {
 }
 
 resource "google_project_iam_custom_role" "ctf_storage_reader" {
+  project     = var.ctf_easy_project
   role_id     = "ctfStorageReader"
   title       = "Read-only Access to Storage Buckets and Objects"
   description = "Read-only Access to Storage Buckets and Objects"
