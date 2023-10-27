@@ -1206,7 +1206,7 @@ module "secuity_ctf_admin_cloud_function" {
         CTF_EASY_PROJECT = var.ctf_easy_project,
         CTF_HARD_PROJECT = var.ctf_hard_project,
         ORG_ID           = var.organization
-        CUSTOM_ROLES     = [google_project_iam_custom_role.ctf_storage_reader.id]
+        STORAGE_ROLE     = google_project_iam_custom_role.ctf_storage_reader.id
     }
 }
 
