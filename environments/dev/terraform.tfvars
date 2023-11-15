@@ -1,1 +1,1 @@
-project="jg-devops"
+project="PROJECT_ID"
