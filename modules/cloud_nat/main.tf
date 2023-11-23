@@ -12,20 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-output "network" {
-  value = "${module.vpc.network}"
+module "cloud-nat" {
+  source  = "terraform-google-modules/cloud-nat/google"
+  version = "~> 6.0"
+  # insert the 3 required variables here
+  project_id   = "${var.project}"
+  region       = "${var.region}"
+  router       = "${var.cloud_router}"
 }
-
-output "subnet" {
-  value = "${module.vpc.subnet}"
-}
-
-output "firewall_rule" {
-  value = "${module.firewall.firewall_rule}"
-}
-
-#output "instance_name" {
-#  value = "${module.http_server.instance_name}"
-#}
-

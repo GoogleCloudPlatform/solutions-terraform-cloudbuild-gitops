@@ -17,6 +17,9 @@ locals {
   env = "dev"
 }
 
+
+
+
 provider "google" {
   project = "${var.project}"
 }
@@ -25,16 +28,33 @@ module "vpc" {
   source  = "../../modules/vpc"
   project = "${var.project}"
   env     = "${local.env}"
+  region = "${var.region}"
 }
 
-module "http_server" {
-  source  = "../../modules/http_server"
+ module "http_server_nginx" {
+  source  = "../../modules/http_server_nginx"
   project = "${var.project}"
   subnet  = "${module.vpc.subnet}"
+  region = "${var.region}"
 }
 
 module "firewall" {
   source  = "../../modules/firewall"
   project = "${var.project}"
   subnet  = "${module.vpc.subnet}"
+}
+
+module "cloud_nat" {
+  source  = "../../modules/cloud_nat"
+  project = "${var.project}"
+  region =  "${var.region}"
+  cloud_router = "${module.cloud_router.cloud_router}"
+
+}
+
+module "cloud_router" {
+  source  = "../../modules/cloud_router"
+  project = "${var.project}"
+  region =  "${var.region}"
+  env = "${var.env}"
 }

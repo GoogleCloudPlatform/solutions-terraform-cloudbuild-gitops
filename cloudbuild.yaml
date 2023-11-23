@@ -10,83 +10,39 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
-# limitations under the License.
+# limitations dunder the License.
 
 
 steps:
-- id: 'branch name'
+- id: 'branch name script'
   name: 'alpine'
+  env:
+  - 'BRANCH_NAME=$BRANCH_NAME'
   entrypoint: 'sh'  
-  args: 
-  - '-c'
-  - | 
-      echo "***********************"
-      echo "$BRANCH_NAME"
-      echo "***********************"
-
+  args: ['./scripts/branch_name.sh']
+ 
 - id: 'tf init'
-  name: 'hashicorp/terraform:1.0.0'
+  name: 'hashicorp/terraform:1.5.0'
+  env:
+  - 'BRANCH_NAME=$BRANCH_NAME'
   entrypoint: 'sh'
-  args: 
-  - '-c'
-  - |
-      if [ -d "environments/$BRANCH_NAME/" ]; then
-        cd environments/$BRANCH_NAME
-        terraform init
-      else
-        for dir in environments/*/
-        do 
-          cd ${dir}   
-          env=${dir%*/}
-          env=${env#*/}
-          echo ""
-          echo "*************** TERRAFORM INIT ******************"
-          echo "******* At environment: ${env} ********"
-          echo "*************************************************"
-          terraform init || exit 1
-          cd ../../
-        done
-      fi 
+  args: ['./scripts/tf_init.sh']
 
 # [START tf-plan]
 - id: 'tf plan'
-  name: 'hashicorp/terraform:1.0.0'
+  name: 'hashicorp/terraform:1.5.0'
+  env:
+  - 'BRANCH_NAME=$BRANCH_NAME'
   entrypoint: 'sh'
-  args: 
-  - '-c'
-  - | 
-      if [ -d "environments/$BRANCH_NAME/" ]; then
-        cd environments/$BRANCH_NAME
-        terraform plan
-      else
-        for dir in environments/*/
-        do 
-          cd ${dir}   
-          env=${dir%*/}
-          env=${env#*/}  
-          echo ""
-          echo "*************** TERRAFOM PLAN ******************"
-          echo "******* At environment: ${env} ********"
-          echo "*************************************************"
-          terraform plan || exit 1
-          cd ../../
-        done
-      fi 
+  args: ['./scripts/tf_plan.sh']
+  
 # [END tf-plan]
 
 # [START tf-apply]
 - id: 'tf apply'
-  name: 'hashicorp/terraform:1.0.0'
+  name: 'hashicorp/terraform:1.5.0'
+  env:
+  - 'BRANCH_NAME=$BRANCH_NAME'
   entrypoint: 'sh'
-  args: 
-  - '-c'
-  - | 
-      if [ -d "environments/$BRANCH_NAME/" ]; then
-        cd environments/$BRANCH_NAME      
-        terraform apply -auto-approve
-      else
-        echo "***************************** SKIPPING APPLYING *******************************"
-        echo "Branch '$BRANCH_NAME' does not represent an official environment."
-        echo "*******************************************************************************"
-      fi
+  args: ['./scripts/tf_apply.sh']
 # [END tf-apply]      

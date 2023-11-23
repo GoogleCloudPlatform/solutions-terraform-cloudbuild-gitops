@@ -12,20 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+module "cloud_router" {
+  source  = "terraform-google-modules/cloud-router/google"
+  version = "~> 6.0"
 
-output "network" {
-  value = "${module.vpc.network}"
+  name    = "cloud_router01"
+  region  = "${var.region}"
+  project = "${var.project}"
+  network = "${var.env}"
+
 }
 
-output "subnet" {
-  value = "${module.vpc.subnet}"
-}
-
-output "firewall_rule" {
-  value = "${module.firewall.firewall_rule}"
-}
-
-#output "instance_name" {
-#  value = "${module.http_server.instance_name}"
-#}
+ 
 

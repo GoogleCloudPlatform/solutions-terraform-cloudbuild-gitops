@@ -20,10 +20,10 @@ locals {
 resource "google_compute_instance" "http_server" {
   project      = "${var.project}"
   zone         = "${var.region}-a"
-  name         = "${local.network}-apache2-instance"
+  name         = "${local.network}-nginx-instance"
   machine_type = "f1-micro"
 
-  metadata_startup_script = "sudo apt-get update && sudo apt-get install apache2 -y && echo '<html><body><h1>Environment: ${local.network}</h1></body></html>' | sudo tee /var/www/html/index.html"
+  metadata_startup_script = "sudo apt-get update && sudo apt-get install nginx -y && echo '<html><body><h1>Environment: ${local.network}</h1></body></html>' | sudo tee /var/www/html/index.html"
 
   boot_disk {
     initialize_params {
