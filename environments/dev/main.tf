@@ -48,7 +48,7 @@ module "cloud_nat" {
   source  = "../../modules/cloud_nat"
   project = "${var.project}"
   region =  "${var.region}"
-  router = "${module.cloud_router.cloud_router}"
+  cloud_router = "${module.cloud_router.cloud_router}"
 
 }
 
