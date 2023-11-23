@@ -10,7 +10,7 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
-# limitations under the License.
+# limitations under the License.w
 
 
 locals {
@@ -30,14 +30,14 @@ module "vpc" {
   env     = "${local.env}"
   region = "${var.region}"
 }
-/*
- module "http_server" {
-  source  = "../../modules/http_server"
+
+ module "http_server_nginx" {
+  source  = "../../modules/http_server_nginx"
   project = "${var.project}"
   subnet  = "${module.vpc.subnet}"
   region = "${var.region}"
 }
-*/
+
 module "firewall" {
   source  = "../../modules/firewall"
   project = "${var.project}"
