@@ -11,11 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
-terraform {
+# Noqw creatinbg anotrhre PR   to see the tf apply check
+terraform {  
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "solid-choir-254209-tfstate"
     prefix = "env/prod"
   }
 }
