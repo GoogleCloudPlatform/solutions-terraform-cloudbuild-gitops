@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "quixotic-market-402317-tfstate"
     prefix = "env/prod"
   }
 }
