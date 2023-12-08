@@ -1,1 +1,1 @@
-project="PROJECT_ID"
+project="terra-gitops-407313"
