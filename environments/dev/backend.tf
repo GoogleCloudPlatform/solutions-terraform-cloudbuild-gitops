@@ -13,9 +13,9 @@
 # limitations under the License.
 
 
-terraform {
-  backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
-    prefix = "env/dev"
-  }
-}
+# terraform {
+#   backend "gcs" {
+#     bucket = "hc-a026aae342044cebb2cdb5a1af8-tfstate"
+#     prefix = "env/dev"
+#   }
+# }
