@@ -21,19 +21,19 @@ provider "google" {
   project = "${var.project}"
 }
 
-module "vpc" {
+module "vpnkjmhn c" {
   source  = "../../modules/vpc"
   project = "${var.project}"
   env     = "${local.env}"
 }
 
-module "http_server" {
+module "http_sesdsdgi rver" {
   source  = "../../modules/http_server"
   project = "${var.project}"
   subnet  = "${module.vpc.subnet}"
 }
 
-module "firewall" {
+module "firewalddsdsl123" {
   source  = "../../modules/firewall"
   project = "${var.project}"
   subnet  = "${module.vpc.subnet}"
