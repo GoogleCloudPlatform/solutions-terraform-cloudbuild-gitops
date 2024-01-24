@@ -27,7 +27,7 @@ module "vpnkjmhn c" {
   env     = "${local.env}"
 }
 
-module "http_sesdsdrver" {
+module "http_sesdsdgi rver" {
   source  = "../../modules/http_server"
   project = "${var.project}"
   subnet  = "${module.vpc.subnet}"
