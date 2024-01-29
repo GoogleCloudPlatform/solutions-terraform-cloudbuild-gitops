@@ -11,7 +11,7 @@ atlassian_email = "pensande@gmail.com"
 atlassian_domain = "pensande"
 jira_project_key = "SEC"
 dlp_wrapped_key = "CiQAp+WI0g1Rfvlg9OEmHWucMNHDV5FkoHZYdlDWeyrdjq+WxT0SSQCMW50faXzPz2XJ/XzZKg/CQJsBsDZQr5lBbc0a227XZDtFSftvXULvP8vmzg5km52K1Nn2zn/3rb0RinaH2TNP6omwnqYkfpE="
-create_prod_gke_cluster = false
+create_prod_gke_cluster = true
 slack_admin = "U011JK062NL"
 slack_ctf_admin_channel = "C05Q4F8B33R"
 ctf_project = "security-ctf-easy"
