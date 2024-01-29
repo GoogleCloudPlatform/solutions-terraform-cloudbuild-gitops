@@ -28,6 +28,7 @@ import * as firebaseui from 'firebaseui';
 // Document elements
 const startRsvpButton = document.getElementById('startRsvp');
 const leaderboardContainer = document.getElementById('leaderboard-container');
+const countdown_container = document.getElementById('countdown-container');
 
 const form = document.getElementById('leave-message');
 const input = document.getElementById('message');
@@ -177,6 +178,57 @@ async function main() {
       const linebreak2 = document.createElement("br");
       players.appendChild(linebreak2);
     });
+
+    const countdown_break = document.createElement('hr')
+    countdown_container.appendChild(countdown_break);
+
+    const countdown_title = document.createElement('h2');
+    countdown_title.setAttribute("id", "countdown-title")
+    countdown_title.textContent = "10 Minute Timer";
+    countdown_container.appendChild(countdown_title);
+
+    const countdown_clock = document.createElement('span');
+    countdown_clock.setAttribute("id", "time")
+    countdown_clock.textContent = "10:00";
+    countdown_container.appendChild(countdown_clock);
+
+    const timer_buttons = document.createElement('div');
+    timer_buttons.setAttribute("class","function-buttons");
+    document.body.appendChild(timer_buttons);
+
+    const reset_button = document.createElement('button');
+    reset_button.setAttribute("class","reset-btn");
+    reset_button.setAttribute("id","btn-reset");
+    reset_button.textContent = 'Reset';
+    reset_button.addEventListener('click', function(){
+      location.reload();
+    })
+    timer_buttons.appendChild(reset_button);
+
+    const start_button = document.createElement('button');
+    start_button.setAttribute("class","start-btn");
+    start_button.setAttribute("id","btn-start");
+    start_button.textContent = 'Start';
+    start_button.addEventListener('click', function(){
+      var minute = 10;
+      var sec = 0;
+      setInterval(function(){
+          if(sec < 0){
+              minute--;
+              sec = 59;
+          }
+          if(sec <=9){
+              sec = "0" + sec;
+          }
+          if(sec == 0 && minute == 0){
+              alert("Time Up!");
+              location.reload();
+          }
+          document.getElementById("time").innerHTML = minute + ":" + sec;
+          sec--;
+      }, 1000);
+    });
+    timer_buttons.appendChild(start_button);
   }
 }
 
