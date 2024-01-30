@@ -58,16 +58,19 @@ def security_ctf_player(request):
                 result          = ":x: You've got it wrong baby! Better luck in the next one. :thumbsup:"
                 
                 ################### compute challenge score ###################
-                time_limit = int(challenge_doc.get('time_limit'))
-                if time_limit > 0 and datetime.now().timestamp() - player_doc.get(f"{challenge_id}.start_time").timestamp_pb().seconds > time_limit*60:
+                time_limit      = int(challenge_doc.get('time_limit'))
+                time_elapsed    = datetime.now().timestamp() - player_doc.get(f"{challenge_id}.start_time").timestamp_pb().seconds
+
+                if time_limit > 0 and time_elapsed > time_limit*60:
                     result = f":thumbsdown: Sorry, we didn't receive your response within {time_limit} mins. :cry:"
                 else:
+                    eligible_score = int(challenge_doc.get('full_score')) - max(0, time_elapsed - 180)
                     if event['option_id'] == challenge_doc.get('answer') and player_doc.get(f"{challenge_id}.hint_taken"):
                         result = ":clap: Congratulations! You answered correctly but with a hint. :slightly_smiling_face:"
-                        challenge_score = int(challenge_doc.get('hint_score'))
+                        challenge_score = -(-eligible_score//2)
                     elif event['option_id'] == challenge_doc.get('answer') and not player_doc.get(f"{challenge_id}.hint_taken"):
-                        result = ":tada: Congratulations! Full marks for your right answer! :muscle:"
-                        challenge_score = int(challenge_doc.get('full_score'))
+                        result = ":tada: Congratulations! Max marks for your right answer! :muscle:"
+                        challenge_score = eligible_score
                 
                 ################### update challenge score ####################
                 player_ref.update({
@@ -305,7 +308,7 @@ def send_slack_challenge(response_url, game_name, challenge_id, hint_taken, play
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f":pushpin: You can opt to take a hint. But a correct answer with a hint gets you only {challenge_doc.get('hint_score')} points. :neutral_face:"
+                    "text": f":pushpin: You can opt to take a hint. But a correct answer with a hint gets you half the points. :neutral_face:"
                 }
             },
             {
