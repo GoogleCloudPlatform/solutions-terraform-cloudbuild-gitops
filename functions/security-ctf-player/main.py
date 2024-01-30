@@ -67,10 +67,10 @@ def security_ctf_player(request):
                     eligible_score = int(challenge_doc.get('full_score')) - max(0, time_elapsed - 180)
                     if event['option_id'] == challenge_doc.get('answer') and player_doc.get(f"{challenge_id}.hint_taken"):
                         result = ":clap: Congratulations! You answered correctly but with a hint. :slightly_smiling_face:"
-                        challenge_score = -(-eligible_score//2)
+                        challenge_score = int(eligible_score/2)
                     elif event['option_id'] == challenge_doc.get('answer') and not player_doc.get(f"{challenge_id}.hint_taken"):
                         result = ":tada: Congratulations! Max marks for your right answer! :muscle:"
-                        challenge_score = eligible_score
+                        challenge_score = int(eligible_score)
                 
                 ################### update challenge score ####################
                 player_ref.update({
@@ -212,10 +212,10 @@ def send_slack_challenge(response_url, game_name, challenge_id, hint_taken, play
             if hint_taken:
                 player_doc  = player_ref.get()
                 reply_by    = (datetime.fromtimestamp(player_doc.get(f"{challenge_id}.start_time").timestamp_pb().seconds) + timedelta(minutes = time_limit)).astimezone(timezone('Asia/Kolkata')).strftime('%H:%M:%S')
-                time_message    = f"To score {challenge_doc.get('hint_score')} points, answer this question within {time_limit} mins by {reply_by} IST! :hourglass_flowing_sand:"
+                time_message    = f"Respond within {time_limit} mins by {reply_by} IST! {challenge_doc.get('hint_score')} points if you solve in 3 mins! :hourglass_flowing_sand:"
             else:
                 reply_by    = (datetime.now(timezone("Asia/Kolkata"))+ timedelta(minutes = time_limit)).strftime('%H:%M:%S')
-                time_message    = f"To score {challenge_doc.get('full_score')} points, answer this question within {time_limit} mins by {reply_by} IST! :hourglass_flowing_sand:"
+                time_message    = f"Respond within {time_limit} mins by {reply_by} IST! {challenge_doc.get('full_score')} points if you solve in 3 mins! :hourglass_flowing_sand:"
         else:
             if hint_taken:
                 time_message    = f"There's no time limit for this question, so take your time and score {challenge_doc.get('hint_score')} points! :relaxed:"
