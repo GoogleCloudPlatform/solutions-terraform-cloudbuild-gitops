@@ -35,11 +35,11 @@ def security_ctf_player(request):
                         if current_challenge == "Completed!":
                             info = f"Game up! We'll see you in the next edition!:wave:"
                         elif current_challenge == "Accepted!":
-                            info = "Serve Challenge ch01"
+                            info = "Serve Challenge 01"
                         elif current_challenge.startswith("Solving"):
-                            info = "Serve Challenge ch" + current_challenge[-2:]
+                            info = "Serve Challenge " + current_challenge[-2:]
                         elif current_challenge.startswith("Solved"):
-                            info = "Serve Challenge ch{:02d}".format(int(current_challenge[-2:]) + 1)
+                            info = "Serve Challenge {:02d}".format(int(current_challenge[-2:]) + 1)
                         else:
                             info = f"You're already enrolled in the game. :face_with_rolling_eyes:\nPress the Play button to begin!"
                     else:
@@ -61,77 +61,80 @@ def security_ctf_player(request):
             player_doc  = player_ref.get()
             if game_doc.get("state") == "Started":
                 challenge_id = event['challenge_id']
-                challenge_doc = db.collection(challenges_collection).document(challenge_id).get()
+                try:
+                    challenge_score = player_doc.get(f"{challenge_id}.score")
+                    print(f"Game: {event['game_name']}, Challenge: {challenge_id} for Player: {event['player_id']} - ignoring duplicate answer...")
+                except:
+                    challenge_doc = db.collection(challenges_collection).document(challenge_id).get()
+                    challenge_score = 0
+                    total_score     = player_doc.get('total_score')
+                    result          = ":x: You've got it wrong baby! Better luck in the next one. :thumbsup:"
+                    
+                    ################### compute challenge score ###################
+                    time_limit      = int(challenge_doc.get('time_limit'))
+                    time_elapsed    = datetime.now().timestamp() - player_doc.get(f"{challenge_id}.start_time").timestamp_pb().seconds
 
-                challenge_score = 0
-                total_score     = player_doc.get('total_score')
-                result          = ":x: You've got it wrong baby! Better luck in the next one. :thumbsup:"
-                
-                ################### compute challenge score ###################
-                time_limit      = int(challenge_doc.get('time_limit'))
-                time_elapsed    = datetime.now().timestamp() - player_doc.get(f"{challenge_id}.start_time").timestamp_pb().seconds
+                    if time_limit > 0 and time_elapsed > time_limit*60:
+                        result = f":thumbsdown: Sorry, we didn't receive your response within {time_limit} mins. :cry:"
+                    else:
+                        eligible_score = int(challenge_doc.get('full_score')) - max(0, time_elapsed - 180)
+                        if event['option_id'] == challenge_doc.get('answer') and player_doc.get(f"{challenge_id}.hint_taken"):
+                            result = ":clap: Congratulations! You answered correctly but with a hint. :slightly_smiling_face:"
+                            challenge_score = int(eligible_score/2)
+                        elif event['option_id'] == challenge_doc.get('answer') and not player_doc.get(f"{challenge_id}.hint_taken"):
+                            result = ":tada: Congratulations! Max marks for your right answer! :muscle:"
+                            challenge_score = int(eligible_score)
+                    
+                    ################### update challenge score ####################
+                    player_ref.update({
+                        "current_challenge": f"Solved {challenge_id[-2:]}",                    
+                        f"{challenge_id}.resp_time": firestore.SERVER_TIMESTAMP,
+                        f"{challenge_id}.answer": event['option_id'],
+                        f"{challenge_id}.score": challenge_score
+                    })
+                    
+                    ################### update total score ########################
+                    total_score += challenge_score
+                    player_ref.update({"total_score": total_score})
 
-                if time_limit > 0 and time_elapsed > time_limit*60:
-                    result = f":thumbsdown: Sorry, we didn't receive your response within {time_limit} mins. :cry:"
-                else:
-                    eligible_score = int(challenge_doc.get('full_score')) - max(0, time_elapsed - 180)
-                    if event['option_id'] == challenge_doc.get('answer') and player_doc.get(f"{challenge_id}.hint_taken"):
-                        result = ":clap: Congratulations! You answered correctly but with a hint. :slightly_smiling_face:"
-                        challenge_score = int(eligible_score/2)
-                    elif event['option_id'] == challenge_doc.get('answer') and not player_doc.get(f"{challenge_id}.hint_taken"):
-                        result = ":tada: Congratulations! Max marks for your right answer! :muscle:"
-                        challenge_score = int(eligible_score)
-                
-                ################### update challenge score ####################
-                player_ref.update({
-                    "current_challenge": f"Solved {challenge_id[-2:]}",                    
-                    f"{challenge_id}.resp_time": firestore.SERVER_TIMESTAMP,
-                    f"{challenge_id}.answer": event['option_id'],
-                    f"{challenge_id}.score": challenge_score
-                })
-                
-                ################### update total score ########################
-                total_score += challenge_score
-                player_ref.update({"total_score": total_score})
-
-                ################### announce challenge result #################
-                slack_message = {
-                    "text": f"{result}",
-                    "blocks": [ 
-                        {
-                            "type": "header",
-                            "text": {
-                                "type": "plain_text",
-                                "text": f"Challenge: {challenge_doc.get('name')}"
-                            }
-                        },
-                        {
-                            "type": "divider"
-                        },
-                        {
-                            "type": "section",
-                            "text": {
-                                "type": "mrkdwn",
-                                "text": f"{result}\n"
-                            }
-                        },
-                        {
-                            "type": "section",
-                            "fields": [
-                                {
-                                    "type": "mrkdwn",
-                                    "text": f"*Level:* {challenge_doc.get('category')}"
-                                },
-                                {
-                                    "type": "mrkdwn",
-                                    "text": f"*Score:* {challenge_score}"
+                    ################### announce challenge result #################
+                    slack_message = {
+                        "text": f"{result}",
+                        "blocks": [ 
+                            {
+                                "type": "header",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": f"Challenge: {challenge_doc.get('name')}"
                                 }
-                            ]
-                        }
-                    ]
-                }
-                response = requests.post(event['response_url'], data=json.dumps(slack_message), headers={'Content-Type': 'application/json'})
-                print(f"Game: {event['game_name']}, Challenge: {event['challenge_id']} for Player: {event['player_id']} announced with Status Code: {response.status_code}")
+                            },
+                            {
+                                "type": "divider"
+                            },
+                            {
+                                "type": "section",
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": f"{result}\n"
+                                }
+                            },
+                            {
+                                "type": "section",
+                                "fields": [
+                                    {
+                                        "type": "mrkdwn",
+                                        "text": f"*Level:* {challenge_doc.get('category')}"
+                                    },
+                                    {
+                                        "type": "mrkdwn",
+                                        "text": f"*Score:* {challenge_score}"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                    response = requests.post(event['response_url'], data=json.dumps(slack_message), headers={'Content-Type': 'application/json'})
+                    print(f"Game: {event['game_name']}, Challenge: {event['challenge_id']} for Player: {event['player_id']} announced with Status Code: {response.status_code}")
 
                 ################### send next challenge interstitial ##############
                 if challenge_id < last_challenge:
@@ -184,19 +187,15 @@ def security_ctf_player(request):
             if game_doc.get("state") == "Started":
                 if event['action'] == "hint":
                     hint_taken = True
-                    info = f"Serving Game: {event['game_name']}, Challenge: {event['challenge_id']} for Player: {event['player_id']} Hint: {hint_taken}"
-                    if send_slack_challenge(event['response_url'], event['game_name'], event['challenge_id'], hint_taken, player_ref):
-                        player_ref.update({
+                    player_ref.update({
                             f"{event['challenge_id']}.hint_taken": hint_taken
                         })
-                elif player_doc.get(event['challenge_id']):
-                    hint_taken = player_doc.get(f"{event['challenge_id']}.hint_taken")
-                    info = f"Serving Game: {event['game_name']}, Challenge: {event['challenge_id']} for Player: {event['player_id']} Hint: {hint_taken}"
-                    send_slack_challenge(event['response_url'], event['game_name'], event['challenge_id'], hint_taken, player_ref)
                 else:
-                    hint_taken = False
-                    info = f"Serving Game: {event['game_name']}, Challenge: {event['challenge_id']} for Player: {event['player_id']} Hint: {hint_taken}"
-                    if send_slack_challenge(event['response_url'], event['game_name'], event['challenge_id'], hint_taken, player_ref):
+                    try:
+                        player_doc  = player_ref.get()
+                        hint_taken  = player_doc.get(f"{event['challenge_id']}.hint_taken")
+                    except:
+                        hint_taken = False
                         player_ref.update({
                             event['challenge_id']: {
                                 "start_time": firestore.SERVER_TIMESTAMP,
@@ -204,6 +203,8 @@ def security_ctf_player(request):
                             },
                             "current_challenge": f"Solving {event['challenge_id'][-2:]}"
                         })
+                info = f"Serving Game: {event['game_name']}, Challenge: {event['challenge_id']} for Player: {event['player_id']} Hint: {hint_taken}"
+                send_slack_challenge(event['response_url'], event['game_name'], event['challenge_id'], hint_taken, player_ref)
             
             ################### end game and announce game score ##############
             else:
@@ -226,12 +227,11 @@ def send_slack_challenge(response_url, game_name, challenge_id, hint_taken, play
         time_limit      = int(challenge_doc.get('time_limit'))
         
         if time_limit > 0:
+            player_doc  = player_ref.get()
+            reply_by    = (datetime.fromtimestamp(player_doc.get(f"{challenge_id}.start_time").timestamp_pb().seconds) + timedelta(minutes = time_limit)).astimezone(timezone('Asia/Kolkata')).strftime('%H:%M:%S')    
             if hint_taken:
-                player_doc  = player_ref.get()
-                reply_by    = (datetime.fromtimestamp(player_doc.get(f"{challenge_id}.start_time").timestamp_pb().seconds) + timedelta(minutes = time_limit)).astimezone(timezone('Asia/Kolkata')).strftime('%H:%M:%S')
                 time_message    = f"Respond within {time_limit} mins by {reply_by} IST! {challenge_doc.get('hint_score')} points if you solve in 3 mins! :hourglass_flowing_sand:"
             else:
-                reply_by    = (datetime.now(timezone("Asia/Kolkata"))+ timedelta(minutes = time_limit)).strftime('%H:%M:%S')
                 time_message    = f"Respond within {time_limit} mins by {reply_by} IST! {challenge_doc.get('full_score')} points if you solve in 3 mins! :hourglass_flowing_sand:"
         else:
             if hint_taken:

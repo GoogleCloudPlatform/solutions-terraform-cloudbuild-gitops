@@ -268,7 +268,7 @@ def security_ctf(request):
                                 "text": function_response_json['info']
                             },
                             "style": "primary",
-                            "value": f"type=player+game_name={input_text[2]}+action=serve+challenge_id={function_response_json['info'][-4:]}"
+                            "value": f"type=player+game_name={input_text[2]}+action=serve+challenge_id=ch{function_response_json['info'][-2:]}"
                         }]
                     })
 
