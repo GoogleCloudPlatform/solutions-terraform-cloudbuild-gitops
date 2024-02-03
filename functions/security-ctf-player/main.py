@@ -61,11 +61,41 @@ def security_ctf_player(request):
             player_doc  = player_ref.get()
             if game_doc.get("state") == "Started":
                 challenge_id = event['challenge_id']
+                challenge_doc = db.collection(challenges_collection).document(challenge_id).get()
+                slack_message = {}
                 try:
                     challenge_score = player_doc.get(f"{challenge_id}.score")
                     print(f"Game: {event['game_name']}, Challenge: {challenge_id} for Player: {event['player_id']} - ignoring duplicate answer...")
+                    ################### announce duplicate result #################
+                    slack_message = {
+                        "text": "Duplicate Scorecard",
+                        "blocks": [
+                            {
+                                "type": "header",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": f"Challenge: {challenge_doc.get('name')}"
+                                }
+                            },
+                            {
+                                "type": "divider"
+                            },
+                            {
+                                "type": "section",
+                                "fields": [
+                                    {
+                                        "type": "mrkdwn",
+                                        "text": f"*Level:* {challenge_doc.get('category')}"
+                                    },
+                                    {
+                                        "type": "mrkdwn",
+                                        "text": f"*Score:* {challenge_score}"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 except:
-                    challenge_doc = db.collection(challenges_collection).document(challenge_id).get()
                     challenge_score = 0
                     total_score     = player_doc.get('total_score')
                     result          = ":x: You've got it wrong baby! Better luck in the next one. :thumbsup:"
@@ -133,6 +163,7 @@ def security_ctf_player(request):
                             }
                         ]
                     }
+                finally:
                     response = requests.post(event['response_url'], data=json.dumps(slack_message), headers={'Content-Type': 'application/json'})
                     print(f"Game: {event['game_name']}, Challenge: {event['challenge_id']} for Player: {event['player_id']} announced with Status Code: {response.status_code}")
 
