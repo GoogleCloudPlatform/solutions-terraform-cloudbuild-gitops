@@ -257,6 +257,20 @@ def security_ctf(request):
                             }
                         }]
                     })
+                elif function_response_json['info'].startswith("Serve"):
+                    slack_message.append({
+                        "type": "actions",
+                        "elements": [{
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "emoji": True,
+                                "text": function_response_json['info']
+                            },
+                            "style": "primary",
+                            "value": f"type=player+game_name={input_text[2]}+action=serve+challenge_id={function_response_json['info'][-4:]}"
+                        }]
+                    })
 
                 return post_slack_message(requestor_id, function_response_json['info'], slack_message)
             else:

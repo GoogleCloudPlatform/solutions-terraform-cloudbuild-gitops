@@ -31,7 +31,17 @@ def security_ctf_player(request):
                 if game_doc.get("state") == "Started":
                     player_doc = player_ref.get()
                     if player_doc.exists:
-                        info = f"You're already enrolled in the game. :face_with_rolling_eyes:\nPress the Play button to begin!"
+                        current_challenge = player_doc.get('current_challenge')
+                        if current_challenge == "Completed!":
+                            info = f"Game up! We'll see you in the next edition!:wave:"
+                        elif current_challenge == "Accepted!":
+                            info = "Serve Challenge ch01"
+                        elif current_challenge.startswith("Solving"):
+                            info = "Serve Challenge ch" + current_challenge[-2:]
+                        elif current_challenge.startswith("Solved"):
+                            info = "Serve Challenge ch{:02d}".format(int(current_challenge[-2:]) + 1)
+                        else:
+                            info = f"You're already enrolled in the game. :face_with_rolling_eyes:\nPress the Play button to begin!"
                     else:
                         print(f"Enrolling Player: {event['player_name']}, {event['player_id']} to Game: {event['game_name']}")
                         player_ref.set({
@@ -172,14 +182,21 @@ def security_ctf_player(request):
         ################### serve challenge and update database ###############
         elif event['action'] == "hint" or event['action'] == "serve":
             if game_doc.get("state") == "Started":
-                hint_taken = True if event['action'] == "hint" else False   
-                info = f"Serving Game: {event['game_name']}, Challenge: {event['challenge_id']} for Player: {event['player_id']} Hint: {hint_taken}"
-                if send_slack_challenge(event['response_url'], event['game_name'], event['challenge_id'], hint_taken, player_ref):
-                    if hint_taken:
+                if event['action'] == "hint":
+                    hint_taken = True
+                    info = f"Serving Game: {event['game_name']}, Challenge: {event['challenge_id']} for Player: {event['player_id']} Hint: {hint_taken}"
+                    if send_slack_challenge(event['response_url'], event['game_name'], event['challenge_id'], hint_taken, player_ref):
                         player_ref.update({
                             f"{event['challenge_id']}.hint_taken": hint_taken
                         })
-                    else:
+                elif player_doc.get(event['challenge_id']):
+                    hint_taken = player_doc.get(f"{event['challenge_id']}.hint_taken")
+                    info = f"Serving Game: {event['game_name']}, Challenge: {event['challenge_id']} for Player: {event['player_id']} Hint: {hint_taken}"
+                    send_slack_challenge(event['response_url'], event['game_name'], event['challenge_id'], hint_taken, player_ref)
+                else:
+                    hint_taken = False
+                    info = f"Serving Game: {event['game_name']}, Challenge: {event['challenge_id']} for Player: {event['player_id']} Hint: {hint_taken}"
+                    if send_slack_challenge(event['response_url'], event['game_name'], event['challenge_id'], hint_taken, player_ref):
                         player_ref.update({
                             event['challenge_id']: {
                                 "start_time": firestore.SERVER_TIMESTAMP,
