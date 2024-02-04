@@ -1142,6 +1142,15 @@ resource "google_cloud_asset_project_feed" "instance_project_feed" {
       topic = google_pubsub_topic.instance_notification_topic.id
     }
   }
+
+  condition {
+    expression = <<-EOT
+    !temporal_asset.deleted &&
+    temporal_asset.prior_asset_state == google.cloud.asset.v1.TemporalAsset.PriorAssetState.DOES_NOT_EXIST
+    EOT
+    title = "created"
+    description = "Send notifications on creation events"
+  }
 }
 
 resource "google_pubsub_topic_iam_member" "instance_project_feed_writer" {

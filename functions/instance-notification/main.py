@@ -2,6 +2,7 @@ import os
 import json
 import base64
 import requests
+from google.cloud import asset_v1
 
 def instance_notification(event, context):
     """Triggered from a message on a Cloud Pub/Sub topic.
@@ -13,9 +14,21 @@ def instance_notification(event, context):
     message_json = json.loads(pubsub_message)
     print(message_json)
 
+    client      = asset_v1.AssetServiceClient()
+    response    = client.search_all_resources(
+        request = {
+            "scope": "projects/pensande",
+            "query": "NOT tagKeys:network",
+            "asset_types": ["compute.googleapis.com/Instance"],
+            "format": "table(name, assetType)"
+        }
+    )
+    for resource in response:
+        print(resource)
+
     '''
     delta = []
-    
+        
     for new_binding in message_json["asset"]["iamPolicy"]["bindings"]:
         if new_binding not in message_json["priorAsset"]["iamPolicy"]["bindings"]:
             old_binding = next((b for b in message_json["priorAsset"]["iamPolicy"]["bindings"] if b["role"] == new_binding["role"]), "no_old_binding")

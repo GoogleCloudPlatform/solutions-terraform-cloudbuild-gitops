@@ -1,3 +1,4 @@
 # Function dependencies, for example:
 # package>=version
+google-cloud-asset
 requests
