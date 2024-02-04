@@ -1144,7 +1144,7 @@ resource "google_cloud_asset_project_feed" "instance_project_feed" {
   }
 }
 
-resource "google_pubsub_topic_iam_member" "iam_policy_org_feed_writer" {
+resource "google_pubsub_topic_iam_member" "instance_project_feed_writer" {
   project   = google_pubsub_topic.instance_notification_topic.project
   topic     = google_pubsub_topic.instance_notification_topic.name
   role      = "roles/pubsub.publisher"
