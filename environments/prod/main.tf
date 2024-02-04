@@ -1122,6 +1122,72 @@ resource "google_secret_manager_secret_iam_member" "iam_bot_token_binding" {
   member    = "serviceAccount:${module.iam_notification_cloud_function.sa-email}"
 }
 
+######################################################
+## Enforce Resource Tags on Compute Engine VMs Demo ##
+######################################################
+
+# feed that sends notifications about compute-engine updates under a project
+resource "google_cloud_asset_project_feed" "instance_project_feed" {
+  billing_project   = var.project
+  project           = var.test_project
+  feed_id           = "instance-project-feed"
+  content_type      = "RESOURCE"
+
+  asset_types = [
+    "compute.googleapis.com/Instance"
+  ]
+
+  feed_output_config {
+    pubsub_destination {
+      topic = google_pubsub_topic.instance_notification_topic.id
+    }
+  }
+}
+
+resource "google_pubsub_topic_iam_member" "iam_policy_org_feed_writer" {
+  project   = google_pubsub_topic.instance_notification_topic.project
+  topic     = google_pubsub_topic.instance_notification_topic.name
+  role      = "roles/pubsub.publisher"
+  member    = "serviceAccount:${google_project_service_identity.cloudasset_sa.email}"
+}
+
+# topic where the iam-policy change notifications will be sent
+resource "google_pubsub_topic" "instance_notification_topic" {
+  project   = var.project
+  name      = "instance-notification-topic"
+}
+
+module "instance_notification_cloud_function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "instance-notification"
+    function-desc   = "triggered by instance-notification-topic, enforces resource tags on compute vms"
+    entry-point     = "instance_notification"
+    env-vars        = {
+        SLACK_CHANNEL = var.slack_secops_channel,
+    }
+    secrets         = [
+        {
+            key = "SLACK_ACCESS_TOKEN"
+            id  = google_secret_manager_secret.slack_identity_bot_token.secret_id
+        }
+    ]
+    triggers        = [
+        {
+            event_type  = "google.pubsub.topic.publish"
+            resource    = google_pubsub_topic.instance_notification_topic.id
+        }
+    ]
+}
+
+# IAM entry for service account of instance-notification function to use the slack bot token
+resource "google_secret_manager_secret_iam_member" "iam_bot_token_binding" {
+  project   = google_secret_manager_secret.slack_identity_bot_token.project
+  secret_id = google_secret_manager_secret.slack_identity_bot_token.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${module.instance_notification_cloud_function.sa-email}"
+}
+
 #######################
 ## Security CTF Demo ##
 #######################

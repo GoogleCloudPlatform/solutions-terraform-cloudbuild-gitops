@@ -27,6 +27,11 @@ variable "demo_project" {
   description = "Google Cloud Project ID"
 }
 
+variable "test_project" {
+  type        = string
+  description = "Google Cloud Project ID"
+}
+
 variable "region" {
   type        = string
 }

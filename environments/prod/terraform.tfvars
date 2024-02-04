@@ -1,6 +1,7 @@
 organization = "118518422342"
 project="secops-project-348011"
 demo_project="solution-demos-332013"
+test_project="pensande"
 region="us-central1"
 slack_secops_channel = "C03CS4E3PRA"
 slack_approver_channel = "C03RFE89508"
