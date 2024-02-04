@@ -1181,7 +1181,7 @@ module "instance_notification_cloud_function" {
 }
 
 # IAM entry for service account of instance-notification function to use the slack bot token
-resource "google_secret_manager_secret_iam_member" "iam_bot_token_binding" {
+resource "google_secret_manager_secret_iam_member" "instance_bot_token_binding" {
   project   = google_secret_manager_secret.slack_identity_bot_token.project
   secret_id = google_secret_manager_secret.slack_identity_bot_token.secret_id
   role      = "roles/secretmanager.secretAccessor"
