@@ -1145,7 +1145,8 @@ resource "google_cloud_asset_project_feed" "instance_project_feed" {
 
   condition {
     expression = <<-EOT
-    !temporal_asset.deleted
+    !temporal_asset.deleted &&
+    temporal_asset.asset.resource.data.status.matches('RUNNING')
     EOT
     title = "created"
     description = "Send notifications on creation events"
@@ -1172,7 +1173,10 @@ module "instance_notification_cloud_function" {
     function-desc   = "triggered by instance-notification-topic, enforces resource tags on compute vms"
     entry-point     = "instance_notification"
     env-vars        = {
-        SLACK_CHANNEL = var.slack_secops_channel,
+        SLACK_CHANNEL   = var.slack_secops_channel,
+        DEMO_PROJECT    = var.demo_project
+        SECURE_TAG_KEY  = var.secure_tag.key
+        SECURE_TAG_VALUE= var.secure_tag.value
     }
     secrets         = [
         {

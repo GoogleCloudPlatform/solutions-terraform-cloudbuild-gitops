@@ -101,3 +101,13 @@ variable "games_collection" {
 variable "last_challenge" {
   type        = string
 }
+
+variable "secure_tag" {
+    default = null
+    type = object(
+        {
+            key     = string
+            value   = string
+        }
+    )
+}
