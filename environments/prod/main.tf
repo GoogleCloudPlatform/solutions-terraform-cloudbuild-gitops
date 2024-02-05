@@ -1198,7 +1198,7 @@ resource "google_secret_manager_secret_iam_member" "instance_bot_token_binding" 
 }
 
 # IAM entry for service account of instance-notification function to search resources 
-resource "google_project_iam_member" "deploy_approval_approver" {
+resource "google_project_iam_member" "cloud_asset_viewer" {
   project   = var.test_project
   role      = "roles/cloudasset.viewer"
   member    = "serviceAccount:${module.instance_notification_cloud_function.sa-email}"
