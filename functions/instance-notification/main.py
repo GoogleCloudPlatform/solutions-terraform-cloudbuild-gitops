@@ -20,7 +20,7 @@ def instance_notification(event, context):
         search_asset_request    = asset_v1.SearchAllResourcesRequest(
             scope       ="projects/pensande",
             query       ="NOT tagKeys:network",
-            asset_types ="compute.googleapis.com/Instance",
+            asset_types =["compute.googleapis.com/Instance"],
             read_mask   ="name"
         )
         search_asset_result = search_asset_client.search_all_resources(request = search_asset_request)
@@ -28,7 +28,7 @@ def instance_notification(event, context):
             print(search_asset)
     except Exception as error:
         print(f"Error in listing non-compliant instances: {error}")
-
+    '''
     try:
         tag_bindings_client     = resourcemanager_v3.TagBindingsClient()
         tag_bindings_request    = resourcemanager_v3.ListTagBindingsRequest(
@@ -40,4 +40,4 @@ def instance_notification(event, context):
             print(tag_bindings)
     except Exception as error:
         print(f"Error in listing tag bindings: {error}")
-    
+    '''

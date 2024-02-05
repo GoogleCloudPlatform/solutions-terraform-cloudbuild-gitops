@@ -1146,7 +1146,7 @@ resource "google_cloud_asset_project_feed" "instance_project_feed" {
   condition {
     expression = <<-EOT
     !temporal_asset.deleted &&
-    temporal_asset.prior_asset_state == google.cloud.asset.v1.TemporalAsset.PriorAssetState.DOES_NOT_EXIST
+    temporal_asset.prior_asset_state in [google.cloud.asset.v1.TemporalAsset.PriorAssetState.DOES_NOT_EXIST, google.cloud.asset.v1.TemporalAsset.PriorAssetState.DELETED]
     EOT
     title = "created"
     description = "Send notifications on creation events"
@@ -1194,6 +1194,13 @@ resource "google_secret_manager_secret_iam_member" "instance_bot_token_binding" 
   project   = google_secret_manager_secret.slack_identity_bot_token.project
   secret_id = google_secret_manager_secret.slack_identity_bot_token.secret_id
   role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${module.instance_notification_cloud_function.sa-email}"
+}
+
+# IAM entry for service account of instance-notification function to search resources 
+resource "google_project_iam_member" "deploy_approval_approver" {
+  project   = var.test_project
+  role      = "roles/cloudasset.viewer"
   member    = "serviceAccount:${module.instance_notification_cloud_function.sa-email}"
 }
 
