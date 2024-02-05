@@ -18,10 +18,10 @@ def instance_notification(event, context):
     try:
         search_asset_client     = asset_v1.AssetServiceClient()
         search_asset_request    = asset_v1.SearchAllResourcesRequest(
-            scope="projects/pensande",
-            query="NOT tagKeys:network",
-            asset_types="compute.googleapis.com/Instance",
-            format="value(name)"
+            scope       ="projects/pensande",
+            query       ="NOT tagKeys:network",
+            asset_types ="compute.googleapis.com/Instance",
+            read_mask   ="name"
         )
         search_asset_result = search_asset_client.search_all_resources(request = search_asset_request)
         for search_asset in search_asset_result:
@@ -32,7 +32,8 @@ def instance_notification(event, context):
     try:
         tag_bindings_client     = resourcemanager_v3.TagBindingsClient()
         tag_bindings_request    = resourcemanager_v3.ListTagBindingsRequest(
-            parent = message_json["asset"]["name"]
+            parent      = message_json["asset"]["name"],
+            location    = message_json["asset"]["resource"]["location"]
         )
         tag_bindings_result     = tag_bindings_client.list_tag_bindings(request = tag_bindings_request)
         for tag_bindings in tag_bindings_result:
