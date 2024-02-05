@@ -1208,8 +1208,15 @@ resource "google_project_iam_member" "cloud_asset_viewer" {
   member    = "serviceAccount:${module.instance_notification_cloud_function.sa-email}"
 }
 
-resource "google_tags_tag_value_iam_member" "quarantine_tag_member" {
+# IAM entry for service account of instance-notification function to apply tags
+resource "google_tags_tag_value_iam_member" "quarantine_tag_user" {
   tag_value = var.secure_tag.value
+  role      = "roles/resourcemanager.tagUser"
+  member    = "serviceAccount:${module.instance_notification_cloud_function.sa-email}"
+}
+
+resource "google_project_iam_member" "test_project_tag_user" {
+  project   = var.test_project
   role      = "roles/resourcemanager.tagUser"
   member    = "serviceAccount:${module.instance_notification_cloud_function.sa-email}"
 }

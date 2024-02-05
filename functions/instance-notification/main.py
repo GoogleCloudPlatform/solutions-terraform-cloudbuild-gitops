@@ -5,6 +5,7 @@ import requests
 from time import sleep
 from google.cloud import asset_v1
 from google.cloud import resourcemanager_v3
+from google.api_core.client_options import ClientOptions
 
 def instance_notification(event, context):
     """Triggered from a message on a Cloud Pub/Sub topic.
@@ -19,7 +20,7 @@ def instance_notification(event, context):
     secure_tag_key      = os.environ.get('SECURE_TAG_KEY', 'Specified environment variable is not set.')
     secure_tag_value    = os.environ.get('SECURE_TAG_VALUE', 'Specified environment variable is not set.')
     
-    sleep(10)
+    sleep(30)
 
     try:
         search_asset_client     = asset_v1.AssetServiceClient()
@@ -32,13 +33,17 @@ def instance_notification(event, context):
         search_asset_result = search_asset_client.search_all_resources(request = search_asset_request)
         for search_asset in search_asset_result:
             print(search_asset)
-            if search_asset['name'] == message_json["asset"]["name"]:
-                
+            if message_json['asset']['name'] in str(search_asset):
                 print("Found non-compliant instance. Applying tag binding...")
                 
-                tag_binding_client  = resourcemanager_v3.TagBindingsClient()
+                # set the regional endpoint
+                regional_endpoint = f"{message_json['asset']['resource']['location']}-cloudresourcemanager.googleapis.com"
+                client_options = ClientOptions(api_endpoint=regional_endpoint)
+
+                # apply the tag binding
+                tag_binding_client  = resourcemanager_v3.TagBindingsClient(client_options=client_options)
                 tag_binding_request = resourcemanager_v3.CreateTagBindingRequest()
-                tag_binding_request.tag_binding.parent = message_json["asset"]["name"]
+                tag_binding_request.tag_binding.parent = message_json['asset']['name']
                 tag_binding_request.tag_binding.tag_value = secure_tag_value
                 tag_binding_operation = tag_binding_client.create_tag_binding(request=tag_binding_request)
 
@@ -46,7 +51,7 @@ def instance_notification(event, context):
                 tag_binding_response = tag_binding_operation.result()
                 print(tag_binding_response)
                 
-                send_slack_chat_notification(message_json["asset"]["name"], response)
+                send_slack_chat_notification(message_json['asset']['name'], tag_binding_response)
 
     except Exception as error:
         print(f"Error in listing non-compliant instances: {error}")
