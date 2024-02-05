@@ -21,5 +21,5 @@ games_collection = "security-ctf-games"
 last_challenge = "ch06"
 secure_tag = {
     key = "network"
-    value = "quarantine"
+    value = "tagValues/281475530321568"
 }

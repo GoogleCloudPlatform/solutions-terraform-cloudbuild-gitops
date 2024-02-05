@@ -1153,17 +1153,18 @@ resource "google_cloud_asset_project_feed" "instance_project_feed" {
   }
 }
 
+# topic where the iam-policy change notifications will be sent
+resource "google_pubsub_topic" "instance_notification_topic" {
+  project   = var.project
+  name      = "instance-notification-topic"
+}
+
+# IAM entry for the cloud asset service agent to publish to the pubsub topic
 resource "google_pubsub_topic_iam_member" "instance_project_feed_writer" {
   project   = google_pubsub_topic.instance_notification_topic.project
   topic     = google_pubsub_topic.instance_notification_topic.name
   role      = "roles/pubsub.publisher"
   member    = "serviceAccount:${google_project_service_identity.cloudasset_sa.email}"
-}
-
-# topic where the iam-policy change notifications will be sent
-resource "google_pubsub_topic" "instance_notification_topic" {
-  project   = var.project
-  name      = "instance-notification-topic"
 }
 
 module "instance_notification_cloud_function" {
@@ -1174,7 +1175,7 @@ module "instance_notification_cloud_function" {
     entry-point     = "instance_notification"
     env-vars        = {
         SLACK_CHANNEL   = var.slack_secops_channel,
-        DEMO_PROJECT    = var.demo_project
+        TEST_PROJECT    = var.test_project
         SECURE_TAG_KEY  = var.secure_tag.key
         SECURE_TAG_VALUE= var.secure_tag.value
     }
@@ -1200,10 +1201,16 @@ resource "google_secret_manager_secret_iam_member" "instance_bot_token_binding" 
   member    = "serviceAccount:${module.instance_notification_cloud_function.sa-email}"
 }
 
-# IAM entry for service account of instance-notification function to search resources 
+# IAM entry for service account of instance-notification function to search resources
 resource "google_project_iam_member" "cloud_asset_viewer" {
   project   = var.test_project
   role      = "roles/cloudasset.viewer"
+  member    = "serviceAccount:${module.instance_notification_cloud_function.sa-email}"
+}
+
+resource "google_tags_tag_value_iam_member" "quarantine_tag_member" {
+  tag_value = var.secure_tag.value
+  role      = "roles/resourcemanager.tagUser"
   member    = "serviceAccount:${module.instance_notification_cloud_function.sa-email}"
 }
 
