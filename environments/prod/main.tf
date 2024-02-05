@@ -1145,8 +1145,7 @@ resource "google_cloud_asset_project_feed" "instance_project_feed" {
 
   condition {
     expression = <<-EOT
-    !temporal_asset.deleted &&
-    temporal_asset.asset.resource.data.status.matches('RUNNING')
+    !temporal_asset.deleted
     EOT
     title = "created"
     description = "Send notifications on creation events"
