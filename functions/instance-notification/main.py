@@ -20,17 +20,18 @@ def instance_notification(event, context):
     secure_tag_key      = os.environ.get('SECURE_TAG_KEY', 'Specified environment variable is not set.')
     secure_tag_value    = os.environ.get('SECURE_TAG_VALUE', 'Specified environment variable is not set.')
     
-    # wait for 30 secs for instance operation to complete
+    # wait for instance operation to complete
     sleep(30)
 
     try:
-        found_tag = False
+        found_tag_key = False
         print(f"Evaluating instance: {message_json['asset']['name']}")
 
-        # set the regional endpoint
+        # set the regional endpoint for resource-manager
         regional_endpoint = f"{message_json['asset']['resource']['location']}-cloudresourcemanager.googleapis.com"
         client_options = ClientOptions(api_endpoint=regional_endpoint)
 
+        # list tag bindings on the instance
         tag_binding_client  = resourcemanager_v3.TagBindingsClient(client_options=client_options)
         list_tag_binding_request = resourcemanager_v3.ListTagBindingsRequest(
             parent  = f"//compute.googleapis.com/projects/{test_project}/zones/{message_json['asset']['resource']['location']}/instances/{message_json['asset']['resource']['data']['id']}"
@@ -38,18 +39,28 @@ def instance_notification(event, context):
         list_tag_binding_result  = tag_binding_client.list_tag_bindings(request = list_tag_binding_request)        
         
         # iterate through tag bindings to look for a match
-        for tag_bindings in list_tag_binding_result:
-            print(f"Found tag value on instance: {tag_bindings.tag_value_namespaced_name}")
-            if f"{org_id}/{secure_tag_key}/" in tag_bindings.tag_value_namespaced_name:
-                found_tag = True
+        for tag_bindings in list_tag_binding_result:            
+            # obtain corresp namespaced value
+            tag_value_client = resourcemanager_v3.TagValuesClient()
+            tag_value_request = resourcemanager_v3.GetTagValueRequest(
+                name=tag_bindings.tag_value,
+            )
+            tag_value_response = tag_value_client.get_tag_value(request=tag_value_request)
+            print(f"Found tag value on instance: {tag_bindings.tag_value}, {tag_value_response.namespaced_name}")
+            
+            # check if tag key present
+            if f"{org_id}/{secure_tag_key}/" in tag_value_response.namespaced_name:
+                found_tag_key = True
 
-        if not found_tag:
-            print("Found non-compliant instance. Applying tag binding...")
+        if not found_tag_key:
+            # apply default tag binding on the instance
+            print(f"Found non-compliant instance without the {secure_tag_key} tag. Binding default tag value...")
             create_tag_binding_request = resourcemanager_v3.CreateTagBindingRequest()
             create_tag_binding_request.tag_binding.parent = f"//compute.googleapis.com/projects/{test_project}/zones/{message_json['asset']['resource']['location']}/instances/{message_json['asset']['resource']['data']['id']}"
             create_tag_binding_request.tag_binding.tag_value = secure_tag_value
             tag_binding_operation = tag_binding_client.create_tag_binding(request=create_tag_binding_request)
 
+            # send confirmation message on slack
             print("Waiting for tag binding operation to complete...")
             create_tag_binding_response = tag_binding_operation.result()
             send_slack_chat_notification(test_project, message_json, create_tag_binding_response.tag_value_namespaced_name)
@@ -60,39 +71,45 @@ def instance_notification(event, context):
 def send_slack_chat_notification(test_project, assetName, tag_value_namespaced_name):
     try:
         slack_message = [
-                {
-                    "type": "header",
-                    "text": {
-                        "type": "plain_text",
-                        "text": f"Untagged Compute Instance Alert!"
-                    }
-                },
-                {
-                    "type": "section",
-                    "fields": [
-                        {
-                            "type": "mrkdwn",
-                            "text": f"*Project:* {test_project}"
-                        },
-                        {
-                            "type": "mrkdwn",
-                            "text": f"*Instance:* {assetName['asset']['resource']['data']['name']}"
-                        },
-                        {
-                            "type": "mrkdwn",
-                            "text": f"*Network:* {assetName['asset']['resource']['data']['networkInterfaces'][0]['network']}"
-                        },
-                        {
-                            "type": "mrkdwn",
-                            "text": f"*Subnetwork:* {assetName['asset']['resource']['data']['networkInterfaces'][0]['subnetwork']}"
-                        },
-                        {
-                            "type": "mrkdwn",
-                            "text": f"*Tag Binding Response:* {tag_value_namespaced_name}"
-                        }
-                    ]
+            {
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": f"Untagged Compute Instance Alert!"
                 }
-            ]
+            },
+            {
+                "type": "divider"
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": f"Found non-compliant instance without the {tag_value_namespaced_name.split('/')[1]} tag. Binding default tag value {tag_value_namespaced_name.split('/')[2]}\n"
+                } 
+            },
+            {
+                "type": "section",
+                "fields": [
+                    {
+                        "type": "mrkdwn",
+                        "text": f"*Project:* {test_project}"
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": f"*Instance:* {assetName['asset']['resource']['data']['name']}"
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": f"*Network:* {assetName['asset']['resource']['data']['networkInterfaces'][0]['network'].split('/networks/')[1]}"
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": f"*Subnetwork:* {assetName['asset']['resource']['data']['networkInterfaces'][0]['subnetwork'].split('/subnetworks/')[1]}"
+                    }
+                ]
+            }
+        ]
     
         slack_token = os.environ.get('SLACK_ACCESS_TOKEN', 'Specified environment variable is not set.')
         slack_channel = os.environ.get('SLACK_CHANNEL', 'Specified environment variable is not set.')

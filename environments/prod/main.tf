@@ -1202,14 +1202,14 @@ resource "google_secret_manager_secret_iam_member" "instance_bot_token_binding" 
   member    = "serviceAccount:${module.instance_notification_cloud_function.sa-email}"
 }
 
-# IAM entry for service account of instance-notification function to search resources
-resource "google_project_iam_member" "cloud_asset_viewer" {
-  project   = var.test_project
-  role      = "roles/cloudasset.viewer"
+# IAM entry for service account of instance-notification function to view tags
+resource "google_organization_iam_member" "org_tag_viewer" {
+  org_id    = var.organization
+  role      = "roles/resourcemanager.tagViewer"
   member    = "serviceAccount:${module.instance_notification_cloud_function.sa-email}"
 }
 
-# IAM entry for service account of instance-notification function to apply tags
+# IAM entry for service account of instance-notification function to apply the default tag
 resource "google_tags_tag_value_iam_member" "quarantine_tag_user" {
   tag_value = var.secure_tag.default_value
   role      = "roles/resourcemanager.tagUser"
