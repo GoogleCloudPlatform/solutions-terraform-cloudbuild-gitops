@@ -1176,7 +1176,9 @@ module "instance_notification_cloud_function" {
     env-vars        = {
         SLACK_CHANNEL   = var.slack_secops_channel,
         TEST_PROJECT    = var.test_project
-        SECURE_TAG_VALUE= var.secure_tag_value
+        ORG_ID          = var.organization
+        SECURE_TAG_KEY  = var.secure_tag.key
+        SECURE_TAG_VALUE= var.secure_tag.default_value
     }
     secrets         = [
         {
@@ -1209,7 +1211,7 @@ resource "google_project_iam_member" "cloud_asset_viewer" {
 
 # IAM entry for service account of instance-notification function to apply tags
 resource "google_tags_tag_value_iam_member" "quarantine_tag_user" {
-  tag_value = var.secure_tag_value
+  tag_value = var.secure_tag.default_value
   role      = "roles/resourcemanager.tagUser"
   member    = "serviceAccount:${module.instance_notification_cloud_function.sa-email}"
 }

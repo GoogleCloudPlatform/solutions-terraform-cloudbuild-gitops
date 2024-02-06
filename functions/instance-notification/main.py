@@ -15,7 +15,9 @@ def instance_notification(event, context):
     pubsub_message = base64.b64decode(event['data']).decode('utf-8')
     message_json = json.loads(pubsub_message)
 
+    org_id              = os.environ.get('ORG_ID', 'Specified environment variable is not set.')
     test_project        = os.environ.get('TEST_PROJECT', 'Specified environment variable is not set.')
+    secure_tag_key      = os.environ.get('SECURE_TAG_KEY', 'Specified environment variable is not set.')
     secure_tag_value    = os.environ.get('SECURE_TAG_VALUE', 'Specified environment variable is not set.')
     
     # wait for 30 secs for instance operation to complete
@@ -37,8 +39,8 @@ def instance_notification(event, context):
         
         # iterate through tag bindings to look for a match
         for tag_bindings in list_tag_binding_result:
-            print(f"Found tag value on instance: {tag_bindings.tag_value}")
-            if tag_bindings.tag_value == secure_tag_value:
+            print(f"Found tag value on instance: {tag_bindings.tag_value_namespaced_name}")
+            if f"{org_id}/{secure_tag_key}/" in tag_bindings.tag_value_namespaced_name:
                 found_tag = True
 
         if not found_tag:
