@@ -20,6 +20,10 @@ def instance_notification(event, context):
     secure_tag_key      = os.environ.get('SECURE_TAG_KEY', 'Specified environment variable is not set.')
     secure_tag_value    = os.environ.get('SECURE_TAG_VALUE', 'Specified environment variable is not set.')
     
+    # set the regional endpoint
+    regional_endpoint = f"{message_json['asset']['resource']['location']}-cloudresourcemanager.googleapis.com"
+    client_options = ClientOptions(api_endpoint=regional_endpoint)
+
     sleep(30)
 
     try:
@@ -36,27 +40,32 @@ def instance_notification(event, context):
             if message_json['asset']['name'] in str(search_asset):
                 print("Found non-compliant instance. Applying tag binding...")
                 
-                # set the regional endpoint
-                regional_endpoint = f"{message_json['asset']['resource']['location']}-cloudresourcemanager.googleapis.com"
-                client_options = ClientOptions(api_endpoint=regional_endpoint)
-
                 # apply the tag binding
                 tag_binding_client  = resourcemanager_v3.TagBindingsClient(client_options=client_options)
                 tag_binding_request = resourcemanager_v3.CreateTagBindingRequest()
-                tag_binding_request.tag_binding.parent = message_json['asset']['name']
+                tag_binding_request.tag_binding.parent = f"//compute.googleapis.com/projects/{test_project}/zones/{message_json['asset']['resource']['location']}/instances/{message_json['asset']['resource']['data']['id']}"
                 tag_binding_request.tag_binding.tag_value = secure_tag_value
                 tag_binding_operation = tag_binding_client.create_tag_binding(request=tag_binding_request)
 
                 print("Waiting for tag binding operation to complete...")
                 tag_binding_response = tag_binding_operation.result()
-                print(tag_binding_response)
-                
-                send_slack_chat_notification(message_json['asset']['name'], tag_binding_response)
+                send_slack_chat_notification(test_project, message_json, tag_binding_response.tag_value_namespaced_name)
 
     except Exception as error:
         print(f"Error in listing non-compliant instances: {error}")
 
-def send_slack_chat_notification(assetName, tag_binding_response):
+    try:
+        tag_binding_client  = resourcemanager_v3.TagBindingsClient(client_options=client_options)
+        tag_binding_request = resourcemanager_v3.ListTagBindingsRequest(
+            parent  = f"//compute.googleapis.com/projects/{test_project}/zones/{message_json['asset']['resource']['location']}/instances/{message_json['asset']['resource']['data']['id']}"
+        )
+        tag_binding_result  = tag_binding_client.list_tag_bindings(request = tag_binding_request)
+        for tag_bindings in tag_binding_result:
+            print(f"Found tag value on instance: {tag_bindings.tag_value}")
+    except Exception as error:
+        print(f"Error in listing tag bindings: {error}")
+
+def send_slack_chat_notification(test_project, assetName, tag_value_namespaced_name):
     try:
         slack_message = [
                 {
@@ -71,15 +80,23 @@ def send_slack_chat_notification(assetName, tag_binding_response):
                     "fields": [
                         {
                             "type": "mrkdwn",
-                            "text": f"*Project:* {assetName}"
+                            "text": f"*Project:* {test_project}"
                         },
                         {
                             "type": "mrkdwn",
-                            "text": f"*Instance:* {assetName}"
+                            "text": f"*Instance:* {assetName['asset']['resource']['data']['name']}"
                         },
                         {
                             "type": "mrkdwn",
-                            "text": f"*Tag Binding Response:* {tag_binding_response}"
+                            "text": f"*Network:* {assetName['asset']['resource']['data']['networkInterfaces'][0]['network']}"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": f"*Subnetwork:* {assetName['asset']['resource']['data']['networkInterfaces'][0]['subnetwork']}"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": f"*Tag Binding Response:* {tag_value_namespaced_name}"
                         }
                     ]
                 }
