@@ -1209,7 +1209,7 @@ resource "google_project_iam_member" "cloud_asset_viewer" {
 
 # IAM entry for service account of instance-notification function to apply tags
 resource "google_tags_tag_value_iam_member" "quarantine_tag_user" {
-  tag_value = var.secure_tag.value
+  tag_value = var.secure_tag_value
   role      = "roles/resourcemanager.tagUser"
   member    = "serviceAccount:${module.instance_notification_cloud_function.sa-email}"
 }
