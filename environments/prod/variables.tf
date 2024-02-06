@@ -103,11 +103,11 @@ variable "last_challenge" {
 }
 
 variable "secure_tag" {
-    default = null
-    type = object(
-        {
-            key     = string
-            value   = string
-        }
-    )
+  default = null
+  type = object(
+    {
+      key             = string
+      default_value   = string
+    }
+  )
 }
