@@ -85,7 +85,7 @@ def send_slack_chat_notification(test_project, assetName, tag_value_namespaced_n
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"Found non-compliant instance without the {tag_value_namespaced_name.split('/')[1]} tag. Binding default tag value {tag_value_namespaced_name.split('/')[2]}\n"
+                    "text": f"Found non-compliant instance without the *{tag_value_namespaced_name.split('/')[1]}* tag. Binding default tag value *{tag_value_namespaced_name.split('/')[2]}*.\n"
                 } 
             },
             {
