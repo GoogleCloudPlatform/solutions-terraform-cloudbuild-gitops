@@ -1176,8 +1176,7 @@ module "instance_notification_cloud_function" {
     env-vars        = {
         SLACK_CHANNEL   = var.slack_secops_channel,
         TEST_PROJECT    = var.test_project
-        SECURE_TAG_KEY  = var.secure_tag.key
-        SECURE_TAG_VALUE= var.secure_tag.value
+        SECURE_TAG_VALUE= var.secure_tag_value
     }
     secrets         = [
         {

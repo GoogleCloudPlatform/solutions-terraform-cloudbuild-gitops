@@ -3,7 +3,6 @@ import json
 import base64
 import requests
 from time import sleep
-from google.cloud import asset_v1
 from google.cloud import resourcemanager_v3
 from google.api_core.client_options import ClientOptions
 
@@ -17,51 +16,42 @@ def instance_notification(event, context):
     message_json = json.loads(pubsub_message)
 
     test_project        = os.environ.get('TEST_PROJECT', 'Specified environment variable is not set.')
-    secure_tag_key      = os.environ.get('SECURE_TAG_KEY', 'Specified environment variable is not set.')
     secure_tag_value    = os.environ.get('SECURE_TAG_VALUE', 'Specified environment variable is not set.')
     
-    # set the regional endpoint
-    regional_endpoint = f"{message_json['asset']['resource']['location']}-cloudresourcemanager.googleapis.com"
-    client_options = ClientOptions(api_endpoint=regional_endpoint)
-
+    # wait for 30 secs for instance operation to complete
     sleep(30)
 
     try:
-        search_asset_client     = asset_v1.AssetServiceClient()
-        search_asset_request    = asset_v1.SearchAllResourcesRequest(
-            scope       = f"projects/{test_project}",
-            query       = f"NOT tagKeys:{secure_tag_key}",
-            asset_types =["compute.googleapis.com/Instance"],
-            read_mask   ="name"
-        )
-        search_asset_result = search_asset_client.search_all_resources(request = search_asset_request)
-        for search_asset in search_asset_result:
-            print(search_asset)
-            if message_json['asset']['name'] in str(search_asset):
-                print("Found non-compliant instance. Applying tag binding...")
-                
-                # apply the tag binding
-                tag_binding_client  = resourcemanager_v3.TagBindingsClient(client_options=client_options)
-                tag_binding_request = resourcemanager_v3.CreateTagBindingRequest()
-                tag_binding_request.tag_binding.parent = f"//compute.googleapis.com/projects/{test_project}/zones/{message_json['asset']['resource']['location']}/instances/{message_json['asset']['resource']['data']['id']}"
-                tag_binding_request.tag_binding.tag_value = secure_tag_value
-                tag_binding_operation = tag_binding_client.create_tag_binding(request=tag_binding_request)
+        found_tag = False
+        print(f"Evaluating instance: {message_json['asset']['name']}")
 
-                print("Waiting for tag binding operation to complete...")
-                tag_binding_response = tag_binding_operation.result()
-                send_slack_chat_notification(test_project, message_json, tag_binding_response.tag_value_namespaced_name)
+        # set the regional endpoint
+        regional_endpoint = f"{message_json['asset']['resource']['location']}-cloudresourcemanager.googleapis.com"
+        client_options = ClientOptions(api_endpoint=regional_endpoint)
 
-    except Exception as error:
-        print(f"Error in listing non-compliant instances: {error}")
-
-    try:
         tag_binding_client  = resourcemanager_v3.TagBindingsClient(client_options=client_options)
-        tag_binding_request = resourcemanager_v3.ListTagBindingsRequest(
+        list_tag_binding_request = resourcemanager_v3.ListTagBindingsRequest(
             parent  = f"//compute.googleapis.com/projects/{test_project}/zones/{message_json['asset']['resource']['location']}/instances/{message_json['asset']['resource']['data']['id']}"
         )
-        tag_binding_result  = tag_binding_client.list_tag_bindings(request = tag_binding_request)
-        for tag_bindings in tag_binding_result:
+        list_tag_binding_result  = tag_binding_client.list_tag_bindings(request = list_tag_binding_request)        
+        
+        # iterate through tag bindings to look for a match
+        for tag_bindings in list_tag_binding_result:
             print(f"Found tag value on instance: {tag_bindings.tag_value}")
+            if tag_bindings.tag_value == secure_tag_value:
+                found_tag = True
+
+        if not found_tag:
+            print("Found non-compliant instance. Applying tag binding...")
+            create_tag_binding_request = resourcemanager_v3.CreateTagBindingRequest()
+            create_tag_binding_request.tag_binding.parent = f"//compute.googleapis.com/projects/{test_project}/zones/{message_json['asset']['resource']['location']}/instances/{message_json['asset']['resource']['data']['id']}"
+            create_tag_binding_request.tag_binding.tag_value = secure_tag_value
+            tag_binding_operation = tag_binding_client.create_tag_binding(request=create_tag_binding_request)
+
+            print("Waiting for tag binding operation to complete...")
+            create_tag_binding_response = tag_binding_operation.result()
+            send_slack_chat_notification(test_project, message_json, create_tag_binding_response.tag_value_namespaced_name)
+
     except Exception as error:
         print(f"Error in listing tag bindings: {error}")
 

@@ -1,5 +1,4 @@
 # Function dependencies, for example:
 # package>=version
-google-cloud-asset
 google-cloud-resource-manager
 requests

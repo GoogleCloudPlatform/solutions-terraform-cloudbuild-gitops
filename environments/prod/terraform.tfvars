@@ -19,7 +19,4 @@ ctf_project = "security-ctf-easy"
 challenges_collection = "security-ctf-challenges"
 games_collection = "security-ctf-games"
 last_challenge = "ch06"
-secure_tag = {
-    key = "network"
-    value = "tagValues/281475530321568"
-}
+secure_tag_value = "tagValues/281475530321568"

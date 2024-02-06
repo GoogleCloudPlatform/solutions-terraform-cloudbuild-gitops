@@ -102,12 +102,6 @@ variable "last_challenge" {
   type        = string
 }
 
-variable "secure_tag" {
-    default = null
-    type = object(
-        {
-            key     = string
-            value   = string
-        }
-    )
+variable "secure_tag_value" {
+  type        = string
 }
