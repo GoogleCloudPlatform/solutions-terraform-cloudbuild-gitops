@@ -90,3 +90,5 @@ steps:
         echo "*******************************************************************************"
       fi
 # [END tf-apply]      
+options:
+  logging: CLOUD_LOGGING_ONLY
