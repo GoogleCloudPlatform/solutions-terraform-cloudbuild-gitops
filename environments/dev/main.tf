@@ -744,7 +744,7 @@ resource "google_project_iam_member" "config_control_pubsub_admin" {
 } 
 
 # Allow the Config Controller service agent to manage roles
-resource "google_project_iam_member" "config_control_bucket_admin" {
+resource "google_project_iam_member" "config_control_role_admin" {
   project       = var.project
   role          = "roles/iam.roleAdmin"
   member        = "serviceAccount:service-${data.google_project.solution_demos_project.number}@gcp-sa-yakima.iam.gserviceaccount.com"
