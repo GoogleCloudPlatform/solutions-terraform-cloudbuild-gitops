@@ -654,7 +654,6 @@ module "cloud_ids" {
   vpc_subnet_ip     = module.vpc.subnet_ip
 }
 
-
 ####################################
 ## Security CTF FireStore Backend ##
 ####################################
@@ -706,43 +705,7 @@ resource "google_firebaserules_release" "firestore" {
     google_firestore_database.firestore,
   ]
 }
-/*
-# Adds a new Firestore index.
-resource "google_firestore_index" "indexes" {
-  provider = google-beta
-  project  = var.project
 
-  collection  = "security-ctf-challenges"
-  query_scope = "COLLECTION"
-
-  fields {
-    field_path = "id"
-    order      = "ASCENDING"
-  }
-
-  fields {
-    field_path = "scenario"
-    order      = "ASCENDING"
-  }
-
-  depends_on = [
-    google_firestore_database.firestore,
-  ]
-}
-
-# Adds a new Firestore document with seed data.
-resource "google_firestore_document" "doc" {
-  provider    = google-beta
-  project     = var.project
-  collection  = "security-ctf-challenges"
-  document_id = "ch01"
-  fields      = "{\"id\":{\"integerValue\":\"01\"},\"scenario\":{\"stringValue\":\"Favorite Database\"},\"answer\":{\"stringValue\":\"Firestore\"}}"
-
-  depends_on = [
-    google_firestore_database.firestore,
-  ]
-}
-*/
 # Creates a Firebase Web App in the new project created above.
 resource "google_firebase_web_app" "security_ctf_app" {
   provider     = google-beta
@@ -755,4 +718,34 @@ resource "google_firebase_web_app" "security_ctf_app" {
   depends_on = [
     google_firebase_project.firestore,
   ]
+}
+
+############################
+## Config Controller Demo ##
+############################
+
+# solution-demos-project
+data "google_project" "solution_demos_project" {
+  project_id    = var.demo_project  
+}
+
+# Allow the Config Controller service agent to manage buckets
+resource "google_project_iam_member" "config_control_bucket_admin" {
+  project       = var.project
+  role          = "roles/storage.admin"
+  member        = "serviceAccount:service-${data.google_project.solution_demos_project.number}@gcp-sa-yakima.iam.gserviceaccount.com"
+} 
+
+# Allow the Config Controller service agent to manage pub/sub
+resource "google_project_iam_member" "config_control_pubsub_admin" {
+  project       = var.project
+  role          = "roles/pubsub.admin"
+  member        = "serviceAccount:service-${data.google_project.solution_demos_project.number}@gcp-sa-yakima.iam.gserviceaccount.com"
+} 
+
+# Allow the Config Controller service agent to manage roles
+resource "google_project_iam_member" "config_control_bucket_admin" {
+  project       = var.project
+  role          = "roles/iam.roleAdmin"
+  member        = "serviceAccount:service-${data.google_project.solution_demos_project.number}@gcp-sa-yakima.iam.gserviceaccount.com"
 }
