@@ -751,7 +751,7 @@ resource "google_project_iam_member" "config_control_role_admin" {
 }
 
 # Allow the Config Controller service agent to consume services
-resource "google_project_iam_member" "config_control_role_admin" {
+resource "google_project_iam_member" "config_control_service_user" {
   project       = var.project
   role          = "roles/serviceusage.serviceUsageConsumer"
   member        = "serviceAccount:service-${data.google_project.solution_demos_project.number}@gcp-sa-yakima.iam.gserviceaccount.com"
