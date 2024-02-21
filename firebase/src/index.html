@@ -1,73 +1,73 @@
 <head>
-    <meta charset="utf-8" />
-    <title>Security CTF</title>
-    <link 
-      href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css"
-      rel="stylesheet"
+  <meta charset="utf-8" />
+  <title>Cloud Security CTF</title>
+  <link 
+    href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css"
+    rel="stylesheet"
+  />
+  <link
+    href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    rel="stylesheet"
+  />
+  <link 
+    href="https://www.w3schools.com/w3css/4/w3.css"
+    rel="stylesheet"
+  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  
+  <body>
+  <div id="app">
+    <img
+      src="https://firebasestorage.googleapis.com/v0/b/fir-images-a61c9.appspot.com/o/codelab.png?alt=media&token=f45f808c-ce40-4b34-944c-8d8fac00e13d"
     />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet"
-    />
-    <link 
-      href="https://www.w3schools.com/w3css/4/w3.css"
-      rel="stylesheet"
-    />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-</head>
-    
-<body>
-    <div id="app">
-      <img
-        src="https://firebasestorage.googleapis.com/v0/b/fir-images-a61c9.appspot.com/o/codelab.png?alt=media&token=f45f808c-ce40-4b34-944c-8d8fac00e13d"
-      />
-    
-      <section id="event-details-container">
-        <h1>Security CTF Meetup</h1>
-        <p><i class="material-icons">calendar_today</i> February 28</p>
-        <p><i class="material-icons">location_city</i> [J/APAC] Breakout Session - Tech Summit</p>
-        <!-- ADD THE RSVP BUTTON HERE -->
-        <button id="startRsvp">RSVP</button>
-        <section id="firebaseui-auth-container"></section>
-      </section>
-    
+  
+    <section id="event-details-container">
+      <h1>Security CTF Meetup</h1>
+      <p><i class="material-icons">calendar_today</i> February 28</p>
+      <p><i class="material-icons">location_city</i> [J/APAC] Tech Summit 24</p>
+      <!-- ADD THE RSVP BUTTON HERE -->
+      <button id="startRsvp">RSVP</button>
+      <section id="firebaseui-auth-container"></section>
+    </section>
+  
+    <hr />
+  
+    <section id="description-container">
+      <h2>Are you the ultimate Google Cloud superhero?</h2>
+      <p>This workshop is your secret training ground - a gamified, fun-filled, hands-on adventure packed with simulated real-world security battles on Google Cloud.<br><br>We'll provide the clues, you bring your cloud knowledge (IAM, Compute, etc.) and your problem-solving skills. Oh and did we mention, your competitive spirit!<br><br>No matter your current skill level, you'll leave ready to defend your cloud kingdom!</p>
+  
+      <table id="challenges"></table>
       <hr />
-    
-      <section id="description-container">
-        <h2>What we'll be doing</h2>
-        <p>Join us for solving cloud security challenges!</p>
-    
-        <table id="challenges"></table>
-        <hr />
-    
-        <h2>Player Instructions</h2>
-        <ul>
-          <li><p>Before the event</p></li>
-            <ol>
-              <li><p id=bullet>Use the RSVP button above and sign-in using a (non-gmail) Google account.</p></li>
-              <li><p id=bullet>Sign up to the CTF Slack workspace using this <a href="https://join.slack.com/t/sandeep-m4l3838/shared_invite/zt-2b99pcng3-N_7zw6Kwcor1q5HQXK3zSw">link</a>.</p></li>
-            </ol>
-          <li><p>During the event</p></li>
-            <ol>
-              <li><p id=bullet>Login to the <a href="http://console.cloud.google.com">Google Cloud Console</a> with your Google identity from the previous step.</p></li>
-              <li><p id=bullet>Go to the project selector box at the top left, select from “NO ORGANIZATION” and search for the <i>security-ctf-easy</i> project.</li>
-              <li><p id=bullet>Contact the CTF admin for the game code.</p></li>
-              <li><p id=bullet>Kick off by firing the following slash command in slack.</p></li>
-              <p id=bullet>/ctf player start &lt;game_code&gt;</p>
-            </ol>
-        </ul>
-      </section>
-    
-      <hr />
-    
-      <section id="leaderboard-container">
-        <form><!-- ... --></form>
-      </section>
-    
-      <table id="players"></table>
-    
-      <section id="countdown-container">
+  
+      <h2>Player Instructions</h2>
+      <ul>
+        <li><p>Before the event</p></li>
+          <ol>
+            <li><p id=bullet>Use the RSVP button above and sign-in using a (non-gmail) Google account.</p></li>
+            <li><p id=bullet>Sign up to the CTF Slack workspace using this <a href="https://join.slack.com/t/sandeep-m4l3838/shared_invite/zt-2b99pcng3-N_7zw6Kwcor1q5HQXK3zSw">link</a>.</p></li>
+          </ol>
+        <li><p>During the event</p></li>
+          <ol>
+            <li><p id=bullet>Login to the <a href="http://console.cloud.google.com">Google Cloud Console</a> with your Google identity from the previous step.</p></li>
+            <li><p id=bullet>Go to the project selector box at the top left, select from “NO ORGANIZATION” and search for the <i>security-ctf-easy</i> project.</li>
+            <li><p id=bullet>Contact the CTF admin for the game code.</p></li>
+            <li><p id=bullet>Kick off by firing the following slash command in slack.</p></li>
+            <p id=bullet>/ctf player start &lt;game_code&gt;</p>
+          </ol>
+      </ul>
+    </section>
+  
+    <hr />
+  
+    <section id="leaderboard-container">
       <form><!-- ... --></form>
-      </section>
-    </div>
-</body>
+    </section>
+  
+    <table id="players"></table>
+  
+    <section id="countdown-container">
+    <form><!-- ... --></form>
+    </section>
+  </div>
+  </body>
