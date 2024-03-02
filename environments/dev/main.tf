@@ -505,6 +505,7 @@ resource "google_sql_database_instance" "iap_run_sql_demo_db_instance" {
 
     ip_configuration {
       ipv4_enabled  = true
+      require_ssl   = false
       ssl_mode      = "ENCRYPTED_ONLY"
     }
   }
