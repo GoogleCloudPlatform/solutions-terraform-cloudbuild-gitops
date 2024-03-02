@@ -359,6 +359,15 @@ resource "google_compute_global_address" "iap_run_sql_demo" {
   project       = var.project
 }
 
+# old ssl certificate
+resource "google_compute_managed_ssl_certificate" "iap_run_sql_demo" {
+  name = "iap-run-sql-demo-cert"
+
+  managed {
+    domains = ["run.agarsand.demo.altostrat.com."]
+  }
+}
+
 # ssl certificate
 resource "google_compute_managed_ssl_certificate" "iap_run_sql_demo_cert" {
   name = "iap-run-sql-demo-certificate"
