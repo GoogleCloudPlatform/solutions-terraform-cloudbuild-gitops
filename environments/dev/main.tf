@@ -491,7 +491,6 @@ resource "google_sql_database" "iap_run_sql_demo_database" {
 }
 
 resource "google_sql_database_instance" "iap_run_sql_demo_db_instance" {
-  provider          = google-beta
   count             = var.create_iap_run_sql_demo ? 1 : 0
   name              = "iap-run-sql-demo-db-instance"
   region            = var.region
