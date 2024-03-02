@@ -43,8 +43,8 @@ steps:
           echo "*************** TERRAFORM INIT ******************"
           echo "******* At environment: ${env} ********"
           echo "*************************************************"
-          terraform providers
           terraform init || exit 1
+          terraform providers
           cd ../../
         done
       fi 
