@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "docker-project-403012_cloudbuild "
+    bucket = "docker-project-403012-tfstat"
     prefix = "env/prod"
   }
 }
