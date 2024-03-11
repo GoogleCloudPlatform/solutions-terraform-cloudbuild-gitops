@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "docker-project-403012-tfstat"
+    bucket = "kms-protected-bucket"
     prefix = "env/prod"
   }
 }
