@@ -162,6 +162,7 @@ def encrypt_external(plaintext):
     
     # Extract and parse the public key as a PEM-encoded RSA key.
     bankpublickey = os.environ.get('BANKPUBLICKEY', 'Specified environment variable is not set.')
+    print(bankpublickey)
     pem = bankpublickey.encode("utf-8")
     rsa_key = serialization.load_pem_public_key(pem, default_backend())
 
