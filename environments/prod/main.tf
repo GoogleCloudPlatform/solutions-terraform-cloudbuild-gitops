@@ -1504,11 +1504,10 @@ module "cloud_hsm_demo_cloud_function" {
 
 resource "google_secret_manager_secret" "bank_public_key" {
   project   = var.project
-  location  = var.region
   secret_id = "bank-public-key"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
