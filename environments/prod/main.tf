@@ -138,7 +138,7 @@ resource "google_secret_manager_secret" "slack-secure-cicd-bot-token" {
   secret_id = "slack-secure-cicd-bot-token"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -192,7 +192,7 @@ resource "google_secret_manager_secret" "slack-secure-cicd-signing-secret" {
   secret_id = "slack-secure-cicd-signing-secret"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -394,7 +394,7 @@ resource "google_secret_manager_secret" "slack-access-admin-bot-token" {
   secret_id = "slack-access-admin-bot-token"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -413,7 +413,7 @@ resource "google_secret_manager_secret" "slack-access-admin-signing-secret" {
   secret_id = "slack-access-admin-signing-secret"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -628,7 +628,7 @@ resource "google_secret_manager_secret" "recaptcha-site-key" {
   secret_id = "recaptcha-site-key"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -647,7 +647,7 @@ resource "google_secret_manager_secret" "recaptcha-website-password" {
   secret_id = "recaptcha-website-password"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -709,7 +709,7 @@ resource "google_secret_manager_secret" "slack-scc-bot-token" {
   secret_id = "slack-scc-bot-token"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -752,7 +752,7 @@ resource "google_secret_manager_secret" "slack-scc-signing-secret" {
   secret_id = "slack-scc-signing-secret"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -954,7 +954,7 @@ resource "google_secret_manager_secret" "atlassian-api-token" {
   secret_id = "atlassian-api-token"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -1036,7 +1036,7 @@ resource "google_secret_manager_secret" "slack_identity_bot_token" {
   secret_id = "slack-identity-bot-token"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -1263,7 +1263,7 @@ resource "google_secret_manager_secret" "slack_security_ctf_bot_token" {
   secret_id = "slack-security-ctf-bot-token"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -1280,7 +1280,7 @@ resource "google_secret_manager_secret" "slack_security_ctf_signing_secret" {
   secret_id = "slack-security-ctf-signing-secret"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -1492,12 +1492,12 @@ module "cloud_hsm_demo_cloud_function" {
     function-desc   = "input NPCI cipher, decrypts, and creates Bank cipher"
     entry-point     = "cloud_hsm_demo"
     env-vars        = {
-        CLOUD_HSM_KEY = google_kms_crypto_key_version.cloud_hsm_key_version.name
+      CLOUD_HSM_KEY = google_kms_crypto_key_version.cloud_hsm_key_version.name
     }
     secrets         = [
         {
             key = "BANK_PUBLIC_KEY"
-            id  = google_secret_manager_secret.bank_public_key.secret_id
+            id  = data.google_secret_manager_secret.bank_public_key.secret_id
         }
     ]
 }
