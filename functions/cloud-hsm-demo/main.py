@@ -32,11 +32,6 @@ def encrypt_asymmetric(key_version_name: str, plaintext: str) -> bytes:
     # Create the client.
     client = kms.KeyManagementServiceClient()
 
-    # Build the key version name.
-    key_version_name = client.crypto_key_version_path(
-        project_id, location_id, key_ring_id, key_id, version_id
-    )
-
     # Get the public key.
     public_key = client.get_public_key(request={"name": key_version_name})
 
@@ -54,12 +49,14 @@ def encrypt_asymmetric(key_version_name: str, plaintext: str) -> bytes:
     print(f"Ciphertext: {base64.b64encode(ciphertext)!r}")
     return ciphertext
 
-def decrypt_asymmetric(key_version_name: str,ciphertext: bytes) -> kms.DecryptResponse:
+def decrypt_asymmetric(key_version_name: str, ciphertext: bytes) -> kms.DecryptResponse:
     # Create the client.
     client = kms.KeyManagementServiceClient()
 
     # Optional, but recommended: compute ciphertext's CRC32C.
     ciphertext_crc32c = crc32c(ciphertext)
+
+    print(key_version_name)
 
     # Call the API.
     decrypt_response = client.asymmetric_decrypt(
