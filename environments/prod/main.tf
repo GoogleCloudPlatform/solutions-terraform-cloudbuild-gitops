@@ -1492,12 +1492,12 @@ module "cloud_hsm_demo_cloud_function" {
     function-desc   = "input NPCI cipher, decrypts, and creates Bank cipher"
     entry-point     = "cloud_hsm_demo"
     env-vars        = {
-      CLOUD_HSM_KEY = google_kms_crypto_key_version.cloud_hsm_key_version.name
+      CLOUD_HSM_KEY = data.google_kms_crypto_key_version.cloud_hsm_key_version.name
     }
     secrets         = [
         {
             key = "BANK_PUBLIC_KEY"
-            id  = data.google_secret_manager_secret.bank_public_key.secret_id
+            id  = google_secret_manager_secret.bank_public_key.secret_id
         }
     ]
 }
