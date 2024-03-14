@@ -56,8 +56,6 @@ def decrypt_asymmetric(key_version_name: str, ciphertext: bytes) -> kms.DecryptR
     # Optional, but recommended: compute ciphertext's CRC32C.
     ciphertext_crc32c = crc32c(ciphertext)
 
-    print(key_version_name)
-
     # Call the API.
     decrypt_response = client.asymmetric_decrypt(
         request={
