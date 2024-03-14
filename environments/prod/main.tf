@@ -568,8 +568,6 @@ data "google_kms_crypto_key_version" "dlp_tokenize_key_version" {
   crypto_key = google_kms_crypto_key.dlp_tokenize_key.id
 }
 
-
-
 ###############################
 ## reCAPTCHA Enterprise Demo ##
 ###############################
@@ -1456,4 +1454,75 @@ resource "google_project_iam_member" "project_firestore_user" {
   project   = var.project
   role      = "roles/datastore.user"
   member    = "serviceAccount:${module.security_ctf_challenges_cloud_function.sa-email}"
+}
+
+####################################
+## Cloud HSM Asymmetric Keys Demo ##
+####################################
+
+# KMS resources
+resource "google_kms_key_ring" "cloud_hsm_keyring" {
+  name     = "cloud-hsm-keyring"
+  location = var.region
+}
+
+resource "google_kms_crypto_key" "cloud_hsm_key" {
+  name     = "hsm-asymmetric-decrypt-key"
+  key_ring = google_kms_key_ring.cloud_hsm_keyring.id
+  purpose  = "ASYMMETRIC_DECRYPT"
+
+  version_template {
+    algorithm           = "RSA_DECRYPT_OAEP_3072_SHA256"
+    protection_level    = "HSM"
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+data "google_kms_crypto_key_version" "cloud_hsm_key_version" {
+  crypto_key = google_kms_crypto_key.cloud_hsm_key.id
+}
+
+module "cloud_hsm_demo_cloud_function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "cloud-hsm-demo"
+    function-desc   = "input NPCI cipher, decrypts, and creates Bank cipher"
+    entry-point     = "cloud_hsm_demo"
+    env-vars        = {
+        CLOUD_HSM_KEY = google_kms_crypto_key_version.cloud_hsm_key_version.name
+    }
+    secrets         = [
+        {
+            key = "BANK_PUBLIC_KEY"
+            id  = google_secret_manager_secret.bank_public_key.secret_id
+        }
+    ]
+}
+
+resource "google_secret_manager_secret" "bank_public_key" {
+  project   = var.project
+  location  = var.region
+  secret_id = "bank-public-key"
+
+  replication {
+    automatic = true
+  }
+}
+
+# IAM entry for service account of hsm-demo function to access bank public key
+resource "google_secret_manager_secret_iam_member" "bank_public_key_binding" {
+  project   = google_secret_manager_secret.bank_public_key.project
+  secret_id = google_secret_manager_secret.bank_public_key.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${module.cloud_hsm_demo_cloud_function.sa-email}"
+}
+
+# IAM entry for service account of hsm-demo function to operate cloud-hsm key
+resource "google_kms_crypto_key_iam_member" "cloud_hsm_key_operator" {
+  crypto_key_id = google_kms_crypto_key.cloud_hsm_key.id
+  role          = "roles/cloudkms.cryptoOperator"
+  member        = "serviceAccount:${module.cloud_hsm_demo_cloud_function.sa-email}"
 }
