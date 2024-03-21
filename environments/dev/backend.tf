@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "vigilant-cider-417109-tfstate"
     prefix = "env/dev"
   }
 }
