@@ -1540,12 +1540,3 @@ module "mfa_status_demo_cloud_function" {
       CUSTOMER_ID   = var.customer_id
     }
 }
-
-resource "google_secret_manager_secret" "bank_public_key" {
-  project   = var.project
-  secret_id = "bank-public-key"
-
-  replication {
-    auto {}
-  }
-}
