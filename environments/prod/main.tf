@@ -1549,18 +1549,3 @@ resource "google_secret_manager_secret" "bank_public_key" {
     auto {}
   }
 }
-
-# IAM entry for service account of hsm-demo function to access bank public key
-resource "google_secret_manager_secret_iam_member" "bank_public_key_binding" {
-  project   = google_secret_manager_secret.bank_public_key.project
-  secret_id = google_secret_manager_secret.bank_public_key.secret_id
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${module.cloud_hsm_demo_cloud_function.sa-email}"
-}
-
-# IAM entry for service account of hsm-demo function to operate cloud-hsm key
-resource "google_kms_crypto_key_iam_member" "cloud_hsm_key_operator" {
-  crypto_key_id = google_kms_crypto_key.cloud_hsm_key.id
-  role          = "roles/cloudkms.cryptoOperator"
-  member        = "serviceAccount:${module.cloud_hsm_demo_cloud_function.sa-email}"
-}
