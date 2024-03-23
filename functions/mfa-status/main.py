@@ -1,8 +1,10 @@
+import os
 import json
 import googleapiclient.discovery
 
 def mfa_status(self):
     # Get the list of users where 2FA is not enforced.
+    customer_id = os.environ.get('CUSTOMER_ID', 'Specified environment variable is not set.')
     users = get_users_where_2fa_not_enrolled(customer_id)
     users_found = []
 
