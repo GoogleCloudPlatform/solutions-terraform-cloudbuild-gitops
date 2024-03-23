@@ -31,3 +31,9 @@ resource "google_project_service" "cloud_asset" {
   service = "cloudasset.googleapis.com"
   disable_on_destroy = false
 }
+
+resource "google_project_service" "admin_api" {
+  project = var.project
+  service = "admin.googleapis.com"
+  disable_on_destroy = false
+}

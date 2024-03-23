@@ -111,3 +111,8 @@ variable "secure_tag" {
     }
   )
 }
+
+variable "customer_id" {
+  type        = string
+  description = "Google Identity Customer ID"
+}

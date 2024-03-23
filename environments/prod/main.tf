@@ -1525,3 +1525,42 @@ resource "google_kms_crypto_key_iam_member" "cloud_hsm_key_operator" {
   role          = "roles/cloudkms.cryptoOperator"
   member        = "serviceAccount:${module.cloud_hsm_demo_cloud_function.sa-email}"
 }
+
+####################################
+## Cloud Identity MFA Status Demo ##
+####################################
+
+module "mfa_status_demo_cloud_function" {
+    source          = "../../modules/cloud_function"
+    project         = var.project
+    function-name   = "mfa-status"
+    function-desc   = "input customer identity, returns users not enrolled in 2SV"
+    entry-point     = "mfa_status"
+    env-vars        = {
+      CUSTOMER_ID   = var.customer_id
+    }
+}
+
+resource "google_secret_manager_secret" "bank_public_key" {
+  project   = var.project
+  secret_id = "bank-public-key"
+
+  replication {
+    auto {}
+  }
+}
+
+# IAM entry for service account of hsm-demo function to access bank public key
+resource "google_secret_manager_secret_iam_member" "bank_public_key_binding" {
+  project   = google_secret_manager_secret.bank_public_key.project
+  secret_id = google_secret_manager_secret.bank_public_key.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${module.cloud_hsm_demo_cloud_function.sa-email}"
+}
+
+# IAM entry for service account of hsm-demo function to operate cloud-hsm key
+resource "google_kms_crypto_key_iam_member" "cloud_hsm_key_operator" {
+  crypto_key_id = google_kms_crypto_key.cloud_hsm_key.id
+  role          = "roles/cloudkms.cryptoOperator"
+  member        = "serviceAccount:${module.cloud_hsm_demo_cloud_function.sa-email}"
+}
