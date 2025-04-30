@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "storied-coil-458416-r6-tfstate"
     prefix = "env/prod"
   }
 }
