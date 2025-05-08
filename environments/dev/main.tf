@@ -45,7 +45,7 @@ module "cloud_run" {
 
   # Required variables
   service_name           = "backback"
-  project_id             = "${var.project}"
+  project_id             = "${var.project_id}"
   location               = "europe-southwest1"
   image                  = "gcr.io/cloudrun/hello"
 }
