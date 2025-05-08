@@ -18,23 +18,16 @@ locals {
 }
 
 provider "google" {
-  project = "${var.project}"
+  project = "${var.project_id}"
 }
 
-module "vpc" {
-  source  = "../../modules/vpc"
-  project = "${var.project}"
-  env     = "${local.env}"
-}
+module "cloud_run" {
+  source  = "GoogleCloudPlatform/cloud-run/google"
+  version = "~> 0.10.0"
 
-module "http_server" {
-  source  = "../../modules/http_server"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
-}
-
-module "firewall" {
-  source  = "../../modules/firewall"
-  project = "${var.project}"
-  subnet  = "${module.vpc.subnet}"
+  # Required variables
+  service_name           = "backback"
+  project_id             = "${var.project_id}"
+  location               = "europe-southwest1"
+  image                  = "gcr.io/cloudrun/hello"
 }
