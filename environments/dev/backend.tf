@@ -15,7 +15,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "PROJECT_ID-tfstate"
+    bucket = "mormedi-aggregator-456814-tfstate"
     prefix = "env/dev"
   }
 }
