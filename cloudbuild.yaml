@@ -89,7 +89,7 @@ steps:
         echo "Branch '$BRANCH_NAME' does not represent an official environment."
         echo "*******************************************************************************"
       fi
-# [END tf-apply]      
+# [END tf-apply]
 
 # Configure Cloud Build options
 options:
