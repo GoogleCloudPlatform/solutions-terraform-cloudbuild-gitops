@@ -30,5 +30,10 @@ module "cloud_run" {
   project_id             = "${var.project_id}"
   location               = "europe-southwest1"
   image                  = "gcr.io/cloudrun/hello"
+  members                = ["allUsers"]
 }
 
+# TODO: change service account
+# TODO: disable auth
+# TODO: add secret
+# TODO: use built image
