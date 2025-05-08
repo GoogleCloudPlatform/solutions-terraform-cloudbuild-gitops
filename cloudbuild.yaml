@@ -90,3 +90,8 @@ steps:
         echo "*******************************************************************************"
       fi
 # [END tf-apply]      
+
+# Configure Cloud Build options
+options:
+  # Send build logs straight to Cloud Logging
+  logging: CLOUD_LOGGING_ONLY
