@@ -39,14 +39,14 @@ provider "google" {
 #   subnet  = "${module.vpc.subnet}"
 # }
 
-# module "cloud_run" {
-#   source  = "GoogleCloudPlatform/cloud-run/google"
-#   version = "~> 0.10.0"
-#
-#   # Required variables
-#   service_name           = "backback"
-#   project_id             = "${var.project}"
-#   location               = "europe-southwest1"
-#   image                  = "gcr.io/cloudrun/hello"
-# }
+module "cloud_run" {
+  source  = "GoogleCloudPlatform/cloud-run/google"
+  version = "~> 0.10.0"
+
+  # Required variables
+  service_name           = "backback"
+  project_id             = "${var.project}"
+  location               = "europe-southwest1"
+  image                  = "gcr.io/cloudrun/hello"
+}
 
