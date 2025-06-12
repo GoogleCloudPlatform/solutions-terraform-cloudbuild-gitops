@@ -12,11 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-output "network" {
-  value = "${module.vpc.network_name}"
+output "cluster_id" {
+	value = google_container_cluster.primary.id
 }
 
-output "subnet" {
-  value = "${element(module.vpc.subnets_names, 0)}"
+output "cluster_endpoint" {
+	value = google_container_cluster.primary.endpoint
+}
+
+output "pool_id" {
+	value = google_container_node_pool.primary_preemptible_nodes.id
+}
+
+output "pool_instance_group_urls" {
+	value = google_container_node_pool.primary_preemptible_nodes.instance_group_urls
 }
