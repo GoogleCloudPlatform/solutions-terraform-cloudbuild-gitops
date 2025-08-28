@@ -1,0 +1,4 @@
+google-cloud-storage
+google-cloud-kms
+google-auth
+crcmod

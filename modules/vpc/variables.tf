@@ -12,6 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 variable "project" {}
 variable "env" {}
+variable "region" {}
+variable "secondary_ranges" {
+    default = null
+    type = list(object(
+        {
+            range_name      = string
+            ip_cidr_range   = string
+        }
+    ))
+}

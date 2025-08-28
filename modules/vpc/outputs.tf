@@ -12,11 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+output "id" {
+  value = "${google_compute_network.vpc.id}"
+}
 
-output "network" {
-  value = "${module.vpc.network_name}"
+output "name" {
+  value = "${google_compute_network.vpc.name}"
 }
 
 output "subnet" {
-  value = "${element(module.vpc.subnets_names, 0)}"
+  value = "${google_compute_subnetwork.subnet.id}"
+}
+
+output "subnet_ip" {
+  value = "10.${var.env == "dev" ? 10 : 20}.0.0/24"
 }

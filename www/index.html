@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <title>reCAPTCHA demo: Simple page</title>
+        <script src="https://www.google.com/recaptcha/enterprise.js?render=6Lf9jKMiAAAAAPZxzlvRRoFv_MpFz1IWNVrrHHI3"></script>
+        <script>
+           function onSubmit(token) {
+             document.getElementById("loginForm").submit();
+           }
+        </script>
+    </head>
+    <body>
+        <div>
+          <h1>reCAPTCHA-protected Login Form</h1> <br><br>
+        </div>
+
+        <form id="loginForm" action="https://us-central1-secops-project-348011.cloudfunctions.net/recaptcha-backend" method="post">
+          <div>
+              <div>
+                  Username: <input type="text" name="username"> <br><br>
+                  Password: <input type="password" name="password"> <br><br>
+              </div>
+              <div>
+                  <br><br>
+                  <button class="g-recaptcha" 
+                          data-sitekey="6Lf9jKMiAAAAAPZxzlvRRoFv_MpFz1IWNVrrHHI3" 
+                          data-callback="onSubmit" 
+                          data-action='login'>Submit
+                  </button>
+              </div>
+          </div>
+        </form>
+  </body>
+</html>
